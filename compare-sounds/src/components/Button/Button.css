@@ -1,0 +1,68 @@
+.reusableButton {
+  font-weight: 700;
+  background-color: gold;
+  box-shadow: inset .15em .15em .5em #f08700;
+  color: black;
+  padding: 1.5em 1em;
+  margin: .5em;
+  height: 4em;
+  border-radius: .5em;
+  border: 0px;
+  outline: none;
+  text-transform: uppercase;
+}
+
+.reusableButton:hover {
+  background-color: #efca08;
+  color: black;
+  box-shadow: inset -.25em -.25em .5em #f08700;
+}
+
+.reusableButton:active {
+  background-color: #f08700;
+  box-shadow: inset 0 0 10px firebrick;
+  outline: none;
+}
+
+.reusableButton:focus {
+  outline: none;
+}
+
+.loginButton {
+  min-width: 4em;
+  min-height: 4em;
+  height: 4em;
+  padding: 0;
+}
+
+.emptyButton {
+  background: #fff;
+  color: #00a6a6;
+  border: 0px;
+  box-shadow: none;
+}
+
+.emptyButton:hover {
+  color: #f08700;
+  background-color: white;
+  box-shadow: none;
+}
+
+.emptyButton:active {
+  background-color: #fff;
+  box-shadow: none;
+}
+
+.disabledButton, .disabledButton:hover, .disabledButton:active {
+  color: #bbb;
+  border: 0px;
+  outline: none;
+  background-color: #fff;
+  box-shadow: none;
+}
+
+.buyButton {
+  position: relative;
+  right: 5px;
+  bottom: 5px;
+}
