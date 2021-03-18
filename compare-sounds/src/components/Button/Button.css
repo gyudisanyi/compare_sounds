@@ -1,12 +1,14 @@
 .reusableButton {
+  font-family: 'Courier New', Courier, monospace;
   font-weight: 700;
-  background-color: gold;
-  box-shadow: inset .15em .15em .5em #f08700;
+  background-color: aliceblue;
+  box-shadow: inset .15em .15em .5em slategray;
   color: black;
+  min-width: 4em;
   padding: 1.5em 1em;
   margin: .5em;
   height: 4em;
-  border-radius: .5em;
+  border-radius: 5em;
   border: 0px;
   outline: none;
   text-transform: uppercase;
@@ -51,18 +53,4 @@
 .emptyButton:active {
   background-color: #fff;
   box-shadow: none;
-}
-
-.disabledButton, .disabledButton:hover, .disabledButton:active {
-  color: #bbb;
-  border: 0px;
-  outline: none;
-  background-color: #fff;
-  box-shadow: none;
-}
-
-.buyButton {
-  position: relative;
-  right: 5px;
-  bottom: 5px;
 }

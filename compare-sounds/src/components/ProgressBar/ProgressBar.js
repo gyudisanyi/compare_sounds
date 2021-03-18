@@ -1,8 +1,10 @@
 import React from 'react';
 
-const ProgressBar = () => {
+const ProgressBar = ({value, duration, progressRef}) => {
   return (
-    <>YO</>
+    <>
+      <input ref = {progressRef} type="range" id="seek" min="0" max={duration} value={value} step=".1" />
+    </>
   )
 }
 

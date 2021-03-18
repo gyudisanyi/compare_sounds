@@ -1,5 +1,6 @@
 #main {
   margin: auto;
   background-color:darkslategray;
-  color:antiquewhite
+  color:antiquewhite;
+  font-family: 'Courier New', Courier, monospace;
 }
