@@ -30,15 +30,8 @@
   outline: none;
 }
 
-.loginButton {
-  min-width: 4em;
-  min-height: 4em;
-  height: 4em;
-  padding: 0;
-}
-
 .emptyButton {
-  background: #fff;
+  background: #ddd;
   color: #00a6a6;
   border: 0px;
   box-shadow: none;

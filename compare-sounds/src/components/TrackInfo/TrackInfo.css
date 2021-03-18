@@ -1,0 +1,15 @@
+.active {
+  color: azure;
+}
+
+.inactive {
+  color: teal;
+}
+
+div span {
+  font-weight: 700;
+  background-color: azure;
+  color: black;
+  margin: .5em;
+  padding: .25em;
+}

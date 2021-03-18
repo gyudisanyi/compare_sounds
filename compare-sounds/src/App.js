@@ -13,35 +13,62 @@ const set = [
 
 function App() {
 
-
   const [trackNodes, setTrackNodes] = useState();
   const [nowPlaying, setNowPlaying] = useState(0);
-  const [duration, setDuration] = useState(60);
-  const [position, setPosition] = useState(0)
   const [paused, setPaused] = useState(true);
+  const [looping, setLooping] = useState(false);
+  const [loop, setLoop] = useState([94, 96])
   const progressBarRef = useRef(null);
+  const [pbWidth, setPbWidth] = useState(250);
+  const pbHeight = 20;
 
   const trackNodesRef = useCallback((setNode) => {
-    if (!setNode) {console.log(`ohno`); return}
-    console.log(`ohh`)
+    if (!setNode) { console.log(`ohno`); return }
+    console.log('ohhhhhhhhh')
     setTrackNodes(Array.from(setNode.children));
   }, []);
-  
+
+
   useEffect(() => {
     if (trackNodes) {
+      const seek = (e) => {
+        console.log({ e })
+        trackNodes.forEach((t) => t.currentTime = t.duration * (e.offsetX / pbWidth));
+      }
       trackNodes.forEach((t) => {
         t.muted = true;
       })
       trackNodes[nowPlaying].muted = false;
-      trackNodes[0].addEventListener('timeupdate', function(){
-      progressBarRef.current.value = trackNodes[0].currentTime;
-      // if (loopSegment) {
-      //   if (audioElement1.currentTime <= loopStart) {audioElement1.currentTime = audioElement2.currentTime = loopStart}
-      //   if (audioElement1.currentTime >= loopEnd) {audioElement1.currentTime = audioElement2.currentTime = loopStart}
-      // }
+
+      const progressBar = progressBarRef.current.getContext('2d');
+      setPbWidth(progressBarRef.current.width);
+
+      progressBar.fillStyle = 'black';
+      progressBar.fillRect(0, 0, pbWidth, pbHeight);
+      progressBarRef.current.addEventListener('click', (e) => seek(e))
+
+      trackNodes[0].addEventListener('timeupdate', (e) => {
+        console.log({e});
+        console.log({trackNodes});
+        console.log(looping, trackNodes[0].currentTime);
+        if (looping) {looper()};
+        progressBar.fillStyle = 'black';
+        progressBar.fillRect(0, 0, pbWidth, pbHeight);
+        progressBar.fillStyle = 'white';
+        progressBar.fillRect(0, 0, pbWidth * trackNodes[0].currentTime / trackNodes[0].duration, pbHeight)
+
       });
+
+      trackNodes[0].removeEventListener('timeupdate', ()=>{});
+
+      const looper = () => {
+        console.log(looping);
+        if (trackNodes[0].currentTime <= loop[0] || trackNodes[0].currentTime >= loop[1]) {trackNodes.forEach((t)=>t.currentTime = loop[0])}
+        if (!looping) {return};
+      }
+
     }
-  }, [trackNodes, nowPlaying]);
+  }, [nowPlaying, trackNodes, looping]);
 
   const playPause = () => {
     paused ?
@@ -68,13 +95,14 @@ function App() {
       <div id="dashboard">
         <div id="buttons">
           <Button id="play" buttonText={!paused ? `▌▌` : `►`} handleClick={playPause} />
-          <Button id="loop" buttonText="Loop" handleClick={playPause} />
+          <Button id="loop" buttonText="Loop" buttonClass={looping ? "emptyButton" : ""} handleClick={() => setLooping(!looping)} />
+
           <Button id="switch" buttonText="Switch" handleClick={switchTrack} />
         </div>
-        <ProgressBar progressRef={progressBarRef} duration={duration} value={position}/>
+        <ProgressBar progRef={progressBarRef} />
       </div>
       <div>
-        <TrackSet tracksRef={trackNodesRef} set={set} nowPlaying={nowPlaying}/>
+        <TrackSet tracksRef={trackNodesRef} set={set} nowPlaying={nowPlaying} />
       </div>
     </div>
   );
