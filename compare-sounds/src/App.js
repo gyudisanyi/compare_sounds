@@ -5,10 +5,8 @@ import TrackSet from './components/TrackSet/TrackSet';
 import './App.css';
 
 const set = [
-  ["./audio_src/1.wav", "Mix 1"],
-  ["./audio_src/2.wav", "Mix 2"],
-  ["./audio_src/3.mp3", "Adam and the Ants 1"],
-  ["./audio_src/4.mp3", "Adam and the Ants 2"],
+  ["./audio_src/5A.mp3", "Mix 1"],
+  ["./audio_src/5B.mp3", "Mix 2"],
 ]
 
 function App() {
@@ -17,7 +15,7 @@ function App() {
   const [nowPlaying, setNowPlaying] = useState(0);
   const [paused, setPaused] = useState(true);
   const [looping, setLooping] = useState(false);
-  const [loop, setLoop] = useState([94, 96])
+  const [loop, setLoop] = useState([2, 4])
   const progressBarRef = useRef(null);
   const [pbWidth, setPbWidth] = useState(250);
   const pbHeight = 20;
