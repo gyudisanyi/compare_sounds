@@ -37,7 +37,7 @@ function App() {
         t.muted = true;
       })
       trackNodes[nowPlaying].muted = false;
-
+      console.log(looping)
       const progressBar = progressBarRef.current.getContext('2d');
       setPbWidth(progressBarRef.current.width);
 
@@ -93,7 +93,7 @@ function App() {
       <div id="dashboard">
         <div id="buttons">
           <Button id="play" buttonText={!paused ? `▌▌` : `►`} handleClick={playPause} />
-          <Button id="loop" buttonText="Loop" buttonClass={looping ? "emptyButton" : ""} handleClick={() => setLooping(!looping)} />
+          <Button id="loop" buttonText="Loop" buttonClass={looping ? "emptyButton" : ""} handleClick={() => setLooping(prev => !prev)} />
 
           <Button id="switch" buttonText="Switch" handleClick={switchTrack} />
         </div>
