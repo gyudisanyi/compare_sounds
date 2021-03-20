@@ -1,14 +1,14 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import Button from './components/Button/Button';
 import { Line } from 'rc-progress';
-import Slider, { Range } from 'rc-slider';
+import { Range } from 'rc-slider';
 import 'rc-slider/assets/index.css';
-import TrackSet from './components/TrackSet/TrackSet';
+import TrackInfo from './components/TrackInfo/TrackInfo';
 import './App.css';
 
 const set = [
-  ["./audio_src/5A.mp3", "Mix 1"],
-  ["./audio_src/5B.mp3", "Mix 2"],
+  ["./audio_src/5A.mp3", "Mix 1", "Atmosphere yi"],
+  ["./audio_src/5B.mp3", "Mix 2", "Slug and Ant ho"],
 ]
 
 function App() {
@@ -22,28 +22,22 @@ function App() {
 
   const trackNodesRef = useCallback((setNode) => {
     if (!setNode) { console.log(`ohno`); return }
-    console.log('ohhhhhhhhh')
-    console.log({setNode})
+    const track1 = setNode.children[0];
+    track1.muted = false;
+    track1.addEventListener('timeupdate', () => {
+      setProgress(track1.currentTime / track1.duration * 100);
+    })
     setTrackNodes(Array.from(setNode.children));
   }, []);
 
   useEffect(() => {
-    if (!trackNodes) {console.log(`fck`); return;}
-    console.log("FFXXX")
-    trackNodes[0].addEventListener('timeupdate', () => {
-      setProgress(trackNodes[0].currentTime / trackNodes[0].duration * 100);
-    })
-  }, [trackNodes])
-
-  useEffect(() => {
-    if (!trackNodes || !looping) return;
-    console.log(`chkloop`, loop, trackNodes[0].currentTime)
+    if (!looping) return;
     if (trackNodes[0].currentTime <= loop[0]/1000 * trackNodes[0].duration
       || trackNodes[0].currentTime >= loop[1]/1000 * trackNodes[0].duration)
       {
         trackNodes.forEach((t)=>t.currentTime = loop[0]/1000 * trackNodes[0].duration)
       }
-  }, [progress])
+  }, [progress, looping, loop, trackNodes])
 
   function playPause() {
     paused ?
@@ -57,27 +51,17 @@ function App() {
     setPaused(prev => !prev);
   }
 
-  function checkLoop() {
-    
-    
-  }
 
   function seek(e) {
-    console.log("seekeer")
-    console.log(e.nativeEvent.offsetX);
-    console.log({ e });
     let seekSeconds = (e.nativeEvent.offsetX / 300)*trackNodes[0].duration
-    console.log(seekSeconds);
     trackNodes[0].currentTime=seekSeconds;
-
   }
   
-  function switchTrack() {
+  function switchTrack(i) {
+    console.log(i);
+    trackNodes[nowPlaying].muted = true;
+    trackNodes[(nowPlaying + 1) % trackNodes.length].muted = false;
     setNowPlaying(prev => (prev + 1) % trackNodes.length);
-    trackNodes.forEach((t) => {
-      t.muted = true;
-    });
-    trackNodes[nowPlaying].muted = false;
   }
 
   return (
@@ -97,8 +81,8 @@ function App() {
           />
       </div>
       <div>
-        <div ref={trackNodesRef}>{set.map((t, i)=> (<audio src={t[0]} loop/>))}</div>
-        {/* <TrackSet tracksRef={trackNodesRef} set={set} nowPlaying={nowPlaying} /> */}
+        <div ref={trackNodesRef}>{set.map((t, i)=> (<audio src={t[0]} key={i} id={i} loop muted/>))}</div>
+        <div>{set.map((t, i)=> (<TrackInfo handleClick={switchTrack} track={t} key={i} id={i} active={nowPlaying === i}/>))}</div>
       </div>
     </div>
   );
