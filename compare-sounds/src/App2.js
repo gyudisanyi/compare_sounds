@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import Button from './components/Button/Button';
 import { Line } from 'rc-progress';
 import Slider, { Range } from 'rc-slider';
@@ -10,8 +10,6 @@ const set = [
   ["./audio_src/5A.mp3", "Mix 1"],
   ["./audio_src/5B.mp3", "Mix 2"],
 ]
-
-const context = new AudioContext();
 
 function App() {
 
@@ -25,25 +23,27 @@ function App() {
   const trackNodesRef = useCallback((setNode) => {
     if (!setNode) { console.log(`ohno`); return }
     console.log('ohhhhhhhhh')
+    console.log({setNode})
     setTrackNodes(Array.from(setNode.children));
   }, []);
 
-
   useEffect(() => {
-    if (!trackNodes) return;
+    if (!trackNodes) {console.log(`fck`); return;}
     console.log("FFXXX")
-    // const buffers = trackNodes.map((t) => context.createBufferSource(t));
-    // console.log(buffers)
     trackNodes[0].addEventListener('timeupdate', () => {
-      if (trackNodes[0].currentTime <= loop[0]/1000 * trackNodes[0].duration || trackNodes[0].currentTime >= loop[1]/1000 * trackNodes[0].duration) {trackNodes.forEach((t)=>t.currentTime = loop[0]/1000 * trackNodes[0].duration)}
       setProgress(trackNodes[0].currentTime / trackNodes[0].duration * 100);
     })
-
-  }, [trackNodes, loop])
+  }, [trackNodes])
 
   useEffect(() => {
-    console.log("loop y es tu")
-  }, [loop])
+    if (!trackNodes || !looping) return;
+    console.log(`chkloop`, loop, trackNodes[0].currentTime)
+    if (trackNodes[0].currentTime <= loop[0]/1000 * trackNodes[0].duration
+      || trackNodes[0].currentTime >= loop[1]/1000 * trackNodes[0].duration)
+      {
+        trackNodes.forEach((t)=>t.currentTime = loop[0]/1000 * trackNodes[0].duration)
+      }
+  }, [progress])
 
   function playPause() {
     paused ?
@@ -55,6 +55,11 @@ function App() {
         t.pause();
       });
     setPaused(prev => !prev);
+  }
+
+  function checkLoop() {
+    
+    
   }
 
   function seek(e) {
@@ -92,7 +97,8 @@ function App() {
           />
       </div>
       <div>
-        <TrackSet tracksRef={trackNodesRef} set={set} nowPlaying={nowPlaying} />
+        <div ref={trackNodesRef}>{set.map((t, i)=> (<audio src={t[0]} loop/>))}</div>
+        {/* <TrackSet tracksRef={trackNodesRef} set={set} nowPlaying={nowPlaying} /> */}
       </div>
     </div>
   );
