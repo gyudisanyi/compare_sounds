@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import Button from './components/Button/Button';
 import { Line } from 'rc-progress';
-import { Range } from 'rc-slider';
 import 'rc-slider/assets/index.css';
 import TrackInfo from './components/TrackInfo/TrackInfo';
 import './App.css';
@@ -19,6 +18,7 @@ function App() {
   const [nowPlaying, setNowPlaying] = useState(0);
   const [progress, setProgress] = useState(0);
   const [paused, setPaused] = useState(true);
+  const [loopBarCtx, setLoopBarCtx] = useState();
   const [looping, setLooping] = useState(false);
   const [loop, setLoop] = useState([0, 1000]);
   const [loopBarClicked, setLoopBarClicked] = useState(false);
@@ -27,10 +27,10 @@ function App() {
   const loopBarRef = useCallback((setCanvas) => {
     if (!setCanvas) {console.log(`nocanvas`); return}
     const canvasCtx = setCanvas.getContext("2d");
-    canvasCtx.fillStyle = 'black';
-    canvasCtx.fillRect(0, 0, 300, 100);
+    canvasCtx.fillStyle = 'white';
+    canvasCtx.fillRect(0, 0, 300, 10);
+    setLoopBarCtx(canvasCtx);
   }, []);
-
 
   const trackNodesRef = useCallback((setNode) => {
     if (!setNode) { console.log(`ohno`); return }
@@ -41,6 +41,15 @@ function App() {
     })
     setTrackNodes(Array.from(setNode.children));
   }, []);
+
+  useEffect(() => {
+    if (!loopBarCtx) { console.log('whatcanvas'); return }
+    
+    loopBarCtx.fillStyle = 'black';
+    loopBarCtx.fillRect(0, 0, 300, 10);
+    loopBarCtx.fillStyle = 'yellow';
+    loopBarCtx.fillRect(loop[0] / 3.33, 0, (loop[1] - loop[0]) / 3.33, 10);
+  }, [loop])
 
   useEffect(() => {
     if (!looping) return;
@@ -70,16 +79,12 @@ function App() {
   }
 
   function loopBarMouse(e) {
-    console.log(e.nativeEvent.type)
-    console.log(e.nativeEvent.offsetX)
     switch (e.nativeEvent.type) {
       case `mousedown`:
-        console.log(`MOUSEDOWN`);
         setLoopBarClicked(prev => !prev);
         setLoopBarClickedValue(e.nativeEvent.offsetX);
         break;
       case `mouseup` || `mouseout`:
-          console.log(`MOUSEUP/out`);
           setLoopBarClicked(false);
           setLoop([loopBarClickedValue*3.33, e.nativeEvent.offsetX*3.33]);
           break;
@@ -88,7 +93,6 @@ function App() {
   }
   
   function switchTrack(i) {
-    console.log(i.target.id);
     trackNodes[nowPlaying].muted = true;
     switch (i.target.id) {
       case 'switch': trackNodes[(nowPlaying + 1) % trackNodes.length].muted = false;
@@ -108,18 +112,11 @@ function App() {
           <Button id="switch" buttonText="Switch" handleClick={switchTrack} />
         </div>
         <Line strokeLinecap="square" percent={progress} strokeWidth="5" strokeColor="#ffffff" onClick={seek} />
-        <Range
-          min={0}
-          max={1000}
-          defaultValue={[0, 1000]}
-          onChange={(e)=>setLoop(e)}
-          />
         <canvas ref={loopBarRef}
         onMouseDown={loopBarMouse}
         onMouseUp={loopBarMouse}
         onMouseLeave={loopBarMouse}        
         width={300} height={10} />
-        {`LOOP ${loop}`} {loopBarClicked ? `C` : `0`} {loopBarClickedValue}
       </div>
       <div>
         <div ref={trackNodesRef}>{set.map((t, i)=> (<audio src={t[0]} key={i} id={i} loop muted/>))}</div>
