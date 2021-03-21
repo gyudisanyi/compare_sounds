@@ -27,7 +27,7 @@ function App() {
   const loopBarRef = useCallback((setCanvas) => {
     if (!setCanvas) {console.log(`nocanvas`); return}
     const canvasCtx = setCanvas.getContext("2d");
-    canvasCtx.fillStyle = 'white';
+    canvasCtx.fillStyle = '#333';
     canvasCtx.fillRect(0, 0, 300, 10);
     setLoopBarCtx(canvasCtx);
   }, []);
@@ -44,12 +44,11 @@ function App() {
 
   useEffect(() => {
     if (!loopBarCtx) { console.log('whatcanvas'); return }
-    
     loopBarCtx.fillStyle = 'black';
     loopBarCtx.fillRect(0, 0, 300, 10);
-    loopBarCtx.fillStyle = 'yellow';
+    loopBarCtx.fillStyle = looping ? 'yellow' : '#333';
     loopBarCtx.fillRect(loop[0] / 3.33, 0, (loop[1] - loop[0]) / 3.33, 10);
-  }, [loop])
+  }, [loop, looping])
 
   useEffect(() => {
     if (!looping) return;
@@ -79,26 +78,31 @@ function App() {
   }
 
   function loopBarMouse(e) {
-    switch (e.nativeEvent.type) {
-      case `mousedown`:
-        setLoopBarClicked(prev => !prev);
-        setLoopBarClickedValue(e.nativeEvent.offsetX);
-        break;
-      case `mouseup` || `mouseout`:
-          setLoopBarClicked(false);
-          setLoop([loopBarClickedValue*3.33, e.nativeEvent.offsetX*3.33]);
-          break;
-      default: break;
-    }
+    setLoopBarClicked(true);
+    setLoopBarClickedValue(e.nativeEvent.offsetX);
+  }
+
+  function loopBarMouseLeave(e) {
+    if (!loopBarClicked) return;
+    setLoopBarClicked(false);
+    if (Math.abs(loopBarClickedValue - e.nativeEvent.offsetX) < 10) {
+      setLooping(prev => !prev);
+      return;
+    };
+    const newCoord = Math.max(Math.min((e.nativeEvent.offsetX * 10/3), 1000), 0);
+    const newLoop = [loopBarClickedValue * 10/3, newCoord].sort((a, b) => {return a-b});
+    setLoop(newLoop);
   }
   
   function switchTrack(i) {
     trackNodes[nowPlaying].muted = true;
     switch (i.target.id) {
-      case 'switch': trackNodes[(nowPlaying + 1) % trackNodes.length].muted = false;
+      case 'switch': 
+        trackNodes[(nowPlaying + 1) % trackNodes.length].muted = false;
         setNowPlaying(prev => (prev + 1) % trackNodes.length);
         break;
-      default: trackNodes[i.target.id].muted = false;
+      default: 
+        trackNodes[i.target.id].muted = false;
         setNowPlaying(parseInt(i.target.id))
     }
   }
@@ -108,15 +112,17 @@ function App() {
       <div id="dashboard">
         <div id="buttons">
           <Button id="play" buttonText={!paused ? `▌▌` : `►`} handleClick={playPause} />
-          <Button id="loop" buttonText="Loop" buttonClass={looping ? "emptyButton" : ""} handleClick={() => setLooping(prev => !prev)} />
+          <Button id="loop" buttonText="Loop" buttonClass={!looping ? "emptyButton" : ""} handleClick={() => setLooping(prev => !prev)} />
           <Button id="switch" buttonText="Switch" handleClick={switchTrack} />
         </div>
         <Line strokeLinecap="square" percent={progress} strokeWidth="5" strokeColor="#ffffff" onClick={seek} />
         <canvas ref={loopBarRef}
         onMouseDown={loopBarMouse}
-        onMouseUp={loopBarMouse}
-        onMouseLeave={loopBarMouse}        
+        onMouseUp={loopBarMouseLeave}
+        onMouseLeave={loopBarMouseLeave}        
         width={300} height={10} />
+        {loopBarClicked ? `loopbar held` : `loopbar not held`}
+        {` ${loop[0]} -- ${loop[1]}`}
       </div>
       <div>
         <div ref={trackNodesRef}>{set.map((t, i)=> (<audio src={t[0]} key={i} id={i} loop muted/>))}</div>
