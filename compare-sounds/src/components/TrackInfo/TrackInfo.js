@@ -6,7 +6,6 @@ const TrackInfo = ({ track, id, active }) => {
       <span className="number">{id + 1}</span>
       <span className="title">{track[1]}</span>
     </div>
-
   )
 }
 
