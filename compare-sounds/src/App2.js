@@ -12,10 +12,12 @@ function App() {
   const [progressBarCtx, setProgressBarCtx] = useState();
   const [progress, setProgress] = useState(0);
   const [paused, setPaused] = useState(true);
+  const [canvasWidth, setCanvasWidth] = useState(300);
   const [loopBarCtx, setLoopBarCtx] = useState();
   const [looping, setLooping] = useState(false);
   const [loop, setLoop] = useState([0, 1000]);
   const [loopBarClicked, setLoopBarClicked] = useState(false);
+  const [loopBarClickedPosition, setLoopBarClickedPosition] = useState();
   const [loopBarClickedValue, setLoopBarClickedValue] = useState();
 
   useEffect(() => {
@@ -41,7 +43,7 @@ function App() {
     if (!setCanvas) {console.log(`nocanvas`); return}
     const canvasCtx = setCanvas.getContext("2d");
     canvasCtx.fillStyle = '#333';
-    canvasCtx.fillRect(0, 0, 300, 10);
+    canvasCtx.fillRect(0, 0, canvasWidth, 10);
     setLoopBarCtx(canvasCtx);
   }, []);
 
@@ -55,11 +57,9 @@ function App() {
 
   const trackNodesRef = useCallback((setNode) => {
     if (!setNode) { console.log(`ohno`); return }
+    if (!setNode.children) { console.log(`ohnnono`); return }
     const track1 = setNode.children[0];
     track1.muted = false;
-    track1.addEventListener('timeupdate', () => {
-      setProgress(track1.currentTime / track1.duration * 100);
-    })
     setTrackNodes(Array.from(setNode.children));
   }, []);
   
@@ -81,19 +81,46 @@ function App() {
   }, [loop, looping])
 
   useEffect(() => {
+    if(!trackNodes) {console.log(`ejh`); return}
+    console.log("TYOOFD")
+    trackNodes[0].addEventListener('timeupdate', ({target}) => {
+      console.log(`progresss`, target.currentTime / trackNodes[0].duration);
+      setProgress((target.currentTime / trackNodes[0].duration)*1000);
+    })
+  }, [])
+
+  useEffect(() => {
     if (!loopBarCtx) { console.log('whatcanvas'); return }
     loopBarCtx.fillStyle = 'black';
-    loopBarCtx.fillRect(0, 0, 300, 10);
+    loopBarCtx.fillRect(0, 0, canvasWidth, 10);
     loopBarCtx.fillStyle = looping ? 'yellow' : '#333';
-    loopBarCtx.fillRect(loop[0] / 3.33, 0, (loop[1] - loop[0]) / 3.33, 10);
-  }, [loop, looping])
+    loopBarCtx.fillRect(loop[0] / (1000/canvasWidth), 0, (loop[1] - loop[0]) / (1000/canvasWidth), 10);
+    loopBarCtx.beginPath();
+    loopBarCtx.strokeStyle = looping ? 'red' : '#999';
+    loopBarCtx.lineWidth = 4;
+    loopBarCtx.moveTo(loop[0] / (1000/canvasWidth), 0);
+    loopBarCtx.lineTo(loop[0] / (1000/canvasWidth), 10);
+    loopBarCtx.moveTo(loop[1] / (1000/canvasWidth), 0);
+    loopBarCtx.lineTo(loop[1] / (1000/canvasWidth), 10);
+    loopBarCtx.stroke();
+  }, [loop, looping]);
+
+  useEffect(() => {
+    console.log(`clickdragyo`, loopBarClickedValue, loopBarClickedPosition);
+    if (!loopBarCtx || !loopBarClicked) { console.log('whatnooocanvas'); return }
+    loopBarCtx.strokeStyle="#fff";
+    loopBarCtx.lineWidth=1;
+    loopBarCtx.moveTo(loopBarClickedValue, 5)
+    loopBarCtx.lineTo(loopBarClickedPosition, 5);
+    loopBarCtx.stroke();
+  }, [loopBarClickedValue, loopBarClickedPosition])
 
   useEffect(() => {
     if (!looping) return;
-    if (trackNodes[0].currentTime <= loop[0]/1000 * trackNodes[0].duration
-      || trackNodes[0].currentTime >= loop[1]/1000 * trackNodes[0].duration)
+    if (trackNodes[0].currentTime <= loop[0]/1000*trackNodes[0].duration
+      || trackNodes[0].currentTime >= loop[1]/1000*trackNodes[0].duration)
       {
-        trackNodes.forEach((t)=>t.currentTime = loop[0]/1000 * trackNodes[0].duration)
+        trackNodes.forEach((t)=>t.currentTime = loop[0]/1000*trackNodes[0].duration)
       }
   }, [progress, looping, loop, trackNodes])
 
@@ -110,25 +137,36 @@ function App() {
   }
 
 
-  function seek(e) {
-    let seekSeconds = (e.nativeEvent.offsetX / 300)*trackNodes[0].duration
-    trackNodes[0].currentTime=seekSeconds;
+  function seek({nativeEvent}) {
+    let seekSeconds = (nativeEvent.offsetX / canvasWidth) * (trackNodes[0].duration)
+    console.log({seekSeconds})
+    if(!seekSeconds) return;
+    trackNodes[0].currentTime = seekSeconds;
   }
 
-  function loopBarMouse(e) {
+  function loopBarMouseMove({nativeEvent}) {
+    if(!loopBarClicked) return;
+    console.log('somewhere over the loopbar', nativeEvent.offsetX)
+    setLoopBarClickedPosition(nativeEvent.offsetX);
+  }
+
+  function loopBarMouseClick({nativeEvent}) {
     setLoopBarClicked(true);
-    setLoopBarClickedValue(e.nativeEvent.offsetX);
+    setLoopBarClickedPosition(nativeEvent.offsetX);
+    setLoopBarClickedValue(nativeEvent.offsetX);
   }
 
-  function loopBarMouseLeave(e) {
+  function loopBarMouseLeave({nativeEvent}) {
     if (!loopBarClicked) return;
     setLoopBarClicked(false);
-    if (Math.abs(loopBarClickedValue - e.nativeEvent.offsetX) < 10) {
+    if (Math.abs(loopBarClickedValue - nativeEvent.offsetX) < 10) {
       setLooping(prev => !prev);
       return;
     };
-    const newCoord = Math.max(Math.min((e.nativeEvent.offsetX * 10/3), 1000), 0);
-    const newLoop = [loopBarClickedValue * 10/3, newCoord].sort((a, b) => {return a-b});
+    const newCoord = Math.max(Math.min((nativeEvent.offsetX / canvasWidth) * canvasWidth, canvasWidth), 0);
+    console.log("clkval", newCoord/canvasWidth)
+    const newLoop = [(loopBarClickedValue / canvasWidth) * 1000, (newCoord / canvasWidth) * 1000].sort((a, b) => {return a - b});
+    console.log(newLoop)
     setLoop(newLoop);
   }
   
@@ -157,12 +195,11 @@ function App() {
         onMouseDown={seek}
         width={300} height={10} />
         <canvas ref={loopBarRef}
-        onMouseDown={loopBarMouse}
+        onMouseMove={loopBarMouseMove}
+        onMouseDown={loopBarMouseClick}
         onMouseUp={loopBarMouseLeave}
         onMouseLeave={loopBarMouseLeave}        
-        width={300} height={10} />
-        {loopBarClicked ? `loopbar held` : `loopbar not held`}
-        {` ${loop[0]} -- ${loop[1]}`}
+        width={canvasWidth} height={10} />
       </div>
       {collection.set.title}
       <div id="tracks">
