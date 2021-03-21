@@ -127,6 +127,7 @@ function App() {
       <div id="tracks">
         <div id="tracksload" ref={trackNodesRef}>{set.map((t, i)=> (<audio src={t[0]} key={i} id={i} loop muted/>))}</div>
         <div onClick={switchTrack} id="tracklist">{set.map((t, i)=> (<TrackInfo track={t} key={i} id={i} active={nowPlaying === i}/>))}</div>
+        <div id="tracklist">{set.map((t, i)=> (<TrackInfo handleClick={switchTrack} track={t} key={i} id={i} active={nowPlaying === i}/>))}</div>
         <div id="trackdescr">{set[nowPlaying][2]}</div>
       </div>
     </div>
