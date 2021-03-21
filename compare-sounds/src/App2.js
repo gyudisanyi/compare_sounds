@@ -7,8 +7,10 @@ import TrackInfo from './components/TrackInfo/TrackInfo';
 import './App.css';
 
 const set = [
-  ["./audio_src/5A.mp3", "Mix 1", "Atmosphere yi"],
-  ["./audio_src/5B.mp3", "Mix 2", "Slug and Ant ho"],
+  ["./audio_src/5A.mp3", "Los Angeles original", "Excerpt from this song from Seven's travels by Atmosphere"],
+  ["./audio_src/5B.mp3", "Los Angeles overdrive EQ", "Distorted as hell with EQ for comparison"],
+  ["./audio_src/5A.mp3", "Los Angeles", "Excerpt from this song from Seven's travels by Atmosphere"],
+  ["./audio_src/5B.mp3", "Los Angeles overdrive EQ", "Distorted as hell with EQ for comparison"],
 ]
 
 function App() {
@@ -68,8 +70,8 @@ function App() {
     <div id="main" tabIndex="-1">
       <div id="dashboard">
         <div id="buttons">
-          <Button id="play" buttonText={!paused ? `▌▌` : `►`} handleClick={playPause} />
-          <Button id="loop" buttonText="Loop" buttonClass={looping ? "emptyButton" : ""} handleClick={() => setLooping(prev => !prev)} />
+          <Button id="play" buttonText={`►`} buttonClass={paused? "emptyButton" : ""} handleClick={playPause} />
+          <Button id="loop" buttonText="Loop" buttonClass={!looping ? "emptyButton" : ""} handleClick={() => setLooping(prev => !prev)} />
           <Button id="switch" buttonText="Switch" handleClick={switchTrack} />
         </div>
         <Line strokeLinecap="square" percent={progress} strokeWidth="5" strokeColor="#ffffff" onClick={seek} />
@@ -80,9 +82,10 @@ function App() {
           onChange={(e)=>setLoop(e)}
           />
       </div>
-      <div>
-        <div ref={trackNodesRef}>{set.map((t, i)=> (<audio src={t[0]} key={i} id={i} loop muted/>))}</div>
-        <div>{set.map((t, i)=> (<TrackInfo handleClick={switchTrack} track={t} key={i} id={i} active={nowPlaying === i}/>))}</div>
+      <div id="tracks">
+        <div id="tracksload" ref={trackNodesRef}>{set.map((t, i)=> (<audio src={t[0]} key={i} id={i} loop muted/>))}</div>
+        <div id="tracklist">{set.map((t, i)=> (<TrackInfo handleClick={switchTrack} track={t} key={i} id={i} active={nowPlaying === i}/>))}</div>
+        <div id="trackdescr">{set[nowPlaying][2]}</div>
       </div>
     </div>
   );
