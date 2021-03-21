@@ -1,11 +1,10 @@
 import React from 'react';
-import './TrackInfo.css';
 
 const TrackInfo = ({ track, id, active }) => {
   return (
     <div className={active ? "active" : "inactive"}>
-      <span>{id + 1}</span>
-      {track[1]}
+      <span className="number">{id + 1}</span>
+      <span className="title">{track[1]}</span>
     </div>
 
   )
