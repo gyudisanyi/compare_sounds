@@ -1,15 +1,13 @@
 .reusableButton {
   font-family: 'Courier New', Courier, monospace;
   font-weight: 700;
-  background-color: aliceblue;
-  box-shadow: inset .15em .15em .5em slategray;
+  background-color: white;
   color: black;
-  min-width: 4em;
+  width: 33%;
   padding: 1.5em 1em;
-  margin: .5em;
+  margin: auto;
   height: 4em;
-  border-radius: 5em;
-  border: 0px;
+  border: 1px solid slategray;
   outline: none;
   text-transform: uppercase;
 }
@@ -31,19 +29,9 @@
 }
 
 .emptyButton {
-  background: #ddd;
-  color: #00a6a6;
-  border: 0px;
-  box-shadow: none;
-}
-
-.emptyButton:hover {
+  background: #111;
   color: #f08700;
-  background-color: white;
   box-shadow: none;
 }
 
-.emptyButton:active {
-  background-color: #fff;
-  box-shadow: none;
-}
+

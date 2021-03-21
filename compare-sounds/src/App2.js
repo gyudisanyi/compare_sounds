@@ -6,10 +6,10 @@ import TrackInfo from './components/TrackInfo/TrackInfo';
 import './App.css';
 
 const set = [
-  ["./audio_src/5A.mp3", "Mix 1", "Atmosphere yi"],
-  ["./audio_src/5B.mp3", "Mix 2", "Slug and Ant ho"],
-  ["./audio_src/3.mp3", "AAA1", "Atmosphere yi"],
-  ["./audio_src/4.mp3", "AAA2", "Slug and Ant ho"],
+  ["./audio_src/5A.mp3", "Los Angeles original", "Excerpt from this song from Seven's travels by Atmosphere"],
+  ["./audio_src/5B.mp3", "Los Angeles overdrive EQ", "Distorted as hell with EQ for comparison"],
+  ["./audio_src/5A.mp3", "Los Angeles", "Excerpt from this song from Seven's travels by Atmosphere"],
+  ["./audio_src/5B.mp3", "Los Angeles overdrive EQ", "Distorted as hell with EQ for comparison"],
 ]
 
 function App() {
@@ -94,16 +94,16 @@ function App() {
     setLoop(newLoop);
   }
   
-  function switchTrack(i) {
+  function switchTrack({target}) {
+    console.log(target.id);
     trackNodes[nowPlaying].muted = true;
-    switch (i.target.id) {
-      case 'switch': 
-        trackNodes[(nowPlaying + 1) % trackNodes.length].muted = false;
+    switch (target.id) {
+      case 'switch': trackNodes[(nowPlaying + 1) % trackNodes.length].muted = false;
         setNowPlaying(prev => (prev + 1) % trackNodes.length);
         break;
       default: 
-        trackNodes[i.target.id].muted = false;
-        setNowPlaying(parseInt(i.target.id))
+        trackNodes[target.parentElement.id].muted = false;
+        setNowPlaying(parseInt(target.parentElement.id))
     }
   }
 
@@ -111,7 +111,7 @@ function App() {
     <div id="main" tabIndex="-1">
       <div id="dashboard">
         <div id="buttons">
-          <Button id="play" buttonText={!paused ? `▌▌` : `►`} handleClick={playPause} />
+          <Button id="play" buttonText={`►`} buttonClass={paused? "emptyButton" : ""} handleClick={playPause} />
           <Button id="loop" buttonText="Loop" buttonClass={!looping ? "emptyButton" : ""} handleClick={() => setLooping(prev => !prev)} />
           <Button id="switch" buttonText="Switch" handleClick={switchTrack} />
         </div>
@@ -124,9 +124,10 @@ function App() {
         {loopBarClicked ? `loopbar held` : `loopbar not held`}
         {` ${loop[0]} -- ${loop[1]}`}
       </div>
-      <div>
-        <div ref={trackNodesRef}>{set.map((t, i)=> (<audio src={t[0]} key={i} id={i} loop muted/>))}</div>
-        <div onClick={switchTrack}>{set.map((t, i)=> (<TrackInfo track={t} key={i} id={i} active={nowPlaying === i}/>))}</div>
+      <div id="tracks">
+        <div id="tracksload" ref={trackNodesRef}>{set.map((t, i)=> (<audio src={t[0]} key={i} id={i} loop muted/>))}</div>
+        <div onClick={switchTrack} id="tracklist">{set.map((t, i)=> (<TrackInfo track={t} key={i} id={i} active={nowPlaying === i}/>))}</div>
+        <div id="trackdescr">{set[nowPlaying][2]}</div>
       </div>
     </div>
   );
