@@ -1,7 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import Button from './components/Button/Button';
-import { Line } from 'rc-progress';
-import 'rc-slider/assets/index.css';
 import TrackInfo from './components/TrackInfo/TrackInfo';
 import './App.css';
 
