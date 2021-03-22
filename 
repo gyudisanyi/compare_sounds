@@ -1,0 +1,56 @@
+[33mcommit 912c832868820411f39da8d5b329d2d6bb33042d[m[33m ([m[1;36mHEAD -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m)[m
+Author: gyudisanyi <gyudisanyi@gmail.com>
+Date:   Sat Mar 20 15:45:08 2021 +0100
+
+    Callbacks and Hooks cleanup, proper switching
+
+[33mcommit 8d1810412c9598dc33bae2ac61895bb9ceb2c567[m
+Merge: b5b6846 f4490df
+Author: gyudisanyi <66912927+gyudisanyi@users.noreply.github.com>
+Date:   Sat Mar 20 13:40:39 2021 +0100
+
+    Merge pull request #1 from gyudisanyi/loopproblems
+    
+    looping works fine now
+
+[33mcommit f4490df840169eb0ed4533f8b7f062e27efd934d[m
+Author: gyudisanyi <gyudisanyi@gmail.com>
+Date:   Fri Mar 19 22:47:53 2021 +0100
+
+    looping works fine now
+
+[33mcommit b5b6846c10df6a7028dc828d88f15b95a67cab8f[m
+Author: gyudisanyi <gyudisanyi@gmail.com>
+Date:   Fri Mar 19 12:10:19 2021 +0100
+
+    rc-progress and rc-range sliders added, looping but glitchy.
+
+[33mcommit 6d5b09b3d86bb46431670a63a0d137f5fc0b31d8[m
+Author: gyudisanyi <gyudisanyi@gmail.com>
+Date:   Thu Mar 18 19:18:57 2021 +0100
+
+    lightweight audios for sandboxing
+
+[33mcommit e65eed228db7ea8782e581e94ae4995cd27f154f[m
+Author: gyudisanyi <gyudisanyi@gmail.com>
+Date:   Thu Mar 18 19:01:58 2021 +0100
+
+    Progress bar functional. Loop acting weird.
+
+[33mcommit dcbf81a511344cb6d2e4745264cc6ddf44094e6a[m
+Author: gyudisanyi <gyudisanyi@gmail.com>
+Date:   Thu Mar 18 13:17:23 2021 +0100
+
+    Hooks working OK
+
+[33mcommit c170ae0b37821b9adc34abfd0b52193703a81dfc[m
+Author: gyudisanyi <gyudisanyi@gmail.com>
+Date:   Thu Mar 18 10:27:34 2021 +0100
+
+    Makes a sound. Basic components set (without functionality).
+
+[33mcommit e8fc20efe6631c7ba4bb7195a06343f3689c86e5[m
+Author: gyudisanyi <gyudisanyi@gmail.com>
+Date:   Thu Mar 18 10:20:49 2021 +0100
+
+    init

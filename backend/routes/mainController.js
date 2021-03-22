@@ -20,8 +20,10 @@ mainController.get('/sets', async (req, res) => {
 })
 
 mainController.get('/sets/:id', async (req, res) => {
-  Data = await queryAsync(`SELECT sounds.*, sets.title AS set_title FROM sounds JOIN sets ON set_id=idsets WHERE set_id=?;`, req.params.id);
-
+  Data1 = await queryAsync(`SELECT description, title FROM sets WHERE idsets = ?`, req.params.id);
+  Data2 = await queryAsync(`SELECT title, url, description FROM sounds WHERE set_id = ?;`, req.params.id);
+  Data3 = await queryAsync(`SELECT loopstart, loopend, description FROM loops WHERE set_id = ?;`, req.params.id);
+  Data = {set: {title: Data1[0].title, description: Data1[0].description}, tracks: Data2, loops: Data3};
   res.status(200).json(Data);
 })
 
