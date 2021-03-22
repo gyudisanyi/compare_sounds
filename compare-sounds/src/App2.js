@@ -67,6 +67,14 @@ function App() {
   }, [loop, looping])
 
   useEffect(() => {
+    if (!loopBarCtx) { console.log('whatcanvas'); return }
+    loopBarCtx.fillStyle = 'black';
+    loopBarCtx.fillRect(0, 0, 300, 10);
+    loopBarCtx.fillStyle = looping ? 'yellow' : '#333';
+    loopBarCtx.fillRect(loop[0] / 3.33, 0, (loop[1] - loop[0]) / 3.33, 10);
+  }, [loop, looping])
+
+  useEffect(() => {
     if (!looping) return;
     if (trackNodes[0].currentTime <= loop[0]/1000 * trackNodes[0].duration
       || trackNodes[0].currentTime >= loop[1]/1000 * trackNodes[0].duration)
