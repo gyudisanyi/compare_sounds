@@ -4,7 +4,7 @@ const TrackInfo = ({ track, id, active }) => {
   return (
     <div id={id} className={active ? "active" : "inactive"}>
       <span className="number">{id + 1}</span>
-      <span className="title">{track[1]}</span>
+      <span className="title">{track.title}</span>
     </div>
   )
 }

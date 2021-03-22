@@ -1,17 +1,12 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import Button from './components/Button/Button';
+import defaultCollection from './defaultCollection';
 import TrackInfo from './components/TrackInfo/TrackInfo';
 import './App.css';
 
-const set = [
-  ["./audio_src/5A.mp3", "Los Angeles original", "Excerpt from this song from Seven's travels by Atmosphere"],
-  ["./audio_src/5B.mp3", "Los Angeles overdrive EQ", "Distorted as hell with EQ for comparison"],
-  ["./audio_src/5A.mp3", "Los Angeles", "Excerpt from this song from Seven's travels by Atmosphere"],
-  ["./audio_src/5B.mp3", "Los Angeles overdrive EQ", "Distorted as hell with EQ for comparison"],
-]
-
 function App() {
-
+  const [URL, setURL] = useState('./');
+  const [collection, setCollection] = useState(defaultCollection());
   const [trackNodes, setTrackNodes] = useState();
   const [nowPlaying, setNowPlaying] = useState(0);
   const [progressBarCtx, setProgressBarCtx] = useState();
@@ -22,6 +17,25 @@ function App() {
   const [loop, setLoop] = useState([0, 1000]);
   const [loopBarClicked, setLoopBarClicked] = useState(false);
   const [loopBarClickedValue, setLoopBarClickedValue] = useState();
+
+  useEffect(() => {
+    try {
+      async function fetchData() {
+      const httpResponse = await fetch(`${process.env.REACT_APP_API_URL}sets/1`);
+      const response = await httpResponse.json();
+      console.log(response);
+      setURL(process.env.REACT_APP_API_URL);
+      setCollection(response);
+      if (!response.loops[0]) {setLoop([0, 1000]); return};
+      setLoop([response.loops[0].loopstart || 0, response.loops[0].loopend || 1000])
+      }
+      fetchData()
+    }
+    catch {
+      console.log(collection);
+    }
+  }, []);
+
   
   const loopBarRef = useCallback((setCanvas) => {
     if (!setCanvas) {console.log(`nocanvas`); return}
@@ -150,10 +164,11 @@ function App() {
         {loopBarClicked ? `loopbar held` : `loopbar not held`}
         {` ${loop[0]} -- ${loop[1]}`}
       </div>
+      {collection.set.title}
       <div id="tracks">
-        <div id="tracksload" ref={trackNodesRef}>{set.map((t, i)=> (<audio src={t[0]} key={i} id={i} loop muted/>))}</div>
-        <div onClick={switchTrack} id="tracklist">{set.map((t, i)=> (<TrackInfo track={t} key={i} id={i} active={nowPlaying === i}/>))}</div>
-        <div id="trackdescr">{set[nowPlaying][2]}</div>
+        <div id="tracksload" ref={trackNodesRef}>{collection.tracks.map((t, i)=> (<audio src={`${URL}audio_src/${t.url}`} key={i} id={i} loop muted/>))}</div>
+        <div onClick={switchTrack} id="tracklist">{collection.tracks.map((t, i)=> (<TrackInfo track={t} key={i} id={i} active={nowPlaying === i}/>))}</div>
+        <div id="trackdescr">{collection.tracks[nowPlaying].description}</div>
       </div>
     </div>
   );
