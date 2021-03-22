@@ -52,6 +52,7 @@ body {
 
 #tracklist .inactive {
   color: gray;
+  border-bottom: 1px solid black;
 }
 
 #tracklist .number {
