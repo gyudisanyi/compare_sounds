@@ -1,7 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import Button from './components/Button/Button';
-import { Line } from 'rc-progress';
-import 'rc-slider/assets/index.css';
 import TrackInfo from './components/TrackInfo/TrackInfo';
 import './App.css';
 
@@ -16,6 +14,7 @@ function App() {
 
   const [trackNodes, setTrackNodes] = useState();
   const [nowPlaying, setNowPlaying] = useState(0);
+  const [progressBarCtx, setProgressBarCtx] = useState();
   const [progress, setProgress] = useState(0);
   const [paused, setPaused] = useState(true);
   const [loopBarCtx, setLoopBarCtx] = useState();
@@ -32,6 +31,14 @@ function App() {
     setLoopBarCtx(canvasCtx);
   }, []);
 
+  const progressBarRef = useCallback((setCanvas) => {
+    if (!setCanvas) {console.log(`nocanvas`); return}
+    const canvasCtx = setCanvas.getContext("2d");
+    canvasCtx.fillStyle = '#333';
+    canvasCtx.fillRect(0, 0, 300, 10);
+    setProgressBarCtx(canvasCtx);
+  }, []);
+
   const trackNodesRef = useCallback((setNode) => {
     if (!setNode) { console.log(`ohno`); return }
     const track1 = setNode.children[0];
@@ -41,6 +48,23 @@ function App() {
     })
     setTrackNodes(Array.from(setNode.children));
   }, []);
+  
+  useEffect(() => {
+    if (!progressBarCtx) { console.log('whatprogresscanvas'); return }
+    progressBarCtx.fillStyle = 'black';
+    progressBarCtx.fillRect(0, 0, 300, 10);
+    progressBarCtx.fillStyle = 'white';
+    progressBarCtx.fillRect(progress*3, 0, 1, 10);
+
+  }, [progress])
+  
+  useEffect(() => {
+    if (!loopBarCtx) { console.log('whatcanvas'); return }
+    loopBarCtx.fillStyle = 'black';
+    loopBarCtx.fillRect(0, 0, 300, 10);
+    loopBarCtx.fillStyle = looping ? 'yellow' : '#333';
+    loopBarCtx.fillRect(loop[0] / 3.33, 0, (loop[1] - loop[0]) / 3.33, 10);
+  }, [loop, looping])
 
   useEffect(() => {
     if (!loopBarCtx) { console.log('whatcanvas'); return }
@@ -115,7 +139,9 @@ function App() {
           <Button id="loop" buttonText="Loop" buttonClass={!looping ? "emptyButton" : ""} handleClick={() => setLooping(prev => !prev)} />
           <Button id="switch" buttonText="Switch" handleClick={switchTrack} />
         </div>
-        <Line strokeLinecap="square" percent={progress} strokeWidth="5" strokeColor="#ffffff" onClick={seek} />
+        <canvas ref={progressBarRef}
+        onMouseDown={seek}
+        width={300} height={10} />
         <canvas ref={loopBarRef}
         onMouseDown={loopBarMouse}
         onMouseUp={loopBarMouseLeave}
