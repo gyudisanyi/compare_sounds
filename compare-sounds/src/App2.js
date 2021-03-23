@@ -1,128 +1,74 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import Button from './components/Button/Button';
-import defaultCollection from './defaultCollection';
+import { Grid, Button, ButtonGroup, Select, MenuItem, Slider } from '@material-ui/core';
+import { withStyles } from '@material-ui/core/styles';
+import { defaultCollection, defaultSets } from './defaults';
 import TrackInfo from './components/TrackInfo/TrackInfo';
 import './App.css';
 
+const ProgressBar = withStyles({
+  rail: {height: 12,},
+  track: {height: 12,},
+  thumb: {display: "none",}
+})(Slider);
+
 function App() {
+
   const [URL, setURL] = useState('./');
+  const resolution = 1000;
   const [collection, setCollection] = useState(defaultCollection());
   const [trackNodes, setTrackNodes] = useState();
   const [nowPlaying, setNowPlaying] = useState(0);
-  const [progressBarCtx, setProgressBarCtx] = useState();
   const [progress, setProgress] = useState(0);
   const [paused, setPaused] = useState(true);
-  const [canvasWidth, setCanvasWidth] = useState(300);
-  const [loopBarCtx, setLoopBarCtx] = useState();
   const [looping, setLooping] = useState(false);
-  const [loop, setLoop] = useState([0, 1000]);
-  const [loopBarClicked, setLoopBarClicked] = useState(false);
-  const [loopBarClickedPosition, setLoopBarClickedPosition] = useState();
-  const [loopBarClickedValue, setLoopBarClickedValue] = useState();
+  const [loops, setLoops] = useState([{range: [846, 890.35], description: "Default loop"}]);
+  const [originalLoops, setOriginalLoops] = useState()
+  const [actualLoop, setActualLoop] = useState(loops.length-1);
+  
 
   useEffect(() => {
-    try {
-      async function fetchData() {
-      const httpResponse = await fetch(`${process.env.REACT_APP_API_URL}sets/1`);
-      const response = await httpResponse.json();
-      console.log(response);
-      setURL(process.env.REACT_APP_API_URL);
-      setCollection(response);
-      if (!response.loops[0]) {setLoop([0, 1000]); return};
-      setLoop([response.loops[0].loopstart || 0, response.loops[0].loopend || 1000])
+
+    async function fetchData() {
+      try {
+        const httpResponse = await fetch(`${process.env.REACT_APP_API_URL}sets/1`);
+        const response = await httpResponse.json();
+        setURL(process.env.REACT_APP_API_URL);
+        setCollection(response);
+        if (!response.loops[0]) {setLoops([{range: [0, resolution], description: "Loop"}]); return};
+        const newLoops = Object.values(response.loops).map((loop) => ({range: [loop.loopstart, loop.loopend], description: loop.description}))
+        setLoops(newLoops);
+        setOriginalLoops(newLoops);
+      } catch {
+
       }
-      fetchData()
     }
-    catch {
-      console.log(collection);
-    }
-  }, []);
+    fetchData()
 
-  
-  const loopBarRef = useCallback((setCanvas) => {
-    if (!setCanvas) {console.log(`nocanvas`); return}
-    const canvasCtx = setCanvas.getContext("2d");
-    canvasCtx.fillStyle = '#333';
-    canvasCtx.fillRect(0, 0, canvasWidth, 10);
-    setLoopBarCtx(canvasCtx);
-  }, []);
-
-  const progressBarRef = useCallback((setCanvas) => {
-    if (!setCanvas) {console.log(`nocanvas`); return}
-    const canvasCtx = setCanvas.getContext("2d");
-    canvasCtx.fillStyle = '#333';
-    canvasCtx.fillRect(0, 0, 300, 10);
-    setProgressBarCtx(canvasCtx);
   }, []);
 
   const trackNodesRef = useCallback((setNode) => {
-    if (!setNode) { console.log(`ohno`); return }
-    if (!setNode.children) { console.log(`ohnnono`); return }
+    if (!setNode) { console.log(`noNodes`); return }
+    if (!setNode.children) { console.log(`noNodesChildren`); return }
     const track1 = setNode.children[0];
     track1.muted = false;
     setTrackNodes(Array.from(setNode.children));
   }, []);
   
   useEffect(() => {
-    if (!progressBarCtx) { console.log('whatprogresscanvas'); return }
-    progressBarCtx.fillStyle = 'black';
-    progressBarCtx.fillRect(0, 0, 300, 10);
-    progressBarCtx.fillStyle = 'white';
-    progressBarCtx.fillRect(progress*3, 0, 1, 10);
-
-  }, [progress])
-  
-  useEffect(() => {
-    if (!loopBarCtx) { console.log('whatcanvas'); return }
-    loopBarCtx.fillStyle = 'black';
-    loopBarCtx.fillRect(0, 0, 300, 10);
-    loopBarCtx.fillStyle = looping ? 'yellow' : '#333';
-    loopBarCtx.fillRect(loop[0] / 3.33, 0, (loop[1] - loop[0]) / 3.33, 10);
-  }, [loop, looping])
-
-  useEffect(() => {
-    if(!trackNodes) {console.log(`ejh`); return}
-    console.log("TYOOFD")
+    if(!trackNodes) {console.log(`No track nodes`); return}
+    console.log("Track nodes loaded", trackNodes[0].duration);
     trackNodes[0].addEventListener('timeupdate', ({target}) => {
-      console.log(`progresss`, target.currentTime / trackNodes[0].duration);
-      setProgress((target.currentTime / trackNodes[0].duration)*1000);
+      setProgress((target.currentTime / target.duration)*resolution);
     })
-  }, [])
-
-  useEffect(() => {
-    if (!loopBarCtx) { console.log('whatcanvas'); return }
-    loopBarCtx.fillStyle = 'black';
-    loopBarCtx.fillRect(0, 0, canvasWidth, 10);
-    loopBarCtx.fillStyle = looping ? 'yellow' : '#333';
-    loopBarCtx.fillRect(loop[0] / (1000/canvasWidth), 0, (loop[1] - loop[0]) / (1000/canvasWidth), 10);
-    loopBarCtx.beginPath();
-    loopBarCtx.strokeStyle = looping ? 'red' : '#999';
-    loopBarCtx.lineWidth = 4;
-    loopBarCtx.moveTo(loop[0] / (1000/canvasWidth), 0);
-    loopBarCtx.lineTo(loop[0] / (1000/canvasWidth), 10);
-    loopBarCtx.moveTo(loop[1] / (1000/canvasWidth), 0);
-    loopBarCtx.lineTo(loop[1] / (1000/canvasWidth), 10);
-    loopBarCtx.stroke();
-  }, [loop, looping]);
-
-  useEffect(() => {
-    console.log(`clickdragyo`, loopBarClickedValue, loopBarClickedPosition);
-    if (!loopBarCtx || !loopBarClicked) { console.log('whatnooocanvas'); return }
-    loopBarCtx.strokeStyle="#fff";
-    loopBarCtx.lineWidth=1;
-    loopBarCtx.moveTo(loopBarClickedValue, 5)
-    loopBarCtx.lineTo(loopBarClickedPosition, 5);
-    loopBarCtx.stroke();
-  }, [loopBarClickedValue, loopBarClickedPosition])
+  }, [trackNodes])
 
   useEffect(() => {
     if (!looping) return;
-    if (trackNodes[0].currentTime <= loop[0]/1000*trackNodes[0].duration
-      || trackNodes[0].currentTime >= loop[1]/1000*trackNodes[0].duration)
-      {
-        trackNodes.forEach((t)=>t.currentTime = loop[0]/1000*trackNodes[0].duration)
+    console.log(loops[actualLoop].range || loops, actualLoop)
+    if (progress <= loops[actualLoop].range[0] || progress >= loops[actualLoop].range[1])
+      { trackNodes.forEach((t)=>t.currentTime = loops[actualLoop].range[0]/resolution*trackNodes[0].duration)
       }
-  }, [progress, looping, loop, trackNodes])
+  }, [progress, looping, loops, trackNodes, actualLoop])
 
   function playPause() {
     paused ?
@@ -136,72 +82,98 @@ function App() {
     setPaused(prev => !prev);
   }
 
+  function changeLoop({id, value}) {
+    const newLoops = [...loops];
+    newLoops[id].range = value;
+    setLoops(newLoops)
+    setActualLoop(id);
+  }
 
-  function seek({nativeEvent}) {
-    let seekSeconds = (nativeEvent.offsetX / canvasWidth) * (trackNodes[0].duration)
-    console.log({seekSeconds})
-    if(!seekSeconds) return;
+  function prevLoop() {
+    if (actualLoop===0) {setActualLoop(loops.length-1); return}
+    setActualLoop(prev => (prev-1)%loops.length)
+  }
+
+  function nextLoop() {
+    
+    setActualLoop(prev => (prev+1)%loops.length)
+  }
+
+  function resetLoop(id) {
+    const newLoops = [...loops];
+    newLoops[id].range = originalLoops[id].range;
+    setActualLoop(originalLoops[id]);
+  }
+
+  function seek(event, newValue) {
+    let seekSeconds = (newValue/resolution) * (trackNodes[0].duration)
     trackNodes[0].currentTime = seekSeconds;
   }
 
-  function loopBarMouseMove({nativeEvent}) {
-    if(!loopBarClicked) return;
-    console.log('somewhere over the loopbar', nativeEvent.offsetX)
-    setLoopBarClickedPosition(nativeEvent.offsetX);
-  }
-
-  function loopBarMouseClick({nativeEvent}) {
-    setLoopBarClicked(true);
-    setLoopBarClickedPosition(nativeEvent.offsetX);
-    setLoopBarClickedValue(nativeEvent.offsetX);
-  }
-
-  function loopBarMouseLeave({nativeEvent}) {
-    if (!loopBarClicked) return;
-    setLoopBarClicked(false);
-    if (Math.abs(loopBarClickedValue - nativeEvent.offsetX) < 10) {
-      setLooping(prev => !prev);
-      return;
-    };
-    const newCoord = Math.max(Math.min((nativeEvent.offsetX / canvasWidth) * canvasWidth, canvasWidth), 0);
-    console.log("clkval", newCoord/canvasWidth)
-    const newLoop = [(loopBarClickedValue / canvasWidth) * 1000, (newCoord / canvasWidth) * 1000].sort((a, b) => {return a - b});
-    console.log(newLoop)
-    setLoop(newLoop);
-  }
-  
   function switchTrack({target}) {
-    console.log(target.id);
+    console.log(target.parentElement.id);
     trackNodes[nowPlaying].muted = true;
-    switch (target.id) {
+    switch (target.parentElement.id) {
       case 'switch': trackNodes[(nowPlaying + 1) % trackNodes.length].muted = false;
-        setNowPlaying(prev => (prev + 1) % trackNodes.length);
+        setNowPlaying(prev => parseInt((prev + 1) % trackNodes.length));
         break;
       default: 
         trackNodes[target.parentElement.id].muted = false;
         setNowPlaying(parseInt(target.parentElement.id))
     }
   }
-
   return (
     <div id="main" tabIndex="-1">
       <div id="dashboard">
-        <div id="buttons">
-          <Button id="play" buttonText={`►`} buttonClass={paused? "emptyButton" : ""} handleClick={playPause} />
-          <Button id="loop" buttonText="Loop" buttonClass={!looping ? "emptyButton" : ""} handleClick={() => setLooping(prev => !prev)} />
-          <Button id="switch" buttonText="Switch" handleClick={switchTrack} />
-        </div>
-        <canvas ref={progressBarRef}
-        onMouseDown={seek}
-        width={300} height={10} />
-        <canvas ref={loopBarRef}
-        onMouseMove={loopBarMouseMove}
-        onMouseDown={loopBarMouseClick}
-        onMouseUp={loopBarMouseLeave}
-        onMouseLeave={loopBarMouseLeave}        
-        width={canvasWidth} height={10} />
+      <Grid container spacing={3} justify="left">
+        <Grid item>
+          <Button 
+          variant="contained"
+          color={paused?"primary":"secondary"}
+          onClick={playPause}
+          >
+          ►
+         </Button>
+        </Grid>
+        <Grid item>
+          <ButtonGroup>
+            <Button onClick={prevLoop}>{`<`}</Button>
+            <Button 
+              variant="contained" color={!looping?"primary":"secondary"}
+              onClick={() => setLooping(prev => !prev)}>
+              Loop
+            </Button>
+            <Button onClick={nextLoop}>{`>`}</Button>
+          </ButtonGroup>
+        </Grid>
+        <Grid item>
+          <Button id="switch" variant="contained" color="primary" onClick={switchTrack}>
+          Switch
+         </Button>
+        </Grid>        
+      </Grid>
+      <Button variant="text" color="primary">{collection.set.title}</Button>
+        <ProgressBar
+          max={resolution}
+          value={progress}
+          onChange={seek}
+        />
+        {loops.map((loop, id) => (
+          <div>
+            <Button variant="text" color={id===parseInt(actualLoop)?"secondary":"primary"} onClick={()=>setActualLoop(id)}>{loop.description}</Button>
+            <Slider
+              color={id===parseInt(actualLoop) ? "secondary" : "primary"}
+              max={resolution}
+              value={loop.range} 
+              onChange={(event, newValue) => {
+              event.target.id = id;
+              event.target.value = newValue;
+              changeLoop(event.target)}
+            } />
+          </div>
+          ))
+        }
       </div>
-      {collection.set.title}
       <div id="tracks">
         <div id="tracksload" ref={trackNodesRef}>{collection.tracks.map((t, i)=> (<audio src={`${URL}audio_src/${t.url}`} key={i} id={i} loop muted/>))}</div>
         <div onClick={switchTrack} id="tracklist">{collection.tracks.map((t, i)=> (<TrackInfo track={t} key={i} id={i} active={nowPlaying === i}/>))}</div>

@@ -1,7 +1,7 @@
 import React from 'react';
 import './Button.css';
 
-function Button({
+function Button2({
   buttonText,
   buttonClass,
   handleClick,
@@ -12,4 +12,4 @@ function Button({
   );
 }
 
-export default Button;
+export default Button2;

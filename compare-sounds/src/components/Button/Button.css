@@ -1,15 +1,18 @@
 .reusableButton {
-  font-family: 'Courier New', Courier, monospace;
   font-weight: 700;
   background-color: white;
   color: black;
-  width: 33%;
   padding: 1.5em 1em;
   margin: auto;
   height: 4em;
+  flex-grow: 1;
   border: 1px solid slategray;
   outline: none;
   text-transform: uppercase;
+}
+
+#prevloop, #nextloop {
+  flex-grow: 0;
 }
 
 .reusableButton:hover {
