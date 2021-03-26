@@ -14,7 +14,7 @@ mainController.get('/', (req, res) => {
 });
 
 mainController.get('/sets', async (req, res) => {
-  Data = await queryAsync(`SELECT idsets FROM sets`);
+  Data = await queryAsync(`SELECT * FROM sets`);
 
   res.status(200).json(Data);
 })

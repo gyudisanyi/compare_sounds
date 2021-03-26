@@ -6,68 +6,6 @@ body {
   margin: auto;
   margin-top: 2em;
   max-width: 1200px;
-  background-color:whitesmoke;
-  color: darkolivegreen;
   font-family: 'Roboto', sans-serif;
-  padding: 1em;
   overflow: hidden;
-}
-
-#dashboard {
-  width: 100%;
-  background-color: whitesmoke;
-}
-
-#buttons {
-  margin-bottom: 1em;
-  display: flex;
-  flex-direction: row;
-}
-
-#tracks {
-  display: flex;
-  flex-direction: row;
-}
-
-#tracksload {
-  display: none;
-}
-
-#trackdescr {
-  width: 50%;
-  padding-left: .5em;
-  border-left: 1px solid blue;
-}
-
-#tracklist {
-  width: 70%;
-}
-
-#tracklist :nth-child(odd) {
-  background-color: gainsboro;
-}
-
-#tracklist .active {
-  color: blue;
-  border-bottom: 1px solid blue;
-}
-
-#tracklist .inactive {
-  color: gray;
-  border-bottom: 1px solid antiquewhite;
-}
-
-#tracklist .number {
-  font-weight: 700;
-  background-color: rgb(70, 90, 60);
-  color: black;
-  margin-right: .5em;
-  padding-left: .5em;
-  width: 40%;
-  align-self: center;
-}
-
-#tracklist .title {
-  width: 80%;
-  display: inline-block;
 }
