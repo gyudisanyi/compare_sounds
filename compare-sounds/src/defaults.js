@@ -49,7 +49,7 @@ export function defaultSets() {
       {
           "idsets": 3,
           "title": "Atmosphere",
-          "description": "Small excerpts  distorted"
+          "description": "Small excerpts distorted"
       }
   ]
   )
