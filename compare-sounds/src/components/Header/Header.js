@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
@@ -9,6 +9,9 @@ import Button from '@material-ui/core/Button';
 import LibraryMusicTwoToneIcon from '@material-ui/icons/LibraryMusicTwoTone';
 import IconButton from '@material-ui/core/IconButton';
 import GlobalContext from '../../context/GlobalContext';
+
+import About from '../About/About';
+import EditSet from '../EditSet/EditSet';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -27,22 +30,41 @@ export default function Header() {
 
   const context = useContext(GlobalContext);
 
-  const [anchorEl, setAnchorEl] = React.useState(null);
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [editOpen, setEditOpen] = useState(false);
+  const [aboutOpen, setAboutOpen] = useState(false);
 
-  const handleClick = (event) => {
+  const handleMenuClick = (event) => {
     setAnchorEl(event.currentTarget);
   };
 
-  const handleClose = (id) => {
+  const handleMenuClose = (id) => {
     setAnchorEl(null);
     context.changeCurrentSet(id);
   };
+
+  const handleAboutOpen = () => {
+    setAboutOpen(true);
+  }
+
+  const handleAboutClose = () => {
+    setAboutOpen(false);
+  }
+
+  const handleEditOpen = () => {
+    setAnchorEl(null);
+    setEditOpen(true);
+  }
+
+  const handleEditClose = () => {
+    setEditOpen(false);
+  }
 
   return (
     <div className={classes.root}>
       <AppBar position="static">
         <Toolbar>
-          <IconButton edge="start" className={classes.menuButton} color="inherit" aria-label="menu" onClick={handleClick}>
+          <IconButton edge="start" className={classes.menuButton} color="inherit" aria-label="menu" onClick={handleMenuClick}>
            <LibraryMusicTwoToneIcon />
           </IconButton>
           <Menu
@@ -50,14 +72,19 @@ export default function Header() {
             anchorEl={anchorEl}
             keepMounted
             open={Boolean(anchorEl)}
-            onClose={handleClose}
+            onClose={handleMenuClose}
           >
-          {context.sets.map((set)=>(<MenuItem onClick={()=>handleClose(set.idsets)}>{set.title}</MenuItem>))}
+          {context.sets.map((set)=>(<MenuItem key={set.idset} onClick={()=>handleMenuClose(set.idset)}>{set.title}</MenuItem>))}
+          <hr />
+          <MenuItem key="addset" onClick={handleEditOpen}>Add new set</MenuItem>
           </Menu>
           <Typography variant="h6" className={classes.title}>
-            {context.collection.set.title}
+            {context.collection.set.title}            
+          <Button color="inherit" onClick={handleEditOpen}>Edit</Button>
+          <EditSet open={editOpen} onClose={handleEditClose} />
           </Typography>
-          <Button color="inherit">About</Button>
+          <Button color="inherit" onClick={handleAboutOpen}>About</Button>
+          <About open={aboutOpen} onClose={handleAboutClose} />
         </Toolbar>
       </AppBar>
     </div>

@@ -2,29 +2,33 @@ const express = require('express');
 const queryAsync = require('../database');
 const mainController = express.Router();
 
-mainController.get('/', (req, res) => {
-  let sqlQuery = "SELECT * FROM `1`"
-  queryAsync(sqlQuery)
-    .then((response) => res.status(200).json(response))
-    .catch((error) => {
-      res.status(500).json({
-        "errorMessage": error.sqlMessage
-      });
-    });
-});
+mainController.get('/', async (req, res) => {
+  Data = await queryAsync(`SELECT * FROM sets WHERE deleted IS NULL`);
+
+  res.status(200).json(Data);
+})
 
 mainController.get('/sets', async (req, res) => {
-  Data = await queryAsync(`SELECT * FROM sets`);
+  Data = await queryAsync(`SELECT * FROM sets WHERE deleted IS NULL`);
 
   res.status(200).json(Data);
 })
 
 mainController.get('/sets/:id', async (req, res) => {
-  Data1 = await queryAsync(`SELECT description, title FROM sets WHERE idsets = ?`, req.params.id);
-  Data2 = await queryAsync(`SELECT title, url, description FROM sounds WHERE set_id = ?;`, req.params.id);
-  Data3 = await queryAsync(`SELECT loopstart, loopend, description FROM loops WHERE set_id = ?;`, req.params.id);
-  Data = {set: {title: Data1[0].title, description: Data1[0].description}, tracks: Data2, loops: Data3};
-  res.status(200).json(Data);
+  const status = 200;
+  try {
+    Data1 = await queryAsync(`SELECT idset AS id, description, title FROM sets WHERE idset = ? AND deleted IS NULL`, req.params.id);
+    Data2 = await queryAsync(`SELECT idsound AS id, title, filename, description FROM sounds WHERE set_id = ? AND deleted IS NULL;`, req.params.id);
+    Data3 = await queryAsync(`SELECT idloop AS id, start, end, description FROM loops WHERE set_id = ? AND deleted IS NULL;`, req.params.id);
+    if (Data1.length == 0 ) {throw new Error(`No such set`)};
+    if (Data2.length == 0 ) {throw new Error(`Empty set`)};
+    Data = {set: {title: Data1[0].title, description: Data1[0].description}, tracks: Data2, loops: Data3};
+  } catch(err) {
+    console.log(err);
+    status = 500;
+    Data = err;
+  }
+    res.status(status).json(Data);
 })
 
 mainController.get('/sounds/', async (req, res) => {
@@ -54,11 +58,58 @@ mainController.get('/loops/:id', async (req, res) => {
   res.status(200).json(Data);
 })
 
+mainController.post('/sets', async (req, res) => {
+  console.log({req});
+  res.send('POST request')
+})
 
-mainController.post('/:id', async (req, res) => {
-  console.log(req);
-  response = await queryAsync(`INSERT INTO (id)
-   VALUES (?);`, [req.params.id, req.body.name = 'Sanyi', req.body.amount = 123]);
+mainController.post('/sets/:id', async ({files, body, params}, res) => {
+  console.log(files.File);
+  console.log(body.Description);
+  files.File.forEach((file) => {
+    uploadPath = __dirname + `./../public/audio_src/${params.id}/` + file.name;
+    console.log(uploadPath);
+    file.mv(uploadPath, function(err) {
+      if (err)
+      console.log(err);
+    })
+  })
+  let query = `INSERT INTO sounds (title, filename, description, set_id) VALUES (?, ?, ?, ?);`;
+  let response = Promise.all(body.Description.map((d, i) => new Promise((resolve, reject) => queryAsync(query, [d, files.File[i].name, d, params.id]))));
+  console.log(response);
+  res.status(200).send(response);
+})
+
+mainController.patch('/sets/:id', async ({files, body, params}, res) => {
+  console.log({body});
+  
+  if (files) {files.File.forEach((file) => {
+    uploadPath = __dirname + `./../public/audio_src/${params.id}/` + file.name;
+    console.log(uploadPath);
+    file.mv(uploadPath, function(err) {
+      if (err)
+      console.log(err);
+    })
+  })}
+  await queryAsync(`UPDATE sets SET title=?, description=? WHERE idset = ?;`, [body.Title || "unnamed", body.Description || "undescribed", params.id]);
+  if (files) {
+    let insertQuery = `INSERT INTO sounds (title, filename, description, set_id) VALUES (?, ?, ?, ?);`;
+    let response = Promise.all(body.Tracktitles.map((t, i) =>
+      new Promise((resolve, reject) =>
+        queryAsync(insertQuery, [t, files.File[i].name, body.Trackdescriptions[i], params.id])
+      )
+    ));
+  }
+  const del = body.ToDelete.split(',');
+  await queryAsync(`UPDATE sounds SET deleted=NOW() WHERE idsound IN (${'?,'.repeat(del.length-1)},?)`, [del]);
+  res.status(200).send();
+})
+
+mainController.delete('/sounds', async({body}, res) => {
+  let toDelete = body.todelete.split(',');
+  let query = `UPDATE sounds SET deleted = NOW() WHERE (idsound = ?);`
+  let response = Promise.all(toDelete.map((s) => new Promise((resolve, reject) => queryAsync(query, [s]))));
+  console.log({response});
   res.status(200).json(response);
 })
 

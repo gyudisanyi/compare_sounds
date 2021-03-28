@@ -7,27 +7,31 @@ export function defaultCollection() {
       },
       "tracks": [
         {
+          "id": 1,
           "title": "Mix 1",
-          "url": "1.wav",
+          "filename": "1.wav",
           "description": "OFFLINE First mix - missed a vocal"
         },
-        {
+        { 
+          "id": 2,
           "title": "Mix 2",
-          "url": "2.wav",
+          "filename": "2.wav",
           "description": "Final mix - vocal added and panning"
         }
       ],
       "loops": [
         {
-          "loopstart": 846,
-          "loopend": 890.35,
-          "description": "Loop1"
+          "id": 1,
+          "start": 220,
+          "end": 250,
+          "description": "Loop2"
         },
         {
-          "loopstart": 220,
-          "loopend": 450,
-          "description": "Loop2"
-        }
+          "id": 2,
+          "start": 846,
+          "end": 890.35,
+          "description": "Vocal added"
+        },
       ]
     }
   )
@@ -37,17 +41,17 @@ export function defaultSets() {
   return (
     [
       {
-          "idsets": 1,
+          "id": 1,
           "title": "Good morning starshine",
           "description": "Léna and Sanyi did that"
       },
       {
-          "idsets": 2,
+          "id": 2,
           "title": "Adam and the Ants set",
           "description": "Songs from Kings of the Wild Frontier"
       },
       {
-          "idsets": 3,
+          "id": 3,
           "title": "Atmosphere",
           "description": "Small excerpts distorted"
       }

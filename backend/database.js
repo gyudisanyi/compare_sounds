@@ -1,4 +1,4 @@
-const mysql = require('mysql');
+const mysql = require('mysql2');
 require('dotenv').config();
 
 const DB = mysql.createConnection({
@@ -6,6 +6,7 @@ const DB = mysql.createConnection({
   user: process.env.MYSQL_USER,
   password: process.env.MYSQL_PASSWORD,
   database: process.env.MYSQL_DATABASE,
+  multipleStatements: true,
 });
 
 DB.connect((err) => {
@@ -23,6 +24,7 @@ function queryAsync(sql, queryParameters) {
         reject(error); // error
         return;
       }
+      console.log({result})
       resolve(result); // success
     });
   });

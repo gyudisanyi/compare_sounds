@@ -33,19 +33,26 @@ export default function Player() {
   })(Slider);
 
   useEffect(() => {
+    setNowPlaying(0);
     if (!context.trackNodes) { console.log(`No track nodes`); return }
     console.log("Track nodes loaded");
     context.trackNodes[0].addEventListener('timeupdate', ({ target }) => {
       setProgress((target.currentTime / target.duration)  * resolution);
     });
-    context.trackNodes[0].addEventListener('loadeddata', ({ target }) => {
+    context.trackNodes[0].addEventListener('loadeddata', () => {
       console.log("Loaded");
       setPaused(true);
+    })
+    context.trackNodes[0].addEventListener('ended', () => {
+      console.log("Ended");
+      setPaused(true);
+      context.trackNodes.forEach(t=>t.currentTime=0);
+      setProgress(0);
     })
   }, [context.trackNodes])
 
   useEffect(() => {
-    setLoops(context.collection.loops.map((loop)=>({ range: [loop.loopstart, loop.loopend], description: loop.description })));
+    setLoops(context.collection.loops.map((loop)=>({ range: [loop.start, loop.end], description: loop.description })));
   }, [context.collection.loops]);
 
   useEffect(() => {
@@ -81,8 +88,9 @@ export default function Player() {
     nextLoop = loopsAhead[0] ? loopsAhead[0].range : [0,1000];
     if (!loopsAhead[0]) {setLooping(false)};
     setActualLoop(nextLoop);
-    let seekSeconds = (newValue / resolution) * (context.trackNodes[0].duration)
-    context.trackNodes.forEach((track)=> track.currentTime = seekSeconds);
+    if (!context.trackNodes[0]) return;
+    let seekSeconds = (newValue / resolution) * (context.trackNodes[0].duration);
+    context.trackNodes.forEach((track)=> track.currentTime = seekSeconds || 0);
   }
   
   function switchTrack(value) {
@@ -109,27 +117,27 @@ export default function Player() {
     <Card>
     <CardContent>
       <Grid container spacing={3} justify="center">
-        <Grid container xs={3} justify="space-around">
+        <Grid item xs={3}>
           <Button onClick={playPause} variant="contained" color={paused ? "primary" : "secondary"}>
             ►
           </Button>
           <FormControl>
-            <FormControlLabel control={<Switch checked={looping} onClick={() =>setLooping(o => !o)}/>} label="Loop" labelPlacement="right" />
-            <FormControlLabel control={<Switch checked={snap} onClick={() => setSnap(o => !o)}/>} label="Snap" labelPlacement="right" />
+            <FormControlLabel key={`loop`} control={<Switch checked={looping} onClick={() =>setLooping(o => !o)}/>} label="Loops" labelPlacement="end" />
+            <FormControlLabel key={`snap`} control={<Switch checked={snap} onClick={() => setSnap(o => !o)}/>} label="Snap" labelPlacement="end" />
           </FormControl>
         </Grid>
         <Grid item xs={4}>
           <FormControl>
             <RadioGroup row aria-label="sources" name="source" value={nowPlaying}>
               {context.collection.tracks.map((track, i) =>              
-              (<FormControlLabel onClick={()=>switchTrack(i)} value={i} control={<Radio />} label={track.title} />)
+              (<FormControlLabel key={i} onClick={()=>switchTrack(i)} value={i} control={<Radio />} label={track.title} />)
               )}
             </RadioGroup>
           </FormControl>
         </Grid>
         <Grid item xs={5}>
           <Card raised>
-            <CardContent>{context.collection.tracks[nowPlaying].description}</CardContent>
+            <CardContent>{context.collection.tracks[nowPlaying] ? context.collection.tracks[nowPlaying].description : "No track"}</CardContent>
           </Card>
         </Grid>
         <Grid item xs={12}>
