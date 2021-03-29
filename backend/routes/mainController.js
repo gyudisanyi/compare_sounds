@@ -35,7 +35,7 @@ mainController.get('/sounds/', async (req, res) => {
 
 mainController.get('/sounds/:id', async (req, res) => {
   console.log(req.params.id)
-  Data = await queryAsync(`SELECT * FROM sounds WHERE idsounds = ?`, req.params.id);
+  Data = await queryAsync(`SELECT * FROM sounds WHERE idsound = ?`, req.params.id);
 
   res.status(200).json(Data);
 })
@@ -49,7 +49,7 @@ mainController.get('/loops', async (req, res) => {
 
 mainController.get('/loops/:id', async (req, res) => {
   console.log(req.params.id)
-  Data = await queryAsync(`SELECT * FROM loops WHERE idloops = ?`, req.params.id);
+  Data = await queryAsync(`SELECT * FROM loops WHERE idloop = ?`, req.params.id);
 
   res.status(200).json(Data);
 })
