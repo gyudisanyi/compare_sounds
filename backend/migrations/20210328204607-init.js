@@ -28,6 +28,7 @@ exports.up = function(db, callback) {
       idsound: {type: 'int', primaryKey: true, autoIncrement: true},
       set_id: 'int',
       filename: 'string',
+      title: {type: 'string', length: 30},
       description: {type: 'string', length: 200},
       img_url: 'string',
       deleted: 'timestamp'
