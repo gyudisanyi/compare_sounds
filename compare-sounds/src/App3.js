@@ -33,6 +33,7 @@ function App() {
         changeSets(response);
         changeCurrentSet(response[0].idset);
       } catch (error) {
+        setURL('./')
         console.log("seterror", { error })
       }
     }
@@ -40,16 +41,16 @@ function App() {
   }, []);
 
   useEffect(() => {
+    console.log({currentSet})
     async function fetchData() {
       try {
         const httpResponse = await fetch(`${process.env.REACT_APP_API_URL}sets/${currentSet}`);
         const response = await httpResponse.json();
-        setURL(process.env.REACT_APP_API_URL);
         console.log("RESP2", {response})
         if (response.tracks.length === 0) { setURL(`./`); changeCurrentSet(1); setCollection(defaultCollection); throw new Error("NO TRX")}
         setCollection(response);
       } catch (error) {
-        console.log("collectionerror", { error })
+        console.log("collection error", { error })
       }
     }
     fetchData()

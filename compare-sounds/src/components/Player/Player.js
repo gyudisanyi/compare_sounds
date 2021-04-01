@@ -41,6 +41,7 @@ export default function Player() {
     });
     context.trackNodes[0].addEventListener('loadeddata', () => {
       console.log("Loaded");
+      console.log(context.currentSet)
       setPaused(true);
     })
     context.trackNodes[0].addEventListener('ended', () => {

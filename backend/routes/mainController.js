@@ -21,7 +21,7 @@ mainController.get('/sets/:id', async (req, res) => {
     Data2 = await queryAsync(`SELECT idsound AS id, title, filename, description FROM sounds WHERE set_id = ? AND deleted IS NULL;`, req.params.id);
     Data3 = await queryAsync(`SELECT idloop AS id, start, end, description FROM loops WHERE set_id = ? AND deleted IS NULL;`, req.params.id);
     if (Data1.length == 0 ) {throw new Error(`No such set`)};
-    if (Data2.length == 0 ) {throw new Error(`Empty set`)};
+    //if (Data2.length == 0 ) {throw new Error(`Empty set`)};
     Data = {set: {title: Data1[0].title, description: Data1[0].description}, tracks: Data2, loops: Data3};
   } catch(err) {
     console.log(err);
