@@ -31,7 +31,7 @@ function App() {
         console.log("RESP", {response})
         if (response.length === 0) { resetDefault(); throw new Error("NO SETS")}
         changeSets(response);
-        changeCurrentSet(response[0].idset);
+        changeCurrentSet(response[0].id);
       } catch (error) {
         setURL('./')
         console.log("seterror", { error })
@@ -47,7 +47,7 @@ function App() {
         const httpResponse = await fetch(`${process.env.REACT_APP_API_URL}sets/${currentSet}`);
         const response = await httpResponse.json();
         console.log("RESP2", {response})
-        if (response.tracks.length === 0) { setURL(`./`); changeCurrentSet(1); setCollection(defaultCollection); throw new Error("NO TRX")}
+        // if (response.tracks.length === 0) { changeCurrentSet(1); setCollection(defaultCollection); throw new Error("NO TRX")}
         setCollection(response);
       } catch (error) {
         console.log("collection error", { error })
@@ -60,6 +60,7 @@ function App() {
   const trackNodesRef = useCallback((setNode) => {
     if (!setNode) { console.log(`noNodes`); return }
     if (!setNode.children) { console.log(`noNodesChildren`); return }
+    if (setNode.children.length === 0) {console.log("Empty settt"); return}
     if (setNode.children.length !== collection.tracks.length) { console.log(`children updated`); return }
     const track1 = setNode.children[0];
     track1.muted = false;

@@ -34,14 +34,29 @@ export default function Header() {
   const [editOpen, setEditOpen] = useState(false);
   const [aboutOpen, setAboutOpen] = useState(false);
 
-  const handleMenuClick = (event) => {
+  const handleMenuClick =  async (event, add) => {
+    if(add) {console.log(add)};
     setAnchorEl(event.currentTarget);
   };
 
   const handleMenuClose = (id) => {
     setAnchorEl(null);
+    console.log(id)
     context.changeCurrentSet(id);
   };
+
+  const newSet = async () => {
+    setAnchorEl(null);
+    const res = await fetch(
+      `${process.env.REACT_APP_API_URL}sets/new/`,
+      {
+        method: 'POST',
+      }
+    );
+    const response = await res.json();
+    console.log("YsdfsdfsdfsdfOOOO");
+    context.changeCurrentSet(response.insertId);
+  }
 
   const handleAboutOpen = () => {
     setAboutOpen(true);
@@ -74,9 +89,9 @@ export default function Header() {
             open={Boolean(anchorEl)}
             onClose={handleMenuClose}
           >
-          {context.sets.map((set)=>(<MenuItem key={set.idset} onClick={()=>handleMenuClose(set.idset)}>{set.title}</MenuItem>))}
+          {context.sets.map((set)=>(<MenuItem key={set.id} onClick={()=>handleMenuClose(set.id)}>{set.title}</MenuItem>))}
           <hr />
-          <MenuItem key="addset" onClick={handleEditOpen}>Add new set</MenuItem>
+          <MenuItem key="addset" id="addset" onClick={newSet}>Add new set</MenuItem>
           </Menu>
           <Typography variant="h6" className={classes.title}>
             {context.collection.set.title}            

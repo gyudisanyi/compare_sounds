@@ -34,6 +34,7 @@ export default function Player() {
 
   useEffect(() => {
     setNowPlaying(0);
+    setPaused(true);
     if (!context.trackNodes) { console.log(`No track nodes`); return }
     console.log("Track nodes loaded");
     context.trackNodes[0].addEventListener('timeupdate', ({ target }) => {
@@ -50,7 +51,7 @@ export default function Player() {
       context.trackNodes.forEach(t=>t.currentTime=0);
       setProgress(0);
     })
-  }, [context.trackNodes])
+  }, [context.currentSet, context.trackNodes])
 
   useEffect(() => {
     setLoops(context.collection.loops.map((loop)=>({ range: [loop.start, loop.end], description: loop.description })));
@@ -77,6 +78,7 @@ export default function Player() {
   }, [progress, actualLoop, looping, context.trackNodes])
 
   function playPause() {
+    if (context.collection.tracks.length === 0 ) {console.log("NUTHIN2PLAY"); setPaused(true); return}
     paused
     ? context.trackNodes.forEach((track) => track.play())
     : context.trackNodes.forEach((track) => track.pause());

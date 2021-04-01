@@ -1,22 +1,31 @@
-import React, { useContext, useState } from 'react';
+import React, { useEffect, useContext, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { FormGroup, FormLabel, FormControl, FormControlLabel, Checkbox } from '@material-ui/core';
 import { Typography, Button, IconButton, DialogTitle, Dialog, Card, CardContent, TextField } from '@material-ui/core';
 import ClearIcon from '@material-ui/icons/Clear';
 import CloseIcon from '@material-ui/icons/Close';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
-import { useTheme } from '@material-ui/core/styles';
+import { useTheme, makeStyles } from '@material-ui/core/styles';
 
 import GlobalContext from '../../context/GlobalContext';
 
+const useStyles = makeStyles((theme) => ({
+  closeButton: {
+    position: 'absolute',
+    right: theme.spacing(1),
+    top: theme.spacing(1),
+  },
+}));
+
 export default function EditSet({ onClose, open }) {
+
+  const classes = useStyles();
   
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down('sm'));
   const context = useContext(GlobalContext);
 
   const [nameDescr, setNameDescr] = useState({newTitle: context.collection.set.title, newDescription: context.collection.set.description})
-  console.log({nameDescr}, "NIIII");
   const [newTracks, setNewTracks] = useState({titles: [], descriptions: []});
   const [oldTracks, setOldTracks] = useState({titles: {}, descriptions: {}, todelete: {}});
 
@@ -25,6 +34,10 @@ export default function EditSet({ onClose, open }) {
   const handleClose = () => {
     onClose();
   }
+
+  useEffect(() => {
+    setNameDescr({newTitle: context.collection.set.title, newDescription: context.collection.set.description});
+  }, [context.collection.set]);
 
   const handleNewTracks = ({target}) => {
     console.log({target});
@@ -41,7 +54,6 @@ export default function EditSet({ onClose, open }) {
     const tracksNow= {...oldTracks};
     const id = target.id.split(' ')[1];
     tracksNow[target.name][id]=target.value || target.checked;
-    console.log({tracksNow});
     setOldTracks(tracksNow);
   }
   
@@ -70,15 +82,16 @@ export default function EditSet({ onClose, open }) {
     data.append("AlteredTitles", Object.keys(oldTracks.titles).filter((k) => !!oldTracks.titles[k]).join(','));
     data.append("AlteredDescriptions", Object.keys(oldTracks.descriptions).filter((k) => !!oldTracks.descriptions[k]).join(','));
     Object.keys(oldTracks.titles).forEach((key) => {
-      data.append("OldTracktitles", oldTracks.titles[key]);
+      data.append("OldTrackTitles", oldTracks.titles[key]);
     });
     Object.keys(oldTracks.descriptions).forEach((key) => {
-      data.append("OldTrackdescriptions", oldTracks.descriptions[key]);
+      data.append("OldTrackDescriptions", oldTracks.descriptions[key]);
     });
 
     data.append("ToDelete", Object.keys(oldTracks.todelete).filter(k => oldTracks.todelete[k]).join(','));
 
     try {
+      if(parseInt(context.currentSet) !== context.currentSet) return;
       let response = await fetch(
       `${process.env.REACT_APP_API_URL}sets/${context.currentSet}/`,
       {
@@ -117,21 +130,21 @@ export default function EditSet({ onClose, open }) {
       <Card>
         <CardContent>
         
-          <DialogTitle>Edit {context.collection.set.title}
-          <IconButton aria-label="close" position="absolute" right="10px" onClick={handleClose}>
-            <CloseIcon />
-          </IconButton>
+          <DialogTitle>
+            Edit set
+            <IconButton className={classes.closeButton} aria-label="close" onClick={handleClose}>
+              <CloseIcon />
+            </IconButton>
           </DialogTitle>
 
           <Typography variant="body2">
             <FormControl onSubmit={handleSubmission}>
             <FormLabel component="legend">Edit title, description</FormLabel>
             <FormGroup onChange={handleNewNameDescr}>
-              <TextField name="newTitle" placeholder={context.collection.set.title} defaultValue={context.collection.set.title}></TextField>
+              <TextField name="newTitle" placeHolder={context.collection.set.title} defaultValue={context.collection.set.title}></TextField>
               <TextField name="newDescription" defaultValue={context.collection.set.description}></TextField>
             </FormGroup>
-            <hr/>
-            <FormLabel component="legend">Delete tracks</FormLabel>
+            <FormLabel component="legend">Delete or rename tracks</FormLabel>
               <FormGroup row onChange={handleOldTracks}>
                 {existingTracksList}
               </FormGroup>
@@ -140,7 +153,7 @@ export default function EditSet({ onClose, open }) {
                 <Typography variant="caption" align="center">
                   <div {...getRootProps({ className: 'dropzone' })}>
                     <input {...getInputProps()} />
-                    <p>Drag 'n' drop or click to select some files</p>
+                    <div>Drag 'n' drop or click to select some files</div>
                     <em>(Only audio will be accepted)</em>
                   </div>
                 </Typography>

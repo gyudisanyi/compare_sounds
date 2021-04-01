@@ -3,13 +3,13 @@ const queryAsync = require('../database');
 const mainController = express.Router();
 
 mainController.get('/', async (req, res) => {
-  Data = await queryAsync(`SELECT * FROM sets WHERE deleted IS NULL`);
+  Data = await queryAsync(`SELECT idset AS id, description, title FROM sets WHERE deleted IS NULL`);
 
   res.status(200).json(Data);
 })
 
 mainController.get('/sets', async (req, res) => {
-  Data = await queryAsync(`SELECT * FROM sets WHERE deleted IS NULL`);
+  Data = await queryAsync(`SELECT idset AS id, description, title FROM sets WHERE deleted IS NULL`);
 
   res.status(200).json(Data);
 })
@@ -21,8 +21,9 @@ mainController.get('/sets/:id', async (req, res) => {
     Data2 = await queryAsync(`SELECT idsound AS id, title, filename, description FROM sounds WHERE set_id = ? AND deleted IS NULL;`, req.params.id);
     Data3 = await queryAsync(`SELECT idloop AS id, start, end, description FROM loops WHERE set_id = ? AND deleted IS NULL;`, req.params.id);
     if (Data1.length == 0 ) {throw new Error(`No such set`)};
+    console.log({Data1})
     //if (Data2.length == 0 ) {throw new Error(`Empty set`)};
-    Data = {set: {title: Data1[0].title, description: Data1[0].description}, tracks: Data2, loops: Data3};
+    Data = {set: Data1[0], tracks: Data2, loops: Data3};
   } catch(err) {
     console.log(err);
     status = 500;
@@ -58,9 +59,10 @@ mainController.get('/loops/:id', async (req, res) => {
   res.status(200).json(Data);
 })
 
-mainController.post('/sets', async (req, res) => {
-  console.log({req});
-  res.send('POST request')
+mainController.post('/sets/new', async (req, res) => {
+  const Data = await queryAsync(`INSERT INTO sets (title, description) VALUES ('Empty set', 'Add description');`)
+  console.log(Data.insertId);
+  res.status(200).json(Data);
 })
 
 mainController.post('/sets/:id', async ({files, body, params}, res) => {
@@ -81,7 +83,7 @@ mainController.post('/sets/:id', async ({files, body, params}, res) => {
 })
 
 mainController.patch('/sets/:id', async ({files, body, params}, res) => {
-  console.log({body});
+  console.log({body}, {params});
   
   if (files) {files.File.forEach((file) => {
     uploadPath = __dirname + `./../public/audio_src/${params.id}/` + file.name;
@@ -91,7 +93,9 @@ mainController.patch('/sets/:id', async ({files, body, params}, res) => {
       console.log(err);
     })
   })}
+
   await queryAsync(`UPDATE sets SET title=?, description=? WHERE idset = ?;`, [body.Title || "unnamed", body.Description || "undescribed", params.id]);
+  
   if (files) {
     let insertQuery = `INSERT INTO sounds (title, filename, description, set_id) VALUES (?, ?, ?, ?);`;
     let response = Promise.all(body.Tracktitles.map((t, i) =>
@@ -100,8 +104,35 @@ mainController.patch('/sets/:id', async ({files, body, params}, res) => {
       )
     ));
   }
+  
+  
+  if (body.AlteredTitles) {
+    const updateTitle = `UPDATE sounds SET title=? WHERE idsound=?`;
+    const AlteredTitles = body.AlteredTitles.split(',');
+    let response = Promise.all(AlteredTitles.map((t, i) =>
+      new Promise((resolve, reject) =>
+        queryAsync(updateTitle, [body.OldTrackTitles[i], t])
+      )
+    ));
+  }
+
+  
+  if (body.AlteredDescriptions) {
+    const updateDescription = `UPDATE sounds SET description=? WHERE idsound=?`;
+    const AlteredDescriptions = body.AlteredDescriptions.split(',');
+    console.log(AlteredDescriptions);
+    let response = Promise.all(AlteredDescriptions.map((t, i) =>
+      new Promise((resolve, reject) =>
+        queryAsync(updateDescription, [typeof body.OldTrackDescriptions == 'string'? body.OldTrackDescriptions : body.OldTrackDescriptions[i], t])
+      )
+    ));
+  }
+
+  if (body.ToDelete) {
   const del = body.ToDelete.split(',');
-  await queryAsync(`UPDATE sounds SET deleted=NOW() WHERE idsound IN (${'?,'.repeat(del.length-1)},?)`, [del]);
+  await queryAsync(`UPDATE sounds SET deleted=NOW() WHERE idsound IN (?${',?'.repeat(del.length-1)})`, del);
+  }
+
   res.status(200).send();
 })
 

@@ -2,6 +2,7 @@ export function defaultCollection() {
   return (
     {
       "set": {
+        "id": 1,
         "title": "DEFAULT OFFLINE Good morning starshine",
         "description": "Léna and Sanyi did that"
       },
