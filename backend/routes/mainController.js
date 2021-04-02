@@ -32,7 +32,7 @@ mainController.get('/sets/:id', async (req, res) => {
   const status = 200;
   try {
     Data1 = await queryAsync(`SELECT idset AS id, description, title FROM sets WHERE idset = ? AND deleted IS NULL`, req.params.id);
-    Data2 = await queryAsync(`SELECT idsound AS id, title, filename, description FROM sounds WHERE set_id = ? AND deleted IS NULL;`, req.params.id);
+    Data2 = await queryAsync(`SELECT idsound AS id, title, filename, description, img_url FROM sounds WHERE set_id = ? AND deleted IS NULL;`, req.params.id);
     Data3 = await queryAsync(`SELECT idloop AS id, start, end, description FROM loops WHERE set_id = ? AND deleted IS NULL;`, req.params.id);
     if (Data1.length == 0 ) {throw new Error(`No such set`)};
     console.log({Data1})
@@ -118,7 +118,7 @@ mainController.patch('/sets/:id', async ({files, body, params}, res) => {
 
   await queryAsync(`UPDATE sets SET title=?, description=? WHERE idset = ?;`, [body.Title || "unnamed", body.Description || "undescribed", params.id]);
   
-  if (files) {
+  if (files && body.Tracktitles) {
     let insertQuery = `INSERT INTO sounds (title, filename, description, set_id) VALUES (?, ?, ?, ?);`;
     let response = Promise.all(body.Tracktitles.map((t, i) =>
       new Promise((resolve, reject) =>

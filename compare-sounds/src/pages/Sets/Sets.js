@@ -69,7 +69,7 @@ function Sets() {
 
   return (
     <div id="main">
-      <GlobalContext.Provider value={{ trackNodes, sets, collection, changeSets, currentSet}}>
+      <GlobalContext.Provider value={{ trackNodes, URL, sets, collection, changeSets, currentSet}}>
           <Header />
           <Player />
       </GlobalContext.Provider>

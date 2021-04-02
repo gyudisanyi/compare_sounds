@@ -1,8 +1,8 @@
-import React, { useEffect, useContext, useState } from 'react';
+import React, { useEffect, useCallback, useContext, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { useDropzone } from 'react-dropzone';
-import { FormGroup, FormLabel, FormControl, FormControlLabel, Checkbox } from '@material-ui/core';
-import { Typography, Button, IconButton, DialogTitle, Dialog, Card, CardContent, TextField } from '@material-ui/core';
+import { FormGroup, FormControl, FormControlLabel, Checkbox } from '@material-ui/core';
+import { Button, IconButton, Dialog, DialogTitle, DialogContent, Card, CardHeader, CardContent, TextField } from '@material-ui/core';
 import ClearIcon from '@material-ui/icons/Clear';
 import CloseIcon from '@material-ui/icons/Close';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
@@ -21,60 +21,66 @@ const useStyles = makeStyles((theme) => ({
 export default function EditSet({ onClose, open }) {
 
   const currentSet = useParams().setId || 1;
-  console.log("PARAM EDIT", currentSet, useParams());
 
   const classes = useStyles();
-  
+
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down('sm'));
   const context = useContext(GlobalContext);
 
-  const [nameDescr, setNameDescr] = useState({newTitle: context.collection.set.title, newDescription: context.collection.set.description})
-  const [newTracks, setNewTracks] = useState({titles: [], descriptions: []});
-  const [oldTracks, setOldTracks] = useState({titles: {}, descriptions: {}, todelete: {}});
+  const [files, setFiles] = useState([]);
 
-  console.log(Object.keys(oldTracks.titles).filter((k) => oldTracks.titles[k]).join(','))
+  const onDrop = useCallback(acceptedFiles => {
+    setFiles([...files, ...acceptedFiles])
+  }, [files])
+
+  const { acceptedFiles, getRootProps, getInputProps } = useDropzone({ onDrop, accept: 'audio/*' });
+
+  const [nameDescr, setNameDescr] = useState({ newTitle: context.collection.set.title, newDescription: context.collection.set.description })
+  const [newTracks, setNewTracks] = useState({ titles: [], descriptions: [] });
+  const [oldTracks, setOldTracks] = useState({ titles: {}, descriptions: {}, todelete: {} });
 
   const handleClose = () => {
     onClose();
   }
 
   useEffect(() => {
-    setNameDescr({newTitle: context.collection.set.title, newDescription: context.collection.set.description});
+    setNewTracks({ titles: [], descriptions: [] });
+    setOldTracks({ titles: {}, descriptions: {}, todelete: {} });
+    setNameDescr({ newTitle: context.collection.set.title, newDescription: context.collection.set.description });
   }, [context.collection.set]);
 
-  const handleNewTracks = ({target}) => {
-    console.log({target});
-    const tracksNow= {...newTracks};
+  const handleNewTracks = ({ target }) => {
+    const tracksNow = { ...newTracks };
     const id = target.id.split(' ')[1];
-    tracksNow[target.name][id]=target.value;
-    console.log({tracksNow});
+    tracksNow[target.name][id] = target.value;
     setNewTracks(tracksNow);
   }
 
-  const handleOldTracks = ({target}) => {
-    console.log({target});
-    console.log(target.id, target.name, target.value, target.checked);
-    const tracksNow= {...oldTracks};
+  const removeFile = file => {
+    const newFiles = [...files];    
+    newFiles.splice(newFiles.indexOf(file), 1);
+    setFiles(newFiles);
+  }
+
+  const handleOldTracks = ({ target }) => {
+    const tracksNow = { ...oldTracks };
     const id = target.id.split(' ')[1];
-    tracksNow[target.name][id]=target.value || target.checked;
+    tracksNow[target.name][id] = target.value || target.checked;
     setOldTracks(tracksNow);
   }
-  
-  const handleNewNameDescr = ({target}) => {
-    console.log({target});
+
+  const handleNewNameDescr = ({ target }) => {
     setNameDescr({ ...nameDescr, [target.name]: target.value });
   }
 
 
   const handleSubmission = async (event) => {
-    
+
     event.preventDefault();
-    
-    console.log({newTracks}, {nameDescr}, {oldTracks});
-    
+
     const data = new FormData();
-    acceptedFiles.forEach((file) => data.append("File", file));
+    files.forEach((file) => data.append("File", file));
     data.append("Title", nameDescr.newTitle);
     data.append("Description", nameDescr.newDescription);
     newTracks.titles.forEach((title) => {
@@ -95,16 +101,17 @@ export default function EditSet({ onClose, open }) {
     data.append("ToDelete", Object.keys(oldTracks.todelete).filter(k => oldTracks.todelete[k]).join(','));
 
     try {
-      
+
       let response = await fetch(
-      `${process.env.REACT_APP_API_URL}sets/${currentSet}/`,
-      {
-        method: 'PATCH',
-        body: data,
-      }
-    );
-    console.log({response})}
-    catch(error) {
+        `${process.env.REACT_APP_API_URL}sets/${currentSet}/`,
+        {
+          method: 'PATCH',
+          body: data,
+        }
+      );
+      console.log({ response })
+    }
+    catch (error) {
       console.log(error);
     };
     window.location.reload();
@@ -113,64 +120,76 @@ export default function EditSet({ onClose, open }) {
 
   const existingTracksList = context.collection.tracks.map((t) => (
     <div>
-    <FormControlLabel
-      control={<Checkbox name="todelete" checkedIcon={<ClearIcon />} key={`del ${t.id}`} id={`del ${t.id}`} checked={!!oldTracks.todelete[t.id]}/>}
-      label=""/>
-    <TextField name="titles" defaultValue={t.title} key={`et ${t.id}`} id={`et ${t.id}`}></TextField>
-    <TextField name="descriptions" defaultValue={t.description} key={`ed ${t.id}`} id={`ed ${t.id}`}></TextField>
+      <FormControlLabel
+        control={<Checkbox name="todelete" checkedIcon={<ClearIcon />} key={`del ${t.id}`} id={`del ${t.id}`} checked={!!oldTracks.todelete[t.id]} />}
+        label="" />
+      <TextField label={`New title for ${t.title}`} name="titles" placeholder={t.title} key={`et ${t.id}`} id={`et ${t.id}`}></TextField>
+      <TextField label="Description" name="descriptions" placeholder={t.description} key={`ed ${t.id}`} id={`ed ${t.id}`}></TextField>
     </div>)
   )
 
-  const { acceptedFiles, getRootProps, getInputProps } = useDropzone({ accept: 'audio/*' });
-
-  const acceptedFileItems = acceptedFiles.map((file, i) => (
-    <div key={i} width="100%">{file.path}<br/>
-    <TextField name="titles" key={`t ${i}`} id={`t ${i}`}></TextField>
-    <TextField name="descriptions" key={`d ${i}`} id={`d ${i}`}></TextField>
+  const acceptedFileItems = files.map((file, i) => (
+    <div key={file.path} id={`b${i}`} width="100%">
+      <Button key={file.path} onClick={() => removeFile(file)}><ClearIcon /></Button>
+      <TextField label={`${file.path} title`} name="titles" placeholder="Title" key={`t ${i}`} id={`t ${i}`}></TextField>
+      <TextField label="Description" name="descriptions" placeholder="Description" key={`d ${i}`} id={`d ${i}`}></TextField>
     </div>
   ));
 
   return (
-    <Dialog onClose={handleClose} open={open} fullScreen={fullScreen} scroll="body">
-      <Card>
-        <CardContent>
-        
-          <DialogTitle>
-            Edit set
-            <IconButton className={classes.closeButton} aria-label="close" onClick={handleClose}>
-              <CloseIcon />
-            </IconButton>
-          </DialogTitle>
+    <Dialog maxWidth="sm" onClose={handleClose} open={open} fullScreen={fullScreen} scroll="body">
 
-          <Typography variant="body2">
-            <FormControl onSubmit={handleSubmission}>
-            <FormLabel component="legend">Edit title, description</FormLabel>
-            <FormGroup onChange={handleNewNameDescr}>
-              <TextField name="newTitle" placeHolder={context.collection.set.title} defaultValue={context.collection.set.title}></TextField>
-              <TextField name="newDescription" defaultValue={context.collection.set.description}></TextField>
-            </FormGroup>
-            <FormLabel component="legend">Delete or rename tracks</FormLabel>
+      <DialogTitle>
+        Edit {context.collection.set.title}
+        <IconButton className={classes.closeButton} aria-label="close" onClick={handleClose}>
+          <CloseIcon />
+        </IconButton>
+      </DialogTitle>
+      <DialogContent>
+        <FormControl onSubmit={handleSubmission}>
+          <Card square>
+            <CardContent>
+              <FormGroup row onChange={handleNewNameDescr}>
+                <TextField label="New title" name="newTitle" placeholder="Add new title"></TextField>
+                <TextField label="New description" name="newDescription" placeholder="Add new description"></TextField>
+              </FormGroup>
+            </CardContent>
+          </Card>
+
+          <Card square>
+            <CardHeader subheader="Delete or update existing tracks" />
+            <CardContent>
               <FormGroup row onChange={handleOldTracks}>
                 {existingTracksList}
               </FormGroup>
-              <FormLabel component="legend">Upload tracks</FormLabel>
-              <Card variant="outlined">
-                <Typography variant="caption" align="center">
-                  <div {...getRootProps({ className: 'dropzone' })}>
-                    <input {...getInputProps()} />
-                    <div>Drag 'n' drop / click</div>
-                    <em>(Only audio will be accepted)</em>
-                  </div>
-                </Typography>
-              </Card>
-              <FormGroup onChange={handleNewTracks}>
-                {acceptedFileItems}
-              </FormGroup>
-            <Button type="submit" variant="contained" onClick={handleSubmission}>Submit</Button>
-            </FormControl>
-          </Typography>
-        </CardContent>
-      </Card>
+            </CardContent>
+          </Card>
+
+          <DropZone getRootProps={getRootProps} getInputProps={getInputProps} />
+
+          <FormGroup onChange={handleNewTracks}>
+            {acceptedFileItems}
+          </FormGroup>
+
+          <Button type="submit" variant="contained" onClick={handleSubmission}>Submit</Button>
+
+        </FormControl>
+      </DialogContent>
     </Dialog>
+  )
+}
+
+function DropZone({ getRootProps, getInputProps }) {
+
+  return (
+    <Card>
+      <CardContent style={{ backgroundColor: "antiquewhite" }}>
+        <div {...getRootProps({ className: 'dropzone' })}>
+          <input {...getInputProps()} />
+          <div>Drag 'n' drop / click to upload</div>
+          <em>(Only audio will be accepted)</em>
+        </div>
+      </CardContent>
+    </Card>
   )
 }

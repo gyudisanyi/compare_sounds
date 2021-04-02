@@ -1,9 +1,12 @@
-import React from 'react'
+import React from 'react';
+import { Card, CardContent } from '@material-ui/core';
 
 export default function Users () {
   return (
-    <>
-    Users
-    </>
+    <Card>
+      <CardContent>
+        Users
+      </CardContent>
+    </Card>
   )
 }
