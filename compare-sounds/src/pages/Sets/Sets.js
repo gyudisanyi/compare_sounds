@@ -1,24 +1,21 @@
 import React, { useEffect, useCallback, useState } from 'react';
+import { useParams } from 'react-router-dom';
+import GlobalContext from '../../context/GlobalContext';
+import { defaultCollection, defaultSets } from '../../defaults';
+import Header from '../../components/Header/Header';
+import Player from '../../components/Player/Player';
 
-import GlobalContext from './context/GlobalContext';
-import { defaultCollection, defaultSets } from './defaults';
-import Header from './components/Header/Header';
-import Player from './components/Player/Player';
 
-import './App.css';
+function Sets() {
 
-function App() {
-  
   const [URL, setURL] = useState('./');
   const [sets, changeSets] = useState(defaultSets);
   
-  const currentSet = 1;
+  const currentSet = useParams().setId;
+
   const [collection, setCollection] = useState(defaultCollection());
   const [trackNodes, setTrackNodes] = useState();
 
-  const changeCurrentSet = (e) => {
-    console.log(e)
-  }
 
   const resetDefault = () => {
     setURL('./');
@@ -72,7 +69,7 @@ function App() {
 
   return (
     <div id="main">
-      <GlobalContext.Provider value={{ trackNodes, sets, collection, changeSets, currentSet, changeCurrentSet}}>
+      <GlobalContext.Provider value={{ trackNodes, sets, collection, changeSets, currentSet}}>
           <Header />
           <Player />
       </GlobalContext.Provider>
@@ -86,4 +83,4 @@ function App() {
 
 }
 
-export default App;
+export default Sets;

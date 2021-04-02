@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useContext, useRef } from 'react';
+import { useParams } from 'react-router-dom';
 import { withStyles } from '@material-ui/core/styles';
 import { Grid, Switch, Button, Slider, Card, CardContent, } from '@material-ui/core';
 import { FormControl, FormControlLabel, RadioGroup, Radio, } from '@material-ui/core';
@@ -7,6 +8,9 @@ import GlobalContext from '../../context/GlobalContext';
 export default function Player() {
 
   const context = useContext(GlobalContext);
+
+  const currentSet = useParams().setId || 1;
+  console.log("PARAM PLAYA", currentSet, useParams());
 
   const resolution = 1000;
   
@@ -42,7 +46,6 @@ export default function Player() {
     });
     context.trackNodes[0].addEventListener('loadeddata', () => {
       console.log("Loaded");
-      console.log(context.currentSet)
       setPaused(true);
     })
     context.trackNodes[0].addEventListener('ended', () => {
@@ -51,7 +54,7 @@ export default function Player() {
       context.trackNodes.forEach(t=>t.currentTime=0);
       setProgress(0);
     })
-  }, [context.currentSet, context.trackNodes])
+  }, [context.trackNodes])
 
   useEffect(() => {
     setLoops(context.collection.loops.map((loop)=>({ range: [loop.start, loop.end], description: loop.description })));

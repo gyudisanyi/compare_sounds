@@ -1,4 +1,5 @@
 import React, { useContext, useState } from 'react';
+import { useHistory } from 'react-router-dom';
 import { makeStyles } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
@@ -28,6 +29,7 @@ const useStyles = makeStyles((theme) => ({
 export default function Header() {
   const classes = useStyles();
 
+  const path = useHistory();
   const context = useContext(GlobalContext);
 
   const [anchorEl, setAnchorEl] = useState(null);
@@ -42,7 +44,7 @@ export default function Header() {
   const handleMenuClose = (id) => {
     setAnchorEl(null);
     console.log(id)
-    context.changeCurrentSet(id);
+    path.push(`/sets/${id}`);
   };
 
   const newSet = async () => {
@@ -54,8 +56,8 @@ export default function Header() {
       }
     );
     const response = await res.json();
-    console.log("YsdfsdfsdfsdfOOOO");
-    context.changeCurrentSet(response.insertId);
+    path.push(`/sets/${response.insertId}`);
+    setEditOpen(true);
   }
 
   const handleAboutOpen = () => {

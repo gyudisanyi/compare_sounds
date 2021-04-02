@@ -1,6 +1,20 @@
 const express = require('express');
+const { fs } = require('fs');
+const fsPromises = require('fs').promises;
 const queryAsync = require('../database');
 const mainController = express.Router();
+
+mainController.post('/md/:id', async ({params}, res) => {
+  let status = 200;
+  let reply = "oi";
+  let uploadPath = __dirname + `./../public/audio_src/${params.id}/`;
+  try {
+  reply = await fsPromises.mkdir(uploadPath, {recursive: true});
+  } catch(err){
+    status = 500;
+  }
+  res.status(status).json(reply);
+})
 
 mainController.get('/', async (req, res) => {
   Data = await queryAsync(`SELECT idset AS id, description, title FROM sets WHERE deleted IS NULL`);
@@ -60,9 +74,16 @@ mainController.get('/loops/:id', async (req, res) => {
 })
 
 mainController.post('/sets/new', async (req, res) => {
+  const status = 200;
   const Data = await queryAsync(`INSERT INTO sets (title, description) VALUES ('Empty set', 'Add description');`)
   console.log(Data.insertId);
-  res.status(200).json(Data);
+  let uploadPath = __dirname + `./../public/audio_src/${Data.insertId}/`;
+  try {
+  reply = await fsPromises.mkdir(uploadPath, {recursive: true});
+  } catch(err){
+    status = 500;
+  }
+  res.status(status).json(Data);
 })
 
 mainController.post('/sets/:id', async ({files, body, params}, res) => {
@@ -84,11 +105,12 @@ mainController.post('/sets/:id', async ({files, body, params}, res) => {
 
 mainController.patch('/sets/:id', async ({files, body, params}, res) => {
   console.log({body}, {params});
-  
-  if (files) {files.File.forEach((file) => {
-    uploadPath = __dirname + `./../public/audio_src/${params.id}/` + file.name;
+
+  if (files) {
+    uploadPath = __dirname + `./../public/audio_src/${params.id}/`;
     console.log(uploadPath);
-    file.mv(uploadPath, function(err) {
+    files.File.forEach((file) => {
+    file.mv(uploadPath+file.name, function(err) {
       if (err)
       console.log(err);
     })

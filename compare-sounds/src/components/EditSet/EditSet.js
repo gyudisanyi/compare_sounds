@@ -1,4 +1,5 @@
 import React, { useEffect, useContext, useState } from 'react';
+import { useParams } from 'react-router-dom';
 import { useDropzone } from 'react-dropzone';
 import { FormGroup, FormLabel, FormControl, FormControlLabel, Checkbox } from '@material-ui/core';
 import { Typography, Button, IconButton, DialogTitle, Dialog, Card, CardContent, TextField } from '@material-ui/core';
@@ -18,6 +19,9 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function EditSet({ onClose, open }) {
+
+  const currentSet = useParams().setId || 1;
+  console.log("PARAM EDIT", currentSet, useParams());
 
   const classes = useStyles();
   
@@ -66,7 +70,7 @@ export default function EditSet({ onClose, open }) {
   const handleSubmission = async (event) => {
     
     event.preventDefault();
-
+    
     console.log({newTracks}, {nameDescr}, {oldTracks});
     
     const data = new FormData();
@@ -91,9 +95,9 @@ export default function EditSet({ onClose, open }) {
     data.append("ToDelete", Object.keys(oldTracks.todelete).filter(k => oldTracks.todelete[k]).join(','));
 
     try {
-      if(parseInt(context.currentSet) !== context.currentSet) return;
+      
       let response = await fetch(
-      `${process.env.REACT_APP_API_URL}sets/${context.currentSet}/`,
+      `${process.env.REACT_APP_API_URL}sets/${currentSet}/`,
       {
         method: 'PATCH',
         body: data,
@@ -103,6 +107,7 @@ export default function EditSet({ onClose, open }) {
     catch(error) {
       console.log(error);
     };
+    window.location.reload();
     onClose();
   };
 
@@ -153,7 +158,7 @@ export default function EditSet({ onClose, open }) {
                 <Typography variant="caption" align="center">
                   <div {...getRootProps({ className: 'dropzone' })}>
                     <input {...getInputProps()} />
-                    <div>Drag 'n' drop or click to select some files</div>
+                    <div>Drag 'n' drop / click</div>
                     <em>(Only audio will be accepted)</em>
                   </div>
                 </Typography>
