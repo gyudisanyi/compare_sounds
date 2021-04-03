@@ -1,5 +1,5 @@
 'use strict';
-var async = require('async')
+var async = require('async');
 
 var dbm;
 var type;
@@ -33,13 +33,13 @@ exports.up = function(db, callback) {
       img_url: 'string',
       deleted: 'timestamp'
   }),
-  db.createTable.bind(db, "loops", {
-    idloop: {type: 'int', primaryKey: true, autoIncrement: true},
-    set_id: 'int',
-    description: {type: 'string', length: 60},
-    start: 'real',
-    end: 'real',
-    deleted: 'timestamp'
+    db.createTable.bind(db, "loops", {
+      idloop: {type: 'int', primaryKey: true, autoIncrement: true},
+      set_id: 'int',
+      description: {type: 'string', length: 60},
+      start: 'real',
+      end: 'real',
+      deleted: 'timestamp'
   })
   ], callback);
 };

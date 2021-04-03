@@ -34,7 +34,7 @@ export default function EditSet({ onClose, open }) {
     setFiles([...files, ...acceptedFiles])
   }, [files])
 
-  const { acceptedFiles, getRootProps, getInputProps } = useDropzone({ onDrop, accept: 'audio/*' });
+  const { getRootProps, getInputProps } = useDropzone({ onDrop, accept: 'audio/*' });
 
   const [nameDescr, setNameDescr] = useState({ newTitle: context.collection.set.title, newDescription: context.collection.set.description })
   const [newTracks, setNewTracks] = useState({ titles: [], descriptions: [] });

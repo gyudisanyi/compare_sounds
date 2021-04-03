@@ -31,7 +31,6 @@ export default function Player() {
   const classes = useStyles();
 
   const currentSet = useParams().setId || 1;
-  console.log("PARAM PLAYA", currentSet, useParams());
 
   const resolution = 1000;
 
@@ -62,6 +61,7 @@ export default function Player() {
     setPaused(true);
     if (!context.trackNodes) { console.log(`No track nodes`); return }
     console.log("Track nodes loaded");
+    console.log(context.trackNodes[0].currentSrc)
     context.trackNodes[0].addEventListener('timeupdate', ({ target }) => {
       setProgress((target.currentTime / target.duration) * resolution);
     });
@@ -102,7 +102,7 @@ export default function Player() {
   }, [progress, actualLoop, looping, context.trackNodes]);
 
   function playPause() {
-    if (context.collection.tracks.length === 0) { console.log("NUTHIN2PLAY"); setPaused(true); return }
+    if (!context.trackNodes) { console.log("NUTHIN2PLAY"); setPaused(true); return }
     paused
       ? context.trackNodes.forEach((track) => track.play())
       : context.trackNodes.forEach((track) => track.pause());
@@ -140,8 +140,6 @@ export default function Player() {
     return (pt1 + pt2.join('') + pt3);
   }
 
-  console.log(context.collection.tracks);
-
   return (
     <Card>
       <CardContent>
@@ -165,13 +163,17 @@ export default function Player() {
             </FormControl>
           </Grid>
           <Grid item xs={5}>
-            <Card className={classes.root} raised>
+            { context.collection.tracks[0] ?
+            (<Card className={classes.root} raised>
               <CardContent className={classes.description}>{context.collection.tracks[nowPlaying] ? context.collection.tracks[nowPlaying].description : "No track"}</CardContent>
               <CardMedia
                 className={classes.media}
                 image={`${context.URL+'audio_src/'+currentSet}/img/${context.collection.tracks[nowPlaying].img_url}`}
               />
-            </Card>
+            </Card>)
+            :
+            ``
+            }
           </Grid>
           <Grid item xs={12}>
             <ProgressBar ref={pBar} step={snap ? null : 1} marks={marks} max={resolution} value={progress} valueLabelDisplay="auto" onChange={seek} />

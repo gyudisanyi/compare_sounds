@@ -3,7 +3,7 @@ export function defaultCollection() {
     {
       "set": {
         "id": 1,
-        "title": "DEFAULT OFFLINE Good morning starshine",
+        "title": "Good morning starshine",
         "description": "Léna and Sanyi did that"
       },
       "tracks": [
@@ -11,7 +11,7 @@ export function defaultCollection() {
           "id": 1,
           "title": "Mix 1",
           "filename": "1.wav",
-          "description": "OFFLINE First mix - missed a vocal"
+          "description": "First mix - missed a vocal"
         },
         { 
           "id": 2,

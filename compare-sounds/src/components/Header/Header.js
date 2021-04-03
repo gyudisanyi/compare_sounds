@@ -36,15 +36,16 @@ export default function Header() {
   const [editOpen, setEditOpen] = useState(false);
   const [aboutOpen, setAboutOpen] = useState(false);
 
-  const handleMenuClick =  async (event, add) => {
-    if(add) {console.log(add)};
+  const handleMenuClick =  async (event) => {
     setAnchorEl(event.currentTarget);
   };
 
   const handleMenuClose = (id) => {
     setAnchorEl(null);
-    console.log(id)
-    path.push(`/sets/${id}`);
+    if (context.sets.map((set)=>set.id).includes(id)) {
+      context.changeCurrentSet(id);
+      path.push(`/sets/${id}`);
+    }
   };
 
   const newSet = async () => {
@@ -58,6 +59,19 @@ export default function Header() {
     const response = await res.json();
     path.push(`/sets/${response.insertId}`);
     setEditOpen(true);
+  }
+
+  const deleteSet = async () => {
+    setAnchorEl(null);
+    const res = await fetch(
+      `${process.env.REACT_APP_API_URL}sets/${context.collection.set.id}`,
+      {
+        method: 'DELETE',
+      }
+    );
+    await res.json();
+    path.push(`/sets/${context.sets[0].id}`);
+
   }
 
   const handleAboutOpen = () => {
@@ -91,13 +105,14 @@ export default function Header() {
             open={Boolean(anchorEl)}
             onClose={handleMenuClose}
           >
-          {context.sets.map((set)=>(<MenuItem key={set.id} onClick={()=>handleMenuClose(set.id)}>{set.title}</MenuItem>))}
+          {context.sets[0] ? context.sets.map((set)=>(<MenuItem key={set.id} onClick={()=>handleMenuClose(set.id)}>{set.title}</MenuItem>)) : "ajjajj"}
           <hr />
-          <MenuItem key="addset" id="addset" onClick={newSet}>Add new set</MenuItem>
+          <MenuItem disabled={context.URL==="../"} key="addset" id="addset" onClick={newSet}>Add new set</MenuItem>
           </Menu>
           <Typography variant="h6" className={classes.title}>
-            {context.collection.set.title}            
-          <Button color="inherit" onClick={handleEditOpen}>Edit</Button>
+            {context.URL==="../" ? "OFFLINE :O " : ""}{context.collection.set.title}            
+          <Button disabled={context.URL==="../"} color="inherit" onClick={handleEditOpen}>Edit</Button>
+          <Button disabled={context.URL==="../"} color="inherit" onClick={deleteSet}>Delete</Button>
           <EditSet open={editOpen} onClose={handleEditClose} />
           </Typography>
           <Button color="inherit" onClick={handleAboutOpen}>About</Button>
