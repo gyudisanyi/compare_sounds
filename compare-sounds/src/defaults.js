@@ -19,15 +19,15 @@ export function defaultCollection() {
       ],
       "loops": [
         {
+          "loopstart": 220,
+          "loopend": 450,
+          "description": "Loop2"
+        },
+        {
           "loopstart": 846,
           "loopend": 890.35,
           "description": "Loop1"
         },
-        {
-          "loopstart": 220,
-          "loopend": 450,
-          "description": "Loop2"
-        }
       ]
     }
   )

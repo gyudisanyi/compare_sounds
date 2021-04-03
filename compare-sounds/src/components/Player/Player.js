@@ -3,7 +3,7 @@ import { withStyles } from '@material-ui/core/styles';
 import { Grid, Switch, Button, Slider, Card, CardContent, } from '@material-ui/core';
 import { FormControl, FormControlLabel, RadioGroup, Radio, } from '@material-ui/core';
 import GlobalContext from '../../context/GlobalContext';
-
+import CustomLoop from '../CustomLoop/CustomLoop';
 export default function Player() {
 
   const context = useContext(GlobalContext);
@@ -134,6 +134,7 @@ export default function Player() {
         </Grid>
         <Grid item xs={12}>
           <ProgressBar ref={pBar} step={snap?null:1} marks={marks} max={resolution} value={progress} valueLabelDisplay="auto" onChange={seek} />
+          <CustomLoop resolution={resolution}/>
         </Grid>
       </Grid>
       </CardContent>
