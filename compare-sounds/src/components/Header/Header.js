@@ -91,6 +91,11 @@ export default function Header() {
     setEditOpen(false);
   }
 
+  const Reload = () => {
+    path.push(`/sets/${context.sets[0].id || 1}`);
+    window.location.reload();
+  }
+
   return (
     <div className={classes.root}>
       <AppBar position="static">
@@ -110,9 +115,16 @@ export default function Header() {
           <MenuItem disabled={context.URL==="../"} key="addset" id="addset" onClick={newSet}>Add new set</MenuItem>
           </Menu>
           <Typography variant="h6" className={classes.title}>
-            {context.URL==="../" ? "OFFLINE :O " : ""}{context.collection.set.title}            
+            {context.URL==="../" ? "OFFLINE " : ""}{context.collection.set.title}            
           <Button disabled={context.URL==="../"} color="inherit" onClick={handleEditOpen}>Edit</Button>
           <Button disabled={context.URL==="../"} color="inherit" onClick={deleteSet}>Delete</Button>
+          {context.URL==="../"
+            ?
+              <Button variant="contained"
+              onClick={Reload}>
+                Reload
+              </Button>
+            : ``}
           <EditSet open={editOpen} onClose={handleEditClose} />
           </Typography>
           <Button color="inherit" onClick={handleAboutOpen}>About</Button>

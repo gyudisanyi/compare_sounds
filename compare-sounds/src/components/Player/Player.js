@@ -102,11 +102,11 @@ export default function Player() {
   }, [progress, actualLoop, looping, context.trackNodes]);
 
   function playPause() {
-    if (!context.trackNodes) { console.log("NUTHIN2PLAY"); setPaused(true); return }
+    if (!context.trackNodes || !context.trackNodes[0].duration) { console.log("No track nodes"); setPaused(true); return }
     paused
       ? context.trackNodes.forEach((track) => track.play())
       : context.trackNodes.forEach((track) => track.pause());
-    setPaused(prev => !prev)
+    setPaused(prev => !prev);
   }
 
   function seek(event, newValue) {

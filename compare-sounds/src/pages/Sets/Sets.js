@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useCallback, useState } from 'react';
+import React, { useEffect, useCallback, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import GlobalContext from '../../context/GlobalContext';
 import { defaultCollection, defaultSets } from '../../defaults';
@@ -15,17 +15,17 @@ function Sets() {
   const [currentSet, changeCurrentSet] = useState(entryParam);
 
   const trackNodesRef = useCallback((setNode) => {
-    console.log("YPPPPPPPPPPP")
-    if (!setNode) { console.log(`no Nodes`); return }
-    if (!setNode.children) { console.log(`no NodesChildren`); return }
+    console.log("Set audio nodes")
+    if (!setNode) { console.log(`No nodes`); return }
+    if (!setNode.children) { console.log(`No NodesChildren`); return }
     if (setNode.children.length === 0) { console.log("Empty set"); return }
     if (setNode.children.length !== collection.tracks.length) { console.log(`children updated`); return }
     setNode.children[0].muted = false;
     setTrackNodes(Array.from(setNode.children));
   }, [collection]);
 
-  const resetDefault = () => {
-    console.log("RESETTTTT")
+  const resetOffline = () => {
+    console.log("Reset to offline")
     setURL('../');
     changeSets(defaultSets);
     setCollection(defaultCollection());
@@ -37,10 +37,11 @@ function Sets() {
         const httpResponse = await fetch(`${URL}sets/`);
         const response = await httpResponse.json();
         console.log("RESP", { response })
-        if (response.length === 0) { resetDefault(); throw new Error("No SETS") }
+        if (response.length === 0) { throw new Error("No SETS") }
         changeSets(response);
         changeCurrentSet(response[0].id);
       } catch (error) {
+        resetOffline();
         console.log("sets fetch error", { error })
       }
     }
@@ -56,7 +57,6 @@ function Sets() {
         console.log({response});
         setCollection(response);
       } catch (error) {
-        resetDefault();
         console.log("collection fetch error", { error })
       }
     }
