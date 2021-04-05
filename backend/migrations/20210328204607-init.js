@@ -1,5 +1,4 @@
 'use strict';
-var async = require('async');
 
 var dbm;
 var type;
@@ -15,41 +14,47 @@ exports.setup = function(options, seedLink) {
   seed = seedLink;
 };
 
-exports.up = function(db, callback) {
-  async.series([
-    db.createTable.bind(db, "sets", {
+exports.up = function(db) {
+
+  const queryPromises = [];
+
+  queryPromises.push(db.createTable("sets", {
       idset: {type: 'int', primaryKey: true, autoIncrement: true},
-      title: {type: 'string', length: 30},
-      description: {type: 'string', length: 100},
+      title: {type: 'string', length: 50},
+      description: {type: 'string', length: 250},
       img_url: 'string',
       deleted: 'timestamp'
-  }),
-    db.createTable.bind(db, "sounds", {
+  }));
+    queryPromises.push(db.createTable("sounds", {
       idsound: {type: 'int', primaryKey: true, autoIncrement: true},
       set_id: 'int',
       filename: 'string',
-      title: {type: 'string', length: 30},
-      description: {type: 'string', length: 200},
+      title: {type: 'string', length: 50},
+      description: {type: 'string', length: 250},
       img_url: 'string',
       deleted: 'timestamp'
-  }),
-    db.createTable.bind(db, "loops", {
+  }));
+    queryPromises.push(db.createTable("loops", {
       idloop: {type: 'int', primaryKey: true, autoIncrement: true},
       set_id: 'int',
-      description: {type: 'string', length: 60},
+      description: {type: 'string', length: 30},
       start: 'real',
       end: 'real',
       deleted: 'timestamp'
-  })
-  ], callback);
+  }));
+
+  return Promise.all(queryPromises);
+
 };
 
-exports.down = function(db, callback) {
-  async.series([
-    db.dropTable.bind(db, 'sets'),
-    db.dropTable.bind(db, 'sounds'),
-    db.dropTable.bind(db, 'loops')
-  ], callback);
+exports.down = function(db) {
+
+  const queryPromises = [];
+    queryPromises.push(db.dropTable('sets'));
+    queryPromises.push(db.dropTable('sounds'));
+    queryPromises.push(db.dropTable('loops'));
+
+  return Promise.all(queryPromises);
 };
 
 exports._meta = {

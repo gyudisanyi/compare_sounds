@@ -43,7 +43,6 @@ mainController.get('/sets/:id', async (req, res) => {
     Data1 = await queryAsync(`SELECT idset AS id, description, title FROM sets WHERE idset = ? AND deleted IS NULL`, req.params.id);
     Data2 = await queryAsync(`SELECT idsound AS id, title, filename, description, img_url FROM sounds WHERE set_id = ? AND deleted IS NULL;`, req.params.id);
     Data3 = await queryAsync(`SELECT idloop AS id, start, end, description FROM loops WHERE set_id = ? AND deleted IS NULL;`, req.params.id);
-    console.log({ Data1 })
     Data = { set: Data1[0], tracks: Data2, loops: Data3 };
   } catch (err) {
     console.log(err);
@@ -88,7 +87,6 @@ mainController.get('/loops', async (req, res) => {
 })
 
 mainController.get('/loops/:id', async (req, res) => {
-  console.log(req.params.id)
   try {
     Data = await queryAsync(`SELECT * FROM loops WHERE idloop = ?`, req.params.id);
   } catch (err) {
@@ -102,8 +100,7 @@ mainController.get('/loops/:id', async (req, res) => {
 mainController.post('/sets/new', async (req, res) => {
   try {
     Data = await queryAsync(`INSERT INTO sets (title, description) VALUES ('Empty set', 'Add description');`)
-    console.log(Data.insertId);
-    let uploadPath = __dirname + `./../public/audio_src/${Data.insertId}/`;
+    let uploadPath = __dirname + `./../public/audio_src/${Data.insertId}/img`;
     await fsPromises.mkdir(uploadPath, { recursive: true });
   } catch (err) {
     status = 500;
@@ -131,11 +128,13 @@ mainController.patch('/sets/:id', async ({ files, body, params }, res) => {
 
     Data += await queryAsync(`UPDATE sets SET title=?, description=? WHERE idset = ?;`, [body.Title || "unnamed", body.Description || "undescribed", params.id]);
 
-    if (files && body.Tracktitles) {
+    if (files) {
+      let titles=files.File.map((file, i)=> body.Tracktitles[i] || file.name);
+      let descriptions=files.File.map((file, i)=> body.Trackdescriptions[i] || "Add description");
       let insertQuery = `INSERT INTO sounds (title, filename, description, set_id) VALUES (?, ?, ?, ?);`;
-      Data += Promise.all(body.Tracktitles.map((t, i) =>
+      Data += Promise.all(titles.map((t, i) =>
         new Promise((resolve, reject) =>
-          queryAsync(insertQuery, [t, files.File[i].name, body.Trackdescriptions[i], params.id])
+          queryAsync(insertQuery, [t, files.File[i].name, descriptions[i], params.id])
         )
       ));
     }

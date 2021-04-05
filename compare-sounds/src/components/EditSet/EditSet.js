@@ -1,5 +1,4 @@
 import React, { useEffect, useCallback, useContext, useState } from 'react';
-import { useParams } from 'react-router-dom';
 import { useDropzone } from 'react-dropzone';
 import { FormGroup, FormControl, FormControlLabel, Checkbox } from '@material-ui/core';
 import { Button, IconButton, Dialog, DialogTitle, DialogContent, Card, CardHeader, CardContent, TextField } from '@material-ui/core';
@@ -20,13 +19,14 @@ const useStyles = makeStyles((theme) => ({
 
 export default function EditSet({ onClose, open }) {
 
-  const currentSet = useParams().setId || 1;
-
+  
   const classes = useStyles();
-
+  
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down('sm'));
   const context = useContext(GlobalContext);
+  
+  console.log("editSet!", context.currentSet)
 
   const [files, setFiles] = useState([]);
 
@@ -100,10 +100,11 @@ export default function EditSet({ onClose, open }) {
 
     data.append("ToDelete", Object.keys(oldTracks.todelete).filter(k => oldTracks.todelete[k]).join(','));
 
-    try {
+    console.log("TRYY", context.currentSet, context.collection.set.id)
 
+    try {
       let response = await fetch(
-        `${process.env.REACT_APP_API_URL}sets/${currentSet}/`,
+        `${process.env.REACT_APP_API_URL}sets/${context.collection.set.id}/`,
         {
           method: 'PATCH',
           body: data,

@@ -30,8 +30,6 @@ export default function Player() {
 
   const classes = useStyles();
 
-  const currentSet = useParams().setId || 1;
-
   const resolution = 1000;
 
   const [progress, setProgress] = useState(0);
@@ -168,7 +166,7 @@ export default function Player() {
               <CardContent className={classes.description}>{context.collection.tracks[nowPlaying] ? context.collection.tracks[nowPlaying].description : "No track"}</CardContent>
               <CardMedia
                 className={classes.media}
-                image={`${context.URL+'audio_src/'+currentSet}/img/${context.collection.tracks[nowPlaying].img_url}`}
+                image={`${context.URL+'audio_src/'+context.collection.set.id}/img/${context.collection.tracks[nowPlaying].img_url}`}
               />
             </Card>)
             :

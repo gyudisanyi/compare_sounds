@@ -36,18 +36,6 @@ export default function Header() {
   const [editOpen, setEditOpen] = useState(false);
   const [aboutOpen, setAboutOpen] = useState(false);
 
-  const handleMenuClick =  async (event) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handleMenuClose = (id) => {
-    setAnchorEl(null);
-    if (context.sets.map((set)=>set.id).includes(id)) {
-      context.changeCurrentSet(id);
-      path.push(`/sets/${id}`);
-    }
-  };
-
   const newSet = async () => {
     setAnchorEl(null);
     const res = await fetch(
@@ -57,6 +45,7 @@ export default function Header() {
       }
     );
     const response = await res.json();
+    context.changeCurrentSet(response.insertId);
     path.push(`/sets/${response.insertId}`);
     setEditOpen(true);
   }
@@ -71,8 +60,20 @@ export default function Header() {
     );
     await res.json();
     path.push(`/sets/${context.sets[0].id}`);
-
+    window.location.reload();
   }
+
+  const handleMenuClick =  async (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleMenuClose = (id) => {
+    setAnchorEl(null);
+    if (context.sets.map((set)=>set.id).includes(id) || id === context.currentSet) {
+      context.changeCurrentSet(id);
+      path.push(`/sets/${id}`);
+    }
+  };
 
   const handleAboutOpen = () => {
     setAboutOpen(true);

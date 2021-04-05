@@ -1,5 +1,5 @@
 import React, { useEffect, useCallback, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useHistory } from 'react-router-dom';
 import GlobalContext from '../../context/GlobalContext';
 import { defaultCollection, defaultSets } from '../../defaults';
 import Header from '../../components/Header/Header';
@@ -11,8 +11,10 @@ function Sets() {
   const [sets, changeSets] = useState(defaultSets());
   const [collection, setCollection] = useState(defaultCollection());
   const [trackNodes, setTrackNodes] = useState();
-  const entryParam = useParams().setId;
+  const entryParam = useParams().id;
   const [currentSet, changeCurrentSet] = useState(entryParam);
+
+  const path=useHistory();
 
   const trackNodesRef = useCallback((setNode) => {
     console.log("Set audio nodes")
@@ -22,6 +24,7 @@ function Sets() {
     if (setNode.children.length !== collection.tracks.length) { console.log(`children updated`); return }
     setNode.children[0].muted = false;
     setTrackNodes(Array.from(setNode.children));
+    console.log("TRACK NODES SET", setNode.children);
   }, [collection]);
 
   const resetOffline = () => {
@@ -39,7 +42,8 @@ function Sets() {
         console.log("RESP", { response })
         if (response.length === 0) { throw new Error("No SETS") }
         changeSets(response);
-        changeCurrentSet(response[0].id);
+        console.log(typeof entryParam, typeof response[0].id)
+        if (!response.map((set)=>''+set.id).includes(entryParam)) {console.log(currentSet, entryParam, "CHANGE TO", response[0].id, response.map((set)=>set.id)); changeCurrentSet(response[0].id); path.push(`/sets/${response[0].id}`);};
       } catch (error) {
         resetOffline();
         console.log("sets fetch error", { error })

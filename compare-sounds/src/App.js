@@ -20,7 +20,7 @@ export default function App() {
           <Route path="/users">
             <Users />
           </Route>
-          <Route path="/sets">
+          <Route path="/sets/:id">
             <Sets />
           </Route>
           <Route path="/">
