@@ -1,7 +1,7 @@
-const express = require('express');
-const { fs } = require('fs');
-const fsPromises = require('fs').promises;
-const queryAsync = require('../database');
+import express from 'express';
+import fs from 'fs';
+import { promises as fsPromises } from 'fs';
+import queryAsync from '../database.js';
 const mainController = express.Router();
 let status = 200;
 let Data;
@@ -39,6 +39,7 @@ mainController.get('/sets', async (req, res) => {
 })
 
 mainController.get('/sets/:id', async (req, res) => {
+  let Data1, Data2, Data3;
   try {
     Data1 = await queryAsync(`SELECT idset AS id, description, title FROM sets WHERE idset = ? AND deleted IS NULL`, req.params.id);
     Data2 = await queryAsync(`SELECT idsound AS id, title, filename, description, img_url FROM sounds WHERE set_id = ? AND deleted IS NULL;`, req.params.id);
@@ -100,7 +101,7 @@ mainController.get('/loops/:id', async (req, res) => {
 mainController.post('/sets/new', async (req, res) => {
   try {
     Data = await queryAsync(`INSERT INTO sets (title, description) VALUES ('Empty set', 'Add description');`)
-    let uploadPath = __dirname + `./../public/audio_src/${Data.insertId}/img`;
+    let uploadPath = `./public/audio_src/${Data.insertId}/img`;
     await fsPromises.mkdir(uploadPath, { recursive: true });
   } catch (err) {
     status = 500;
@@ -176,4 +177,4 @@ mainController.patch('/sets/:id', async ({ files, body, params }, res) => {
   res.status(status).send(Data);
 })
 
-module.exports = mainController;
+export default mainController;

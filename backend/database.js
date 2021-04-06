@@ -1,7 +1,8 @@
-const mysql = require('mysql2');
-require('dotenv').config();
+import pkg from 'mysql2';
+const { createConnection } = pkg;
+import {} from 'dotenv/config.js';
 
-const DB = mysql.createConnection({
+const DB = createConnection({
   host: process.env.MYSQL_HOST,
   user: process.env.MYSQL_USER,
   password: process.env.MYSQL_PASSWORD,
@@ -30,4 +31,4 @@ function queryAsync(sql, queryParameters) {
   });
 }
 
-module.exports = queryAsync;
+export default queryAsync;
