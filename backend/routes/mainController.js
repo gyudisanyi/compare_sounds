@@ -111,15 +111,14 @@ mainController.post('/sets/new', async (req, res) => {
 
 mainController.patch('/sets/:id', async ({ files, body, params }, res) => {
 
-  console.log({ files }, { body }, { params });
-  
+  console.log("YOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO", { files }, { body }, { params });
   
   let Data;
   try {
     
     if (files) {
       if (!Array.isArray(files.File)) {files.File=[files.File]}
-      uploadPath = __dirname + `./../public/audio_src/${params.id}/`;
+      const uploadPath = `./public/audio_src/${params.id}/`;
       console.log(uploadPath);
       files.File.forEach((file) => {
         file.mv(uploadPath + file.name, function (err) {
@@ -131,7 +130,6 @@ mainController.patch('/sets/:id', async ({ files, body, params }, res) => {
       if (!Array.isArray(body.Trackdescriptions)) {body.Trackdescriptions=[body.Trackdescriptions]}
       let titles = files.File.map((file, i) => body.Tracktitles[i] || file.name);
       let descriptions = files.File.map((file, i) => body.Trackdescriptions[i] || "Add description");
-      console.log("HEY", titles, descriptions);
       let insertQuery = `INSERT INTO sounds (title, filename, description, set_id) VALUES (?, ?, ?, ?);`;
       Data += Promise.all(titles.map((t, i) =>
         new Promise((resolve, reject) =>

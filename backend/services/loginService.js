@@ -5,8 +5,8 @@ import config from '../config.js';
 
 export const loginService = {
 
-  generateAccessToken({ id, username }) {
-    return jwt.sign({ id, username }, config.secret || 'someOtherSecret', { expiresIn: '1800000s' });
+  generateAccessToken({ id, username, usertype }) {
+    return jwt.sign({ id, username, usertype }, config.secret || 'someOtherSecret', { expiresIn: '1800000s' });
   },
 
   async getToken(username, password) {
@@ -24,12 +24,16 @@ export const loginService = {
       throw { message: 'Username and password do not match!', status: 400 };
     }
 
+    console.log(user[0]);
+
     const token = this.generateAccessToken({
       id: user[0].iduser,
+      usertype: user[0].user_type,
       username,
     });
     const returnData = {
       username,
+      usertype: user[0].user_type,
       token,
     };
 

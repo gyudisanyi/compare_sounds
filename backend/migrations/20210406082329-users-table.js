@@ -21,6 +21,7 @@ exports.up = function(db) {
   queryPromises.push(db.createTable("users", {
     iduser: {type: 'int', primaryKey: true, autoIncrement: true},
     username: {type: 'string', length: 50},
+    user_type: {type: 'string', length: 10},
     password_hash: {type: 'string', length: 250},
   }));
   queryPromises.push(db.addColumn("sets", "user_id", {

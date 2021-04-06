@@ -2,17 +2,15 @@ import queryAsync from '../database.js';
 
 export const usersRepo = {
   async insertNewUser(username, hashedPassword) {
-    const sql = 'INSERT INTO users (username, password_hash) VALUES (?, ?);';
-    return await queryAsync(sql, [username, hashedPassword]);
+    const sql = 'INSERT INTO users (username, password_hash, user_type) VALUES (?, ?, ?);';
+    return await queryAsync(sql, [username, hashedPassword, 'user']);
   },
   async getUserByUsername(username) {
-    const sql = 'SELECT iduser, username, password_hash as passwordHash FROM users WHERE username=?;';
-    let result= await queryAsync(sql, [username]);
-    console.log("YO", result.length);
-    return result;
+    const sql = 'SELECT iduser, username, user_type, password_hash as passwordHash FROM users WHERE username=?;';
+    return await queryAsync(sql, [username]);
   },
   async getUserById(userId) {
-    const sql = 'SELECT iduser, username, password_hash as passwordHash FROM users WHERE iduser=?;';
+    const sql = 'SELECT iduser, username, user_type, password_hash as passwordHash FROM users WHERE iduser=?;';
     return await queryAsync(sql, [userId]);
   },
   async getPassword(username) {
@@ -21,7 +19,7 @@ export const usersRepo = {
   },
 
   async getAllUsers() {
-    const sql = 'SELECT iduser, username FROM users';
+    const sql = 'SELECT iduser, username, user_type FROM users';
     return await queryAsync(sql, []);
   },
 };
