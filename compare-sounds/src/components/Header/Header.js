@@ -10,6 +10,7 @@ import Button from '@material-ui/core/Button';
 import LibraryMusicTwoToneIcon from '@material-ui/icons/LibraryMusicTwoTone';
 import IconButton from '@material-ui/core/IconButton';
 import GlobalContext from '../../context/GlobalContext';
+import generalFetch from '../../utilities/generalFetch';
 
 import About from '../About/About';
 import EditSet from '../EditSet/EditSet';
@@ -38,15 +39,10 @@ export default function Header() {
 
   const newSet = async () => {
     setAnchorEl(null);
-    const res = await fetch(
-      `${process.env.REACT_APP_API_URL}sets/new/`,
-      {
-        method: 'POST',
-      }
-    );
-    const response = await res.json();
-    context.changeCurrentSet(response.insertId);
-    path.push(`/sets/${response.insertId}`);
+    const res = await generalFetch("sets/new", "POST");
+    console.log({res});
+    context.changeCurrentSet(res);
+    path.push(`/sets/${res}`);
     setEditOpen(true);
   }
 

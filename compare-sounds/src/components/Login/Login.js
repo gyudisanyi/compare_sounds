@@ -45,7 +45,6 @@ export default function Login({ onClose, open }) {
         localStorage.setItem('token', data.token);
       }
       setMessage('')
-      throw new Error("sux");
     } catch(err) {
       console.log(err);
     }

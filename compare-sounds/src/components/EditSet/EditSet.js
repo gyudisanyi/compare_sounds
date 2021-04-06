@@ -7,6 +7,8 @@ import CloseIcon from '@material-ui/icons/Close';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
 import { useTheme, makeStyles } from '@material-ui/core/styles';
 
+import generalFetch from '../../utilities/generalFetch';
+
 import GlobalContext from '../../context/GlobalContext';
 
 const useStyles = makeStyles((theme) => ({
@@ -104,13 +106,7 @@ export default function EditSet({ onClose, open }) {
     console.log("TRYY", context.currentSet, context.collection.set.id)
 
     try {
-      let response = await fetch(
-        `${process.env.REACT_APP_API_URL}sets/${context.collection.set.id}/`,
-        {
-          method: 'PATCH',
-          body: data,
-        }
-      );
+      let response = await generalFetch(`sets/${context.collection.set.id}/`, "PATCH", data);
       console.log({ response })
     }
     catch (error) {

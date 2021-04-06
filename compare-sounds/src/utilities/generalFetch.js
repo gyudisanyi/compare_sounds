@@ -9,6 +9,7 @@ async function generalFetch(endpoint, method, bodyData = undefined) {
 
   if (endpoint !== 'login' && endpoint !== 'users') {
     const token = localStorage.getItem('token');
+    console.log(token)
     requestOptions.headers.Authorization = `Bearer ${token}`;
   }
 
@@ -18,12 +19,16 @@ async function generalFetch(endpoint, method, bodyData = undefined) {
   const response = await httpResponse.json();
   const { status } = httpResponse;
   const { message } = response;
-
+  
   if (endpoint === 'login') {
     return response;
   }
+  
+  if (endpoint.substring(0,4) === 'sets' && method === 'GET') {
+    return response;
+  }
 
-  if (endpoint === 'sets' && method === 'GET') {
+  if (endpoint === 'sets/new' && method === 'POST') {
     return response;
   }
 
