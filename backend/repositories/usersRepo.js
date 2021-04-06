@@ -7,7 +7,9 @@ export const usersRepo = {
   },
   async getUserByUsername(username) {
     const sql = 'SELECT iduser, username, password_hash as passwordHash FROM users WHERE username=?;';
-    return await queryAsync(sql, [username]);
+    let result= await queryAsync(sql, [username]);
+    console.log("YO", result.length);
+    return result;
   },
   async getUserById(userId) {
     const sql = 'SELECT iduser, username, password_hash as passwordHash FROM users WHERE iduser=?;';
