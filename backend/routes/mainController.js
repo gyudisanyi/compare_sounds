@@ -111,11 +111,13 @@ mainController.post('/sets/new', async (req, res) => {
 mainController.patch('/sets/:id', async ({ files, body, params }, res) => {
 
   console.log({ files }, { body }, { params });
-
+  
+  
+  let Data;
   try {
-    let Data;
-
+    
     if (files) {
+      if (!Array.isArray(files.File)) {files.File=[files.File]}
       uploadPath = __dirname + `./../public/audio_src/${params.id}/`;
       console.log(uploadPath);
       files.File.forEach((file) => {
@@ -124,23 +126,24 @@ mainController.patch('/sets/:id', async ({ files, body, params }, res) => {
             throw (err);
         })
       })
-    }
-
-    Data += await queryAsync(`UPDATE sets SET title=?, description=? WHERE idset = ?;`, [body.Title || "unnamed", body.Description || "undescribed", params.id]);
-
-    if (files) {
-      let titles=files.File.map((file, i)=> body.Tracktitles[i] || file.name);
-      let descriptions=files.File.map((file, i)=> body.Trackdescriptions[i] || "Add description");
+      if (!Array.isArray(body.Tracktitles)) {body.Tracktitles=[body.Tracktitles]}
+      if (!Array.isArray(body.Trackdescriptions)) {body.Trackdescriptions=[body.Trackdescriptions]}
+      let titles = files.File.map((file, i) => body.Tracktitles[i] || file.name);
+      let descriptions = files.File.map((file, i) => body.Trackdescriptions[i] || "Add description");
+      console.log("HEY", titles, descriptions);
       let insertQuery = `INSERT INTO sounds (title, filename, description, set_id) VALUES (?, ?, ?, ?);`;
       Data += Promise.all(titles.map((t, i) =>
         new Promise((resolve, reject) =>
           queryAsync(insertQuery, [t, files.File[i].name, descriptions[i], params.id])
         )
       ));
+
     }
 
+    Data += await queryAsync(`UPDATE sets SET title=?, description=? WHERE idset = ?;`, [body.Title || "unnamed", body.Description || "undescribed", params.id]);
 
     if (body.AlteredTitles) {
+      if (!Array.isArray(body.OldTrackTitles)) {body.OldTrackTitles=[body.OldTrackTitles]}
       const updateTitle = `UPDATE sounds SET title=? WHERE idsound=?`;
       const AlteredTitles = body.AlteredTitles.split(',');
       Data += Promise.all(AlteredTitles.map((t, i) =>
@@ -149,7 +152,6 @@ mainController.patch('/sets/:id', async ({ files, body, params }, res) => {
         )
       ));
     }
-
 
     if (body.AlteredDescriptions) {
       const updateDescription = `UPDATE sounds SET description=? WHERE idsound=?`;
@@ -170,7 +172,7 @@ mainController.patch('/sets/:id', async ({ files, body, params }, res) => {
     status = 500;
     Data = err;
   }
-
+  console.log(status, Data)
   res.status(status).send(Data);
 })
 

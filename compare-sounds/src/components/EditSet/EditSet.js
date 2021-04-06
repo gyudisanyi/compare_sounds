@@ -26,8 +26,6 @@ export default function EditSet({ onClose, open }) {
   const fullScreen = useMediaQuery(theme.breakpoints.down('sm'));
   const context = useContext(GlobalContext);
   
-  console.log("editSet!", context.currentSet)
-
   const [files, setFiles] = useState([]);
 
   const onDrop = useCallback(acceptedFiles => {
@@ -35,6 +33,7 @@ export default function EditSet({ onClose, open }) {
   }, [files])
 
   const { getRootProps, getInputProps } = useDropzone({ onDrop, accept: 'audio/*' });
+
 
   const [nameDescr, setNameDescr] = useState({ newTitle: context.collection.set.title, newDescription: context.collection.set.description })
   const [newTracks, setNewTracks] = useState({ titles: [], descriptions: [] });
@@ -53,7 +52,8 @@ export default function EditSet({ onClose, open }) {
   const handleNewTracks = ({ target }) => {
     const tracksNow = { ...newTracks };
     const id = target.id.split(' ')[1];
-    tracksNow[target.name][id] = target.value;
+    tracksNow[target.name][id] = target.value || files[id].name;
+    console.log(tracksNow);
     setNewTracks(tracksNow);
   }
 
@@ -74,19 +74,19 @@ export default function EditSet({ onClose, open }) {
     setNameDescr({ ...nameDescr, [target.name]: target.value });
   }
 
-
   const handleSubmission = async (event) => {
 
     event.preventDefault();
 
     const data = new FormData();
-    files.forEach((file) => data.append("File", file));
-    data.append("Title", nameDescr.newTitle);
-    data.append("Description", nameDescr.newDescription);
-    newTracks.titles.forEach((title) => {
+    data.append("Title", nameDescr.newTitle || context.collection.set.title);
+    data.append("Description", nameDescr.newDescription || context.collection.set.description);
+    const nutitles = [...Array(files.length)].map((u,i) => newTracks.titles[i] || files[i].name);
+    nutitles.forEach((title) => {
       data.append("Tracktitles", title);
     });
-    newTracks.descriptions.forEach((descr) => {
+    const nudesc = [...Array(files.length)].map((u,i) => newTracks.descriptions[i] || "No description");
+    nudesc.forEach((descr) => {
       data.append("Trackdescriptions", descr);
     });
     data.append("AlteredTitles", Object.keys(oldTracks.titles).filter((k) => !!oldTracks.titles[k]).join(','));
@@ -132,8 +132,8 @@ export default function EditSet({ onClose, open }) {
   const acceptedFileItems = files.map((file, i) => (
     <div key={file.path} id={`b${i}`} width="100%">
       <Button key={file.path} onClick={() => removeFile(file)}><ClearIcon /></Button>
-      <TextField label={`${file.path} title`} name="titles" placeholder="Title" key={`t ${i}`} id={`t ${i}`}></TextField>
-      <TextField label="Description" name="descriptions" placeholder="Description" key={`d ${i}`} id={`d ${i}`}></TextField>
+      <TextField label={`${file.path} title`} name="titles" defaultValue={file.name} key={`t ${i}`} id={`t ${i}`}></TextField>
+      <TextField label="Description" name="descriptions" defaultValue="Add description" key={`d ${i}`} id={`d ${i}`}></TextField>
     </div>
   ));
 
