@@ -1,8 +1,8 @@
-const express = require('express');
-const cors = require('cors');
-const fileUpload = require('express-fileupload');
-const router = require('./routes');
-var path = require('path');
+import express from 'express';
+import cors from 'cors';
+import fileUpload from 'express-fileupload';
+import router from './routes/index.js';
+import errorHandler from './middlewares/error-handler.js';
 const app = express();
 const port = 8080;
 
@@ -11,7 +11,9 @@ app.use(express.json());
 app.use(fileUpload());
 app.use(router);
 
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static('./public'));
+
+app.use(errorHandler);
 
 app.listen(port, () => {
   console.log(`Backend server running on port: ${port}`);

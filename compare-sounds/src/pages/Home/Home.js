@@ -1,12 +1,27 @@
-import React from 'react';
-import { Card, CardContent } from '@material-ui/core';
+import React, {useState} from 'react';
+import { Card, CardContent, Button } from '@material-ui/core';
+import Login from '../../components/Login/Login';
 
 export default function Home () {
+  
+  const [loginOpen, setLoginOpen] = useState(false);
+
+  const handleLoginOpen = () => {
+    setLoginOpen(true);
+  }
+
+  const handleLoginClose = () => {
+    setLoginOpen(false);
+  }
+
   return (
-    <Card>
-      <CardContent>
-        Home
-      </CardContent>
-    </Card>
+    <div id="main">
+      <Card>
+        <CardContent>
+          <Button variant="contained" color="primary" onClick={handleLoginOpen}>Login / register</Button>
+          <Login open={loginOpen} onClose={handleLoginClose} />
+        </CardContent>
+      </Card>
+    </div>
   )
 }

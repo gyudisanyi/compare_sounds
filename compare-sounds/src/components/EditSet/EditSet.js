@@ -79,6 +79,7 @@ export default function EditSet({ onClose, open }) {
     event.preventDefault();
 
     const data = new FormData();
+    files.forEach((file) => data.append("File", file));
     data.append("Title", nameDescr.newTitle || context.collection.set.title);
     data.append("Description", nameDescr.newDescription || context.collection.set.description);
     const nutitles = [...Array(files.length)].map((u,i) => newTracks.titles[i] || files[i].name);
