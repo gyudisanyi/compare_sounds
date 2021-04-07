@@ -29,7 +29,7 @@ export const registrationService = {
     }
 
     const selectedUsername = await usersRepo.getUserByUsername(username);
-    console.log({selectedUsername});
+
     if (selectedUsername.length !== 0) {
       throw {
         message: 'Username is already in use.',

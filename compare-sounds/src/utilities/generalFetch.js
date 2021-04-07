@@ -1,4 +1,4 @@
-async function generalFetch(endpoint, method, bodyData = undefined) {
+async function generalFetch(endpoint, method, bodyData = undefined, uploads = undefined) {
   const requestOptions = {
     method,
     headers: {
@@ -7,14 +7,26 @@ async function generalFetch(endpoint, method, bodyData = undefined) {
     },
   };
 
-  if (endpoint !== 'login' && endpoint !== 'users') {
+  console.log("YOOOO", endpoint, method, bodyData);
+
+  if (endpoint !== 'login') {
     const token = localStorage.getItem('token');
-    console.log(token)
     requestOptions.headers.Authorization = `Bearer ${token}`;
   }
 
-  if (bodyData !== undefined) { requestOptions.body = JSON.stringify(bodyData); }
-
+  
+  if (bodyData !== undefined && endpoint !== 'upload' ) { requestOptions.body = JSON.stringify(bodyData); }
+  
+  if (uploads !== undefined) {
+    const reqFiles = new FormData();
+    uploads.forEach((f)=>reqFiles.append("Files", f));
+    requestOptions.body = reqFiles;
+    delete requestOptions.headers.Accept;
+    delete requestOptions.headers['Content-Type'];
+    const token = localStorage.getItem('token');
+    requestOptions.headers.Authorization = `Bearer ${token}`;
+  };
+  
   const httpResponse = await fetch(`${process.env.REACT_APP_API_URL+endpoint}`, requestOptions);
   const response = await httpResponse.json();
   const { status } = httpResponse;
@@ -22,6 +34,10 @@ async function generalFetch(endpoint, method, bodyData = undefined) {
   
   if (endpoint === 'login') {
     return response;
+  }
+
+  if (endpoint === 'upload') {
+    return httpResponse.json();
   }
   
   if (endpoint.substring(0,4) === 'sets' && method === 'GET') {

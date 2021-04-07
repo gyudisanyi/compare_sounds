@@ -18,6 +18,7 @@ DB.connect((err) => {
 });
 
 function queryAsync(sql, queryParameters) {
+  // console.log(sql, queryParameters)
   return new Promise((resolve, reject) => {
     DB.query(sql, queryParameters, (error, result) => {
       if (error) {

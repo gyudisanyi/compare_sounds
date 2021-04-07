@@ -28,17 +28,17 @@ export default function EditSet({ onClose, open }) {
   const fullScreen = useMediaQuery(theme.breakpoints.down('sm'));
   const context = useContext(GlobalContext);
   
-  const [files, setFiles] = useState([]);
+  const [Files, setFiles] = useState([]);
 
   const onDrop = useCallback(acceptedFiles => {
-    setFiles([...files, ...acceptedFiles])
-  }, [files])
+    setFiles([...Files, ...acceptedFiles])
+  }, [Files])
 
-  const { getRootProps, getInputProps } = useDropzone({ onDrop, accept: 'audio/*' });
+  const { getRootProps, getInputProps } = useDropzone({ onDrop });
 
 
   const [nameDescr, setNameDescr] = useState({ newTitle: context.collection.set.title, newDescription: context.collection.set.description })
-  const [newTracks, setNewTracks] = useState({ titles: [], descriptions: [] });
+  const [newTracks, setNewTracks] = useState({ titles: {}, descriptions: {} });
   const [oldTracks, setOldTracks] = useState({ titles: {}, descriptions: {}, todelete: {} });
 
   const handleClose = () => {
@@ -46,7 +46,7 @@ export default function EditSet({ onClose, open }) {
   }
 
   useEffect(() => {
-    setNewTracks({ titles: [], descriptions: [] });
+    setNewTracks({ titles: {}, descriptions: {} });
     setOldTracks({ titles: {}, descriptions: {}, todelete: {} });
     setNameDescr({ newTitle: context.collection.set.title, newDescription: context.collection.set.description });
   }, [context.collection.set]);
@@ -54,21 +54,25 @@ export default function EditSet({ onClose, open }) {
   const handleNewTracks = ({ target }) => {
     const tracksNow = { ...newTracks };
     const id = target.id.split(' ')[1];
-    tracksNow[target.name][id] = target.value || files[id].name;
-    console.log(tracksNow);
+    tracksNow[target.name][id] = target.value || id;
     setNewTracks(tracksNow);
   }
 
-  const removeFile = file => {
-    const newFiles = [...files];    
+  const removeFile = (file) => {
+    const newFiles = [...Files];    
     newFiles.splice(newFiles.indexOf(file), 1);
     setFiles(newFiles);
+    const tracksNow = {...newTracks};
+    delete tracksNow.titles[file.name];
+    delete tracksNow.descriptions[file.name];
+    setNewTracks(tracksNow);
   }
 
   const handleOldTracks = ({ target }) => {
     const tracksNow = { ...oldTracks };
     const id = target.id.split(' ')[1];
     tracksNow[target.name][id] = target.value || target.checked;
+
     setOldTracks(tracksNow);
   }
 
@@ -80,34 +84,30 @@ export default function EditSet({ onClose, open }) {
 
     event.preventDefault();
 
-    const data = new FormData();
-    files.forEach((file) => data.append("File", file));
-    data.append("Title", nameDescr.newTitle || context.collection.set.title);
-    data.append("Description", nameDescr.newDescription || context.collection.set.description);
-    const nutitles = [...Array(files.length)].map((u,i) => newTracks.titles[i] || files[i].name);
-    nutitles.forEach((title) => {
-      data.append("Tracktitles", title);
-    });
-    const nudesc = [...Array(files.length)].map((u,i) => newTracks.descriptions[i] || "No description");
-    nudesc.forEach((descr) => {
-      data.append("Trackdescriptions", descr);
-    });
-    data.append("AlteredTitles", Object.keys(oldTracks.titles).filter((k) => !!oldTracks.titles[k]).join(','));
-    data.append("AlteredDescriptions", Object.keys(oldTracks.descriptions).filter((k) => !!oldTracks.descriptions[k]).join(','));
-    Object.keys(oldTracks.titles).forEach((key) => {
-      data.append("OldTrackTitles", oldTracks.titles[key]);
-    });
-    Object.keys(oldTracks.descriptions).forEach((key) => {
-      data.append("OldTrackDescriptions", oldTracks.descriptions[key]);
-    });
-
-    data.append("ToDelete", Object.keys(oldTracks.todelete).filter(k => oldTracks.todelete[k]).join(','));
-
-    console.log("TRYY", context.currentSet, context.collection.set.id)
-
+    const data = {
+      Title: nameDescr.newTitle || context.collection.set.title,
+      Description: nameDescr.newDescription || context.collection.set.description,
+      NewFilenames: Files.map((f) =>f.name),
+      TrackTitles: Files.map((f) => newTracks.titles[f.name] || f.name),
+      TrackDescriptions: Files.map((f) => newTracks.descriptions[f.name] || f.name+"No description"),
+      AlteredTitles: Object.keys(oldTracks.titles).filter((k) => !!oldTracks.titles[k]),
+      OldTrackTitles: Object.values(oldTracks.titles).filter((k) => !!k),
+      AlteredDescriptions: Object.keys(oldTracks.descriptions).filter((k) => !!oldTracks.descriptions[k]),
+      OldTrackDescriptions: Object.values(oldTracks.descriptions).filter((k) => !!k),
+      ToDelete: Object.keys(oldTracks.todelete).filter(k => oldTracks.todelete[k]),
+    };
+    
+    if(Files[0]) {
+      const uploads = Files;
+      try {
+        await generalFetch(`upload/${context.collection.set.id}/`, "POST", "", uploads);
+      }
+      catch (error) {
+        console.log(error);
+      };
+    }
     try {
-      let response = await generalFetch(`sets/${context.collection.set.id}/`, "PATCH", data);
-      console.log({ response })
+      await generalFetch(`sets/${context.collection.set.id}/`, "PATCH", data);
     }
     catch (error) {
       console.log(error);
@@ -126,11 +126,11 @@ export default function EditSet({ onClose, open }) {
     </div>)
   )
 
-  const acceptedFileItems = files.map((file, i) => (
-    <div key={file.path} id={`b${i}`} width="100%">
-      <Button key={file.path} onClick={() => removeFile(file)}><ClearIcon /></Button>
-      <TextField label={`${file.path} title`} name="titles" defaultValue={file.name} key={`t ${i}`} id={`t ${i}`}></TextField>
-      <TextField label="Description" name="descriptions" defaultValue="Add description" key={`d ${i}`} id={`d ${i}`}></TextField>
+  const acceptedFileItems = Files.map((file) => (
+    <div key={file.name} id={`b${file.name}`} width="100%">
+      <Button key={file.name} onClick={() => removeFile(file)}><ClearIcon /></Button>
+      <TextField label={`${file.name} title`} name="titles" defaultValue={file.name} key={`t ${file.name}`} id={`t ${file.name}`}></TextField>
+      <TextField label="Description" name="descriptions" defaultValue="Add description" key={`d ${file.name}`} id={`d ${file.name}`}></TextField>
     </div>
   ));
 

@@ -1,9 +1,12 @@
-import { setUncaughtExceptionCaptureCallback } from 'node:process';
 import { setsRepo, usersRepo } from '../repositories/index.js';
+import { promises as fsPromises } from 'fs';
 
 export const setsService = {
   async newSet(userId) {
-    return await setsRepo.newSet(userId);
+    let Data = await setsRepo.newSet(userId);
+    let uploadPath = `./public/audio_src/${Data.insertId}/img`;
+    await fsPromises.mkdir(uploadPath, { recursive: true });
+    return Data.insertId;
     },
   async getUserSets(userId) {
     return await setsRepo.getUserSets(userId);  
@@ -12,12 +15,10 @@ export const setsService = {
     return await setsRepo.getSetData(setId);  
   },
   async setTitle(title, setId, userId) {
-    let r = await setsRepo.setTitle(title, setId, userId);
-    console.log(r)
-    return r
+    return await setsRepo.setTitle(title, setId, userId);
   },
   async setDescription(description, setId, userId) {
-    return await setsRepo.setDescription(description, setId);
+    return await setsRepo.setDescription(description, setId, userId);
   },
 
 }

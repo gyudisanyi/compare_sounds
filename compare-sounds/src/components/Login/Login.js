@@ -33,13 +33,12 @@ export default function Login({ onClose, open }) {
   }
 
   const login = async (event, p) => {
-    console.log(p);
-
+    
     event.preventDefault();
     
     try {
       const data = await generalFetch(p, 'POST', userPass);
-      console.log({data});
+      
       if (data.message) {setMessage(data.message); throw new Error(data.message)}
       if (data.token && data.username && data.usertype) {
         localStorage.setItem('token', data.token);

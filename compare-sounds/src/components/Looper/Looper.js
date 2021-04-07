@@ -9,7 +9,7 @@ export default function Looper () {
   
   function changeLoop({id, value}) {
     const newLoops = [...context.loops];
-    console.log(newLoops);
+    
     newLoops[id].range = value;
     context.setLoops(newLoops)
     context.setActualLoop(id);

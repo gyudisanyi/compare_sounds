@@ -40,10 +40,9 @@ function Sets() {
       try {
         const httpResponse = await generalFetch("sets", "GET");
         const response = await httpResponse;
-        console.log("RESP", { response })
         if (response.length === 0) { throw new Error("No SETS") }
         changeSets(response);
-        if (!response.map((set)=>''+set.id).includes(entryParam)) {console.log(currentSet, entryParam, "CHANGE TO", response[0].id, response.map((set)=>set.id)); changeCurrentSet(response[0].id); path.push(`/sets/${response[0].id}`);};
+        if (!response.map((set)=>''+set.id).includes(entryParam)) { changeCurrentSet(response[0].id); path.push(`/sets/${response[0].id}`);};
       } catch (error) {
         resetOffline();
         console.log("sets fetch error", { error })
@@ -57,7 +56,6 @@ function Sets() {
       try {
         const httpResponse = await generalFetch(`sets/${currentSet}`, "GET");
         const response = await httpResponse;
-        console.log("YIUYIUYIUYIUYI", {response});
         if (!response.set) throw new Error("no such set");
         setCollection(response);
       } catch (error) {

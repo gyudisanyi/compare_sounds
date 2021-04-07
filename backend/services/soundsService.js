@@ -1,5 +1,4 @@
-import { setsRepo, soundsRepo } from '../repositories/index.js';
-import { promises as fsPromises } from 'fs';
+import { soundsRepo } from '../repositories/index.js';
 
 export const soundsService = {
 
@@ -7,57 +6,49 @@ export const soundsService = {
     return await soundsRepo.getSounds(setId, userId);
   },
 
-  async addFiles(files, body, setId, userId) {
-    const Data = {}
-    
-    if (files) {
-      if (!Array.isArray(files.File)) {files.File=[files.File]}
-      const uploadPath = `./public/audio_src/${setId}/`;
-      console.log(uploadPath);
-      files.File.forEach((file) => {
-        file.mv(uploadPath + file.name, function (err) {
-          if (err)
-            throw (err);
-        })
-      })
-      if (!Array.isArray(body.Tracktitles)) {body.Tracktitles=[body.Tracktitles]}
-      if (!Array.isArray(body.Trackdescriptions)) {body.Trackdescriptions=[body.Trackdescriptions]}
-      const titles = files.File.map((file, i) => body.Tracktitles[i] || file.name);
-      const descriptions = files.File.map((file, i) => body.Trackdescriptions[i] || `Add description for ${file.name}`);
-      Data += Promise.all(titles.map((t, i) =>
-        new Promise((resolve, reject) =>
-          soundsRepo.addSounds(t, files.File[i].name, descriptions[i], setId, userId)
-        )
-      ));
-    }
+  async addFiles(Files, setId) {
+    const uploadPath = `./public/audio_src/${setId}/`;
+    if (!Array.isArray(Files)) {Files = [Files]};
+    Files.forEach((file) => {
+      file.mv(uploadPath + file.name)
+    })
+  },
 
-    if (body.AlteredTitles) {
-      if (!Array.isArray(body.OldTrackTitles)) {body.OldTrackTitles=[body.OldTrackTitles]}
-      const AlteredTitles = body.AlteredTitles.split(',');
-      Data += Promise.all(AlteredTitles.map((t, i) =>
-        new Promise((resolve, reject) =>
-          soundsRepo.retitleSounds(t, body.OldTrackTitles[i])
-        )
-      ));
-    }
+  async newSounds(
+    NewFileNames,
+    TrackTitles,
+    TrackDescriptions,
+    setId,
+    userId) {
+    return Promise.all(NewFileNames.map((filename, i) =>
+      new Promise((resolve, reject) => 
+        soundsRepo.newSound(
+          filename,
+          TrackTitles[i],
+          TrackDescriptions[i],
+          setId,
+          userId
+          ))));
+  },
 
-    if (body.AlteredDescriptions) {
-      const AlteredDescriptions = body.AlteredDescriptions.split(',');
-      Data += Promise.all(AlteredDescriptions.map((t, i) =>
-        new Promise((resolve, reject) =>
-          soundsRepo.redescribeSounds(t, body.OldTrackDescriptions == 'string' ? body.OldTrackDescriptions : body.OldTrackDescriptions[i])
-        )
-      ));
-    }
+  async changeTitles(AlteredTitles, OldTrackTitles) {
+    return Promise.all(AlteredTitles.map((trackId, i)=>
+      new Promise((resolve, reject) =>
+        soundsRepo.changeTitle(trackId, OldTrackTitles[i])
+    )))
+  },
 
-    if (body.ToDelete) {
-      const del = body.ToDelete.split(',');
-      Data += Promise.all(del.map((d) => 
-        new Promise((resolve, reject) =>
-          soundsRepo.deleteSounds(soundId))
-      ))
-    }
+  async changeDescriptions(AlteredDescriptions, OldTrackDescriptions) {
+    return Promise.all(AlteredDescriptions.map((trackId, i)=>
+      new Promise((resolve, reject) =>
+        soundsRepo.changeDescription(trackId, OldTrackDescriptions[i]
+    ))))
+  },
 
-    return await Data;
+  async deleteSounds(ToDelete) {
+    return Promise.all(ToDelete.map((id)=>
+      new Promise((resolve, reject) => 
+        soundsRepo.deleteSound(id)
+    )))
   }
 }

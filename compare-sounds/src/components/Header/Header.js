@@ -40,9 +40,9 @@ export default function Header() {
   const newSet = async () => {
     setAnchorEl(null);
     const res = await generalFetch("sets/new", "POST");
-    console.log({res});
-    context.changeCurrentSet(res);
-    path.push(`/sets/${res}`);
+    console.log(res.newSetId);
+    context.changeCurrentSet(res.newSetId);
+    path.push(`/sets/${res.newSetId}`);
     setEditOpen(true);
   }
 
