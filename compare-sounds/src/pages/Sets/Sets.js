@@ -1,5 +1,6 @@
 import React, { useEffect, useCallback, useState } from 'react';
 import { useParams, useHistory } from 'react-router-dom';
+import generalFetch from '../../utilities/generalFetch';
 import GlobalContext from '../../context/GlobalContext';
 import { defaultCollection, defaultSets } from '../../defaults';
 import Header from '../../components/Header/Header';
@@ -37,13 +38,11 @@ function Sets() {
   useEffect(() => {
     async function fetchData() {
       try {
-        const httpResponse = await fetch(`${URL}sets/`);
-        const response = await httpResponse.json();
-        console.log("RESP", { response })
+        const httpResponse = await generalFetch("sets", "GET");
+        const response = await httpResponse;
         if (response.length === 0) { throw new Error("No SETS") }
         changeSets(response);
-        console.log(typeof entryParam, typeof response[0].id)
-        if (!response.map((set)=>''+set.id).includes(entryParam)) {console.log(currentSet, entryParam, "CHANGE TO", response[0].id, response.map((set)=>set.id)); changeCurrentSet(response[0].id); path.push(`/sets/${response[0].id}`);};
+        if (!response.map((set)=>''+set.id).includes(entryParam)) { changeCurrentSet(response[0].id); path.push(`/sets/${response[0].id}`);};
       } catch (error) {
         resetOffline();
         console.log("sets fetch error", { error })
@@ -55,10 +54,9 @@ function Sets() {
   useEffect(() => {
     async function fetchData() {
       try {
-        const httpResponse = await fetch(`${URL}sets/${currentSet}`);
-        const response = await httpResponse.json();
+        const httpResponse = await generalFetch(`sets/${currentSet}`, "GET");
+        const response = await httpResponse;
         if (!response.set) throw new Error("no such set");
-        console.log({response});
         setCollection(response);
       } catch (error) {
         console.log("collection fetch error", { error })
@@ -69,8 +67,6 @@ function Sets() {
   }, [currentSet]);
 
   const isDefault = () => {
-    console.log(URL === '../');
-    console.log({trackNodes})
     if (URL === '../') {return 1}
     return currentSet;
   }

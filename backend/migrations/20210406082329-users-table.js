@@ -33,6 +33,9 @@ exports.up = function(db) {
   queryPromises.push(db.addColumn("loops", "user_id", {
     type: 'int'
   }));
+  queryPromises.push(db.runSql('UPDATE sets SET user_id=1 WHERE idset=1'));
+  queryPromises.push(db.runSql('UPDATE sounds SET user_id=1 WHERE idsound IN(1,2)'));
+  queryPromises.push(db.runSql('UPDATE loops SET user_id=1 WHERE idloop=1'));
   
   return Promise.all(queryPromises);
 

@@ -1,4 +1,3 @@
-import jwt from 'jsonwebtoken';
 import hashPassword from './hashPassword.service.js';
 import { usersRepo } from '../repositories/index.js';
 
@@ -6,8 +5,9 @@ export const registrationService = {
   async insertNewUser(username, password) {
     const hashedPassword = hashPassword(password, 10);
     await usersRepo.insertNewUser(username, hashedPassword);
+    
     return {
-      message: 'Successful registration. User was added to database.',
+      message: 'Successful registration. User and empty set was added to database.',
     };
   },
   
@@ -29,7 +29,7 @@ export const registrationService = {
     }
 
     const selectedUsername = await usersRepo.getUserByUsername(username);
-    console.log({selectedUsername});
+
     if (selectedUsername.length !== 0) {
       throw {
         message: 'Username is already in use.',

@@ -24,16 +24,17 @@ export const loginService = {
       throw { message: 'Username and password do not match!', status: 400 };
     }
 
-    console.log(user[0]);
 
     const token = this.generateAccessToken({
       id: user[0].iduser,
       usertype: user[0].user_type,
+      userid: user[0].iduser,
       username,
     });
     const returnData = {
       username,
       usertype: user[0].user_type,
+      userid: user[0].iduser,
       token,
     };
 
