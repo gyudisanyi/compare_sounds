@@ -15,8 +15,9 @@ router.post('/login', loginController.post);
 router.use(authHandler);
 router.post('/upload/:setId', soundsController.uploadSounds);
 router.post('/sets/new', setsController.newSet);
+router.delete('/sets/:setId', setsController.deleteSet);
 router.get('/sets/:setId', setsController.getSetContents);
-router.get('/sets', setsController.userSets);
 router.patch('/sets/:setId', setsController.editSets);
+router.get('/sets', setsController.userSets);
 
 export default router;

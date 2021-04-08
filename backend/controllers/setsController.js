@@ -12,6 +12,17 @@ export const setsController = {
     }
   },
 
+  async deleteSet(req, res, next) {
+    try {
+      
+      const { setId } = req.params;
+      const deleted = await setsService.deleteSet(setId);
+      res.status(200).json({message: deleted.message});
+    } catch (error) {
+      next(error);
+    }
+  },
+
   async userSets(req, res, next) {
     try {
       const userId = req.user.id;

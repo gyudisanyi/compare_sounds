@@ -32,21 +32,38 @@ export default function Login({ onClose, open }) {
     setUserPass({...userPass, [target.name]: target.value});
   }
 
-  const login = async (event, p) => {
+  const login = async (event) => {
     
     event.preventDefault();
     
     try {
-      const data = await generalFetch(p, 'POST', userPass);
-      
+      const data = await generalFetch('login', 'POST', userPass);
+      console.log({data});
       if (data.message) {setMessage(data.message); throw new Error(data.message)}
-      if (data.token && data.username && data.usertype) {
+      if (data.token && data.username && data.usertype && data.userid) {
         localStorage.setItem('token', data.token);
+        localStorage.setItem('username', data.username);
+        localStorage.setItem('usertype', data.usertype);
+        localStorage.setItem('userid', data.userid);
       }
-      setMessage('')
+      setMessage('');
+      onClose();
     } catch(err) {
       console.log(err);
     }
+
+  }
+  const register = async (event) => {
+    
+    event.preventDefault();
+    
+    try {
+      const data = await generalFetch('users', 'POST', userPass);
+      setMessage(data.message);
+    } catch(err) {
+      console.log(err);
+    }
+
   }
 
   return (
@@ -62,11 +79,11 @@ export default function Login({ onClose, open }) {
         <FormControl onSubmit={login}>
           <FormGroup row onChange={handleChange}>
             <TextField label="Username" name="username"></TextField>
-            <TextField label="Password" name="password"></TextField>
+            <TextField label="Password" type="password" name="password"></TextField>
           </FormGroup>
           {message}
-          <Button type="submit" variant="contained" onClick={(event) => login(event, "login")}>Login</Button>
-          <Button type="submit" variant="contained" onClick={(event) => login(event, "users")}>Register</Button>
+          <Button type="submit" variant="contained" color="primary" onClick={(event) => login(event)}>Login</Button>
+          <Button type="submit" variant="contained" onClick={(event) => register(event)}>Register</Button>
         </FormControl>
       </DialogContent>
     </Dialog>

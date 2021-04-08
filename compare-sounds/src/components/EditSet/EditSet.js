@@ -20,12 +20,11 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function EditSet({ onClose, open }) {
-
-  
+ 
   const classes = useStyles();
-  
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down('sm'));
+
   const context = useContext(GlobalContext);
   
   const [Files, setFiles] = useState([]);
@@ -34,22 +33,21 @@ export default function EditSet({ onClose, open }) {
     setFiles([...Files, ...acceptedFiles])
   }, [Files])
 
-  const { getRootProps, getInputProps } = useDropzone({ onDrop });
-
+  const { getRootProps, getInputProps } = useDropzone({ onDrop, accept: 'audio/*' });
 
   const [nameDescr, setNameDescr] = useState({ newTitle: context.collection.set.title, newDescription: context.collection.set.description })
   const [newTracks, setNewTracks] = useState({ titles: {}, descriptions: {} });
   const [oldTracks, setOldTracks] = useState({ titles: {}, descriptions: {}, todelete: {} });
-
-  const handleClose = () => {
-    onClose();
-  }
 
   useEffect(() => {
     setNewTracks({ titles: {}, descriptions: {} });
     setOldTracks({ titles: {}, descriptions: {}, todelete: {} });
     setNameDescr({ newTitle: context.collection.set.title, newDescription: context.collection.set.description });
   }, [context.collection.set]);
+
+  const handleClose = () => {
+    onClose();
+  }
 
   const handleNewTracks = ({ target }) => {
     const tracksNow = { ...newTracks };

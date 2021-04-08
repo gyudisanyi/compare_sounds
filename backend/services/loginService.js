@@ -28,11 +28,13 @@ export const loginService = {
     const token = this.generateAccessToken({
       id: user[0].iduser,
       usertype: user[0].user_type,
+      userid: user[0].iduser,
       username,
     });
     const returnData = {
       username,
       usertype: user[0].user_type,
+      userid: user[0].iduser,
       token,
     };
 
