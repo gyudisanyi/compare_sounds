@@ -20,13 +20,13 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function EditSet({ onClose, open }) {
- 
+
   const classes = useStyles();
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down('sm'));
 
   const context = useContext(GlobalContext);
-  
+
   const [Files, setFiles] = useState([]);
 
   const onDrop = useCallback(acceptedFiles => {
@@ -57,10 +57,10 @@ export default function EditSet({ onClose, open }) {
   }
 
   const removeFile = (file) => {
-    const newFiles = [...Files];    
+    const newFiles = [...Files];
     newFiles.splice(newFiles.indexOf(file), 1);
     setFiles(newFiles);
-    const tracksNow = {...newTracks};
+    const tracksNow = { ...newTracks };
     delete tracksNow.titles[file.name];
     delete tracksNow.descriptions[file.name];
     setNewTracks(tracksNow);
@@ -81,36 +81,31 @@ export default function EditSet({ onClose, open }) {
   const handleSubmission = async (event) => {
 
     event.preventDefault();
+    
+    const formdata = new FormData();
 
-    const data = {
+    const form = {
       Title: nameDescr.newTitle || context.collection.set.title,
       Description: nameDescr.newDescription || context.collection.set.description,
-      NewFilenames: Files.map((f) =>f.name),
+      NewFilenames: Files.map((f) => f.name),
       TrackTitles: Files.map((f) => newTracks.titles[f.name] || f.name),
-      TrackDescriptions: Files.map((f) => newTracks.descriptions[f.name] || f.name+"No description"),
+      TrackDescriptions: Files.map((f) => newTracks.descriptions[f.name] || f.name + "No description"),
       AlteredTitles: Object.keys(oldTracks.titles).filter((k) => !!oldTracks.titles[k]),
       OldTrackTitles: Object.values(oldTracks.titles).filter((k) => !!k),
       AlteredDescriptions: Object.keys(oldTracks.descriptions).filter((k) => !!oldTracks.descriptions[k]),
       OldTrackDescriptions: Object.values(oldTracks.descriptions).filter((k) => !!k),
       ToDelete: Object.keys(oldTracks.todelete).filter(k => oldTracks.todelete[k]),
     };
-    
-    if(Files[0]) {
-      const uploads = Files;
-      try {
-        await generalFetch(`upload/${context.collection.set.id}/`, "POST", "", uploads);
-      }
-      catch (error) {
-        console.log(error);
-      };
-    }
+
+    Files.forEach((file) => formdata.append("Files", file));
+    formdata.append("form", JSON.stringify(form))
+
     try {
-      await generalFetch(`sets/${context.collection.set.id}/`, "PATCH", data);
+      await generalFetch(`sets/${context.collection.set.id}/`, "PATCH", formdata);
     }
     catch (error) {
       console.log(error);
     };
-    window.location.reload();
     onClose();
   };
 

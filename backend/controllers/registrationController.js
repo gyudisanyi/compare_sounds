@@ -1,4 +1,4 @@
-import { registrationService } from '../services/index.js';
+import { registrationService, setsService } from '../services/index.js';
 
 export const registrationController = {
   async post(req, res, next) {
@@ -12,7 +12,12 @@ export const registrationController = {
       const registration = await registrationService.insertNewUser(
         username, password,
       );
-      res.status(201).json({ message: registration.message });
+      
+      const newSetId = await setsService.newSet(registration.insertId);
+
+      res.status(201).json({ 
+        newSetId,
+        message: registration.message });
     } catch (error) {
       next(error);
     }

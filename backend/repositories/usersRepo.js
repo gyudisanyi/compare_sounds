@@ -1,11 +1,9 @@
 import queryAsync from '../database.js';
-import { setsRepo } from './index.js';
 
 export const usersRepo = {
   async insertNewUser(username, hashedPassword) {
     const sql = 'INSERT INTO users (username, password_hash, user_type) VALUES (?, ?, ?);';
     const newUser = await queryAsync(sql, [username, hashedPassword, 'user']);
-    await setsRepo.newSet(newUser.insertId);
     return newUser;
   },
   async getUserByUsername(username) {

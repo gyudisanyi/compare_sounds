@@ -1,11 +1,8 @@
-import { setsRepo, usersRepo } from '../repositories/index.js';
-import { promises as fsPromises } from 'fs';
+import { setsRepo } from '../repositories/index.js';
 
 export const setsService = {
   async newSet(userId) {
     let Data = await setsRepo.newSet(userId);
-    let uploadPath = `./public/audio_src/${Data.insertId}/img`;
-    await fsPromises.mkdir(uploadPath, { recursive: true });
     return Data.insertId;
     },
   async deleteSet(setId) {

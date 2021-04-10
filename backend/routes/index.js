@@ -13,7 +13,8 @@ const router = express.Router();
 router.post('/users', registrationController.post);
 router.post('/login', loginController.post);
 router.use(authHandler);
-router.post('/upload/:setId', soundsController.uploadSounds);
+
+//router.post('/uploads/:setId', soundsController.uploadSounds);
 router.post('/sets/new', setsController.newSet);
 router.delete('/sets/:setId', setsController.deleteSet);
 router.get('/sets/:setId', setsController.getSetContents);

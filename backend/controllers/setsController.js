@@ -1,3 +1,4 @@
+import formidable from 'formidable';
 import { setsService, soundsService, loopsService } from '../services/index.js';
 
 export const setsController = {
@@ -48,11 +49,19 @@ export const setsController = {
   },
 
   async editSets(req, res, next) {
-    let data;
     try {
+      const form = formidable({multiples: true});
       const { setId } = req.params;
       const userId = req.user.id;
-      const { body } = req;
+      let data = await new Promise((resolve, reject) => {
+      form.parse(req, (err, fields, files) => {
+        if (err) {
+          next(err);
+          return;
+        }
+        resolve ({fields, files})
+      })});
+
       const {
         Title,
         Description,
@@ -64,15 +73,18 @@ export const setsController = {
         AlteredDescriptions,
         OldTrackDescriptions,
         ToDelete,
-       } = body;
-      
-      if (Title) await setsService.setTitle(Title, setId, userId);
-      if (Description) await setsService.setDescription(Description, setId, userId);
-      if (NewFilenames) data = await soundsService.newSounds(NewFilenames, TrackTitles, TrackDescriptions, setId, userId);
-      if (AlteredTitles) await soundsService.changeTitles(AlteredTitles, OldTrackTitles);
-      if (AlteredDescriptions) await soundsService.changeDescriptions(AlteredDescriptions, OldTrackDescriptions);
-      if (ToDelete) await soundsService.deleteSounds(ToDelete);
-      res.status(200).json(data);
+       } = JSON.parse(data.fields.form);
+
+      const Files = data.files.Files;
+      let dataz = {}
+      if (Files) dataz += await soundsService.uploadFiles(Files, setId);
+      if (Title) dataz += await setsService.setTitle(Title, setId, userId);
+      if (Description) dataz += await setsService.setDescription(Description, setId, userId);
+      if (NewFilenames) dataz += await soundsService.newSounds(NewFilenames, TrackTitles, TrackDescriptions, setId, userId);
+      if (AlteredTitles) dataz += await soundsService.changeTitles(AlteredTitles, OldTrackTitles);
+      if (AlteredDescriptions) dataz += await soundsService.changeDescriptions(AlteredDescriptions, OldTrackDescriptions);
+      if (ToDelete) dataz += await soundsService.deleteSounds(ToDelete);
+      res.status(200).json(data.fields.form);
     } catch (error) {
       next(error);
     }

@@ -4,9 +4,9 @@ import { usersRepo } from '../repositories/index.js';
 export const registrationService = {
   async insertNewUser(username, password) {
     const hashedPassword = hashPassword(password, 10);
-    await usersRepo.insertNewUser(username, hashedPassword);
-    
+    const newUser = await usersRepo.insertNewUser(username, hashedPassword);
     return {
+      insertId: newUser.insertId,
       message: 'Successful registration. User and empty set was added to database.',
     };
   },
