@@ -35,14 +35,14 @@ export default function EditSet({ onClose, open }) {
 
   const { getRootProps, getInputProps } = useDropzone({ onDrop, accept: 'audio/*' });
 
-  const [nameDescr, setNameDescr] = useState({ newTitle: context.collection.set.title, newDescription: context.collection.set.description })
+  const [updateSet, setupdateSet] = useState({ Title: context.collection.set.title, Description: context.collection.set.description })
   const [newTracks, setNewTracks] = useState({ titles: {}, descriptions: {} });
-  const [oldTracks, setOldTracks] = useState({ titles: {}, descriptions: {}, todelete: {} });
+  const [oldTracks, setOldTracks] = useState({ updateTitles: {}, updateDescriptions: {}, todelete: {} });
 
   useEffect(() => {
     setNewTracks({ titles: {}, descriptions: {} });
-    setOldTracks({ titles: {}, descriptions: {}, todelete: {} });
-    setNameDescr({ newTitle: context.collection.set.title, newDescription: context.collection.set.description });
+    setOldTracks({ updateTitles: {}, updateDescriptions: {}, todelete: {} });
+    setupdateSet({ Title: context.collection.set.title, Description: context.collection.set.description });
   }, [context.collection.set]);
 
   const handleClose = () => {
@@ -50,9 +50,12 @@ export default function EditSet({ onClose, open }) {
   }
 
   const handleNewTracks = ({ target }) => {
+    console.log(target)
+    console.log(newTracks)
     const tracksNow = { ...newTracks };
     const id = target.id.split(' ')[1];
     tracksNow[target.name][id] = target.value || id;
+    console.log(tracksNow, id, target.name)
     setNewTracks(tracksNow);
   }
 
@@ -74,8 +77,8 @@ export default function EditSet({ onClose, open }) {
     setOldTracks(tracksNow);
   }
 
-  const handleNewNameDescr = ({ target }) => {
-    setNameDescr({ ...nameDescr, [target.name]: target.value });
+  const handleUpdateSet = ({ target }) => {
+    setupdateSet({ ...updateSet, [target.name]: target.value });
   }
 
   const handleSubmission = async (event) => {
@@ -84,38 +87,52 @@ export default function EditSet({ onClose, open }) {
     
     const formdata = new FormData();
 
+    // const form2 = {
+    //   Title: updateSet.Title || context.collection.set.title,
+    //   Description: updateSet.Description || context.collection.set.description,
+    //   NewFilenames: Files.map((f) => f.name),
+    //   TrackTitles: Files.map((f) => newTracks.titles[f.name] || f.name),
+    //   TrackDescriptions: Files.map((f) => newTracks.descriptions[f.name] || f.name + "No description"),
+    //   AlteredTitles: Object.keys(oldTracks.titles).filter((k) => !!oldTracks.titles[k]),
+    //   OldTrackTitles: Object.values(oldTracks.titles).filter((k) => !!k),
+    //   AlteredDescriptions: Object.keys(oldTracks.descriptions).filter((k) => !!oldTracks.descriptions[k]),
+    //   OldTrackDescriptions: Object.values(oldTracks.descriptions).filter((k) => !!k),
+    //   ToDelete: Object.keys(oldTracks.todelete).filter(k => oldTracks.todelete[k]),
+    // };
+
+    Files.forEach((file) => newTracks.titles[file.name] = newTracks.titles[file.name] || file.name );
+    Files.forEach((file) => newTracks.descriptions[file.name] = newTracks.descriptions[file.name] || "Add description pliz" );
+
     const form = {
-      Title: nameDescr.newTitle || context.collection.set.title,
-      Description: nameDescr.newDescription || context.collection.set.description,
-      NewFilenames: Files.map((f) => f.name),
-      TrackTitles: Files.map((f) => newTracks.titles[f.name] || f.name),
-      TrackDescriptions: Files.map((f) => newTracks.descriptions[f.name] || f.name + "No description"),
-      AlteredTitles: Object.keys(oldTracks.titles).filter((k) => !!oldTracks.titles[k]),
-      OldTrackTitles: Object.values(oldTracks.titles).filter((k) => !!k),
-      AlteredDescriptions: Object.keys(oldTracks.descriptions).filter((k) => !!oldTracks.descriptions[k]),
-      OldTrackDescriptions: Object.values(oldTracks.descriptions).filter((k) => !!k),
-      ToDelete: Object.keys(oldTracks.todelete).filter(k => oldTracks.todelete[k]),
-    };
+      updateSet,
+      oldTracks,
+      newTracks
+    }
 
     Files.forEach((file) => formdata.append("Files", file));
     formdata.append("form", JSON.stringify(form))
 
     try {
-      await generalFetch(`sets/${context.collection.set.id}/`, "PATCH", formdata);
+      const feedback = await generalFetch(`sets/${context.collection.set.id}/`, "PATCH", formdata);
+      console.log(feedback);
+      const editedCollection = {...context.collection};
+      console.log("Yoi", {editedCollection});
+      context.setCollection(editedCollection)
     }
     catch (error) {
       console.log(error);
     };
+    console.log({context})
     onClose();
   };
 
-  const existingTracksList = context.collection.tracks.map((t) => (
+  const existingTracksList = Object.keys(context.collection.tracks).map((key) => (
     <div>
       <FormControlLabel
-        control={<Checkbox name="todelete" checkedIcon={<ClearIcon />} key={`del ${t.id}`} id={`del ${t.id}`} checked={!!oldTracks.todelete[t.id]} />}
+        control={<Checkbox name="todelete" checkedIcon={<ClearIcon />} key={`del ${key}`} id={`del ${key}`} checked={!!oldTracks.todelete[key]} />}
         label="" />
-      <TextField label={`New title for ${t.title}`} name="titles" placeholder={t.title} key={`et ${t.id}`} id={`et ${t.id}`}></TextField>
-      <TextField label="Description" name="descriptions" placeholder={t.description} key={`ed ${t.id}`} id={`ed ${t.id}`}></TextField>
+      <TextField label={`New title for ${context.collection.tracks[key].title}`} name="updateTitles" placeholder={context.collection.tracks[key].title} key={`et ${key}`} id={`et ${key}`}></TextField>
+      <TextField label="Description" name="updateDescriptions" placeholder={context.collection.tracks[key].description} key={`ed ${key}`} id={`ed ${key}`}></TextField>
     </div>)
   )
 
@@ -140,9 +157,9 @@ export default function EditSet({ onClose, open }) {
         <FormControl onSubmit={handleSubmission}>
           <Card square>
             <CardContent>
-              <FormGroup row onChange={handleNewNameDescr}>
-                <TextField label="New title" name="newTitle" placeholder="Add new title"></TextField>
-                <TextField label="New description" name="newDescription" placeholder="Add new description"></TextField>
+              <FormGroup row onChange={handleUpdateSet}>
+                <TextField label="New title" name="Title" placeholder="Add new title"></TextField>
+                <TextField label="New description" name="Description" placeholder="Add new description"></TextField>
               </FormGroup>
             </CardContent>
           </Card>

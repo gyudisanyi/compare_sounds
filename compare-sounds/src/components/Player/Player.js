@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useContext, useRef } from 'react';
-import { useParams } from 'react-router-dom';
 import { withStyles, makeStyles } from '@material-ui/core/styles';
 import { Grid, Switch, Button, Slider, Card, CardMedia, CardContent, } from '@material-ui/core';
 import { FormControl, FormControlLabel, RadioGroup, Radio, } from '@material-ui/core';
@@ -34,7 +33,8 @@ export default function Player() {
 
   const [progress, setProgress] = useState(0);
 
-  const [nowPlaying, setNowPlaying] = useState(0);
+  const [nowPlaying, setNowPlaying] = useState(Object.keys(context.collection.tracks)[0]);
+  const [nodeKeys, setNodeKeys] = useState(Object.keys(context.collection.tracks));
   const [snap, setSnap] = useState(false);
   const [paused, setPaused] = useState(true);
   const [looping, setLooping] = useState(false);
@@ -55,31 +55,34 @@ export default function Player() {
   })(Slider);
 
   useEffect(() => {
-    setNowPlaying(0);
+    setNodeKeys(Object.keys(context.collection.tracks));
+    setNowPlaying(Object.keys(context.collection.tracks)[0]);
     setPaused(true);
     if (!context.trackNodes) { console.log(`No track nodes`); return }
-    console.log("Track nodes loaded");
-    console.log(context.trackNodes[0].currentSrc)
-    context.trackNodes[0].addEventListener('timeupdate', ({ target }) => {
+    setNodeKeys(Object.keys(context.collection.tracks));
+    const firstNodeId = Object.keys(context.collection.tracks)[0];
+
+    context.trackNodes[firstNodeId].addEventListener('timeupdate', ({ target }) => {
       setProgress((target.currentTime / target.duration) * resolution);
     });
-    context.trackNodes[0].addEventListener('loadeddata', () => {
+    context.trackNodes[firstNodeId].addEventListener('loadeddata', () => {
       console.log("Loaded");
       setPaused(true);
     })
-    context.trackNodes[0].addEventListener('ended', () => {
+    context.trackNodes[firstNodeId].addEventListener('ended', () => {
       console.log("Ended");
       setPaused(true);
-      context.trackNodes.forEach(t => {t.currentTime = 0; t.pause()});
+      nodeKeys.forEach(key => {context.trackNodes[key].currentTime = 0; context.trackNodes[key].pause()});
       setProgress(0);
     })
   }, [context.trackNodes])
 
   useEffect(() => {
-    setLoops(context.collection.loops.map((loop) => ({ range: [loop.start, loop.end], description: loop.description })));
+    setLoops(Object.entries(context.collection.loops).map((loop) => ({ range: [loop[1].start, loop[1].end], description: loop[1].description })));
   }, [context.collection.loops]);
 
   useEffect(() => {
+    console.log({loops})
     const loopstarts = loops.map((loop) => ({ value: loop.range[0], label: loop.description }))
     setGrad(rangesToGradient(loops, "rgb(62, 80, 179)", "rgb(239, 2, 88)"))
     setMarks(loopstarts);
@@ -95,35 +98,37 @@ export default function Player() {
   useEffect(() => {
     if (!looping) return;
     if (progress >= actualLoop[1]) {
-      context.trackNodes.forEach((t) => t.currentTime = actualLoop[0] / resolution * context.trackNodes[0].duration)
+      nodeKeys.forEach((key) => context.trackNodes[key].currentTime = actualLoop[0] / resolution * context.trackNodes[key].duration)
     }
-  }, [progress, actualLoop, looping, context.trackNodes]);
+  }, [progress, actualLoop, looping, context.trackNodes, nodeKeys]);
 
   function playPause() {
-    if (!context.trackNodes || !context.trackNodes[0].duration) { console.log("No track nodes"); setPaused(true); return }
+    if (!context.trackNodes || !Object.entries(context.trackNodes)[0][1].duration) { console.log("No track nodes"); setPaused(true); return }
     paused
-      ? context.trackNodes.forEach((track) => track.play())
-      : context.trackNodes.forEach((track) => track.pause());
+      ? Object.entries(context.trackNodes).forEach((track) => track[1].play())
+      : Object.entries(context.trackNodes).forEach((track) => track[1].pause())
     setPaused(prev => !prev);
   }
 
   function seek(event, newValue) {
     const loopsAhead = loops.filter((loop) => loop.range[1] > newValue);
-    let nextLoop;
-    nextLoop = loopsAhead[0] ? loopsAhead[0].range : [0, 1000];
+    const nextLoop = loopsAhead[0] ? loopsAhead[0].range : [0, 1000];
     if (!loopsAhead[0]) { setLooping(false) };
     setActualLoop(nextLoop);
-    if (!context.trackNodes[0]) return;
-    let seekSeconds = (newValue / resolution) * (context.trackNodes[0].duration);
-    context.trackNodes.forEach((track) => track.currentTime = seekSeconds || 0);
+    if (!context.trackNodes[nodeKeys[0]]) return;
+    let seekSeconds = (newValue / resolution) * (context.trackNodes[nodeKeys[0]].duration);
+    nodeKeys.forEach((key) => context.trackNodes[key].currentTime = seekSeconds || 0);
   }
 
   function switchTrack(value) {
+    if (!context.trackNodes) {console.log("NO TRCKNDS"); return}
+    
     context.trackNodes[nowPlaying].muted = true;
     try {
-      context.trackNodes[value].muted = false;
+      context.trackNodes[value].muted = true;
     } catch {
-      value = (nowPlaying + 1) % context.trackNodes.length;
+      let newIndex = (nodeKeys.indexOf(nowPlaying) + 1) % nowPlaying.length;
+      value = nodeKeys[newIndex];
     }
     context.trackNodes[value].muted = false;
     setNowPlaying(value);
@@ -154,20 +159,20 @@ export default function Player() {
           <Grid item xs={4}>
             <FormControl>
               <RadioGroup row aria-label="sources" name="source" value={nowPlaying}>
-                {context.collection.tracks.map((track, i) =>
-                  (<FormControlLabel key={i} onClick={() => switchTrack(i)} value={i} control={<Radio />} label={track.title} />)
+                {Object.keys(context.collection.tracks).map((key) =>
+                  (<FormControlLabel key={key} onClick={() => switchTrack(key)} value={key} control={<Radio />} label={context.collection.tracks[key].title} />)
                 )}
               </RadioGroup>
             </FormControl>
           </Grid>
           <Grid item xs={5}>
-            { context.collection.tracks[0] ?
+            { Object.keys(context.collection.tracks).length > 0 ?
             (<Card className={classes.root} raised>
               <CardContent className={classes.description}>{context.collection.tracks[nowPlaying] ? context.collection.tracks[nowPlaying].description : "No track"}</CardContent>
-              <CardMedia
+              {/* <CardMedia
                 className={classes.media}
                 image={`${context.URL+'audio_src/'+context.collection.set.id}/img/${context.collection.tracks[nowPlaying].img_url}`}
-              />
+              /> */}
             </Card>)
             :
             ``
