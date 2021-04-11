@@ -169,10 +169,14 @@ export default function Player() {
             { Object.keys(context.collection.tracks).length > 0 ?
             (<Card className={classes.root} raised>
               <CardContent className={classes.description}>{context.collection.tracks[nowPlaying] ? context.collection.tracks[nowPlaying].description : "No track"}</CardContent>
-              {/* <CardMedia
+              {context.collection.tracks[nowPlaying] ?
+                <CardMedia
                 className={classes.media}
                 image={`${context.URL+'audio_src/'+context.collection.set.id}/img/${context.collection.tracks[nowPlaying].img_url}`}
-              /> */}
+              />
+              :
+              ``
+              }
             </Card>)
             :
             ``

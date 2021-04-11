@@ -8,13 +8,13 @@ export function defaultCollection() {
         "img_url": "LS.jpg",
       },
       "tracks": {
-          6: {
+          1: {
             "title": "Mix 1",
             "filename": "1.wav",
             "description": "First mix - missed a vocal",
             "img_url": "L.jpg",
         },
-          9: { 
+          2: { 
             "title": "Mix 2",
             "filename": "2.wav",
             "description": "Final mix - vocal added and panning",

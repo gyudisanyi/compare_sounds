@@ -42,7 +42,8 @@ function Sets() {
       try {
         const httpResponse = await generalFetch("sets", "GET");
         const response = await httpResponse;
-        if (response.length === 0) { throw new Error("No SETS") }
+        console.log(response);
+        if (response.message || response.length === 0) { throw (response.message || "No SETS") }
         console.log(response);
         changeSets(response);
         const setKeys = Object.keys(response);
@@ -61,7 +62,7 @@ function Sets() {
         const httpResponse = await generalFetch(`sets/${currentSet}`, "GET");
         const response = await httpResponse;
         console.log(response);
-        if (!response.set) throw new Error("no such set");
+        if (!response.set) throw ({error: "no such set"});
         setCollection(response);
       } catch (error) {
         console.log("collection fetch error", { error })

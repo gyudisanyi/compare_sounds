@@ -50,12 +50,9 @@ export default function EditSet({ onClose, open }) {
   }
 
   const handleNewTracks = ({ target }) => {
-    console.log(target)
-    console.log(newTracks)
     const tracksNow = { ...newTracks };
     const id = target.id.split(' ')[1];
     tracksNow[target.name][id] = target.value || id;
-    console.log(tracksNow, id, target.name)
     setNewTracks(tracksNow);
   }
 
@@ -87,19 +84,6 @@ export default function EditSet({ onClose, open }) {
     
     const formdata = new FormData();
 
-    // const form2 = {
-    //   Title: updateSet.Title || context.collection.set.title,
-    //   Description: updateSet.Description || context.collection.set.description,
-    //   NewFilenames: Files.map((f) => f.name),
-    //   TrackTitles: Files.map((f) => newTracks.titles[f.name] || f.name),
-    //   TrackDescriptions: Files.map((f) => newTracks.descriptions[f.name] || f.name + "No description"),
-    //   AlteredTitles: Object.keys(oldTracks.titles).filter((k) => !!oldTracks.titles[k]),
-    //   OldTrackTitles: Object.values(oldTracks.titles).filter((k) => !!k),
-    //   AlteredDescriptions: Object.keys(oldTracks.descriptions).filter((k) => !!oldTracks.descriptions[k]),
-    //   OldTrackDescriptions: Object.values(oldTracks.descriptions).filter((k) => !!k),
-    //   ToDelete: Object.keys(oldTracks.todelete).filter(k => oldTracks.todelete[k]),
-    // };
-
     Files.forEach((file) => newTracks.titles[file.name] = newTracks.titles[file.name] || file.name );
     Files.forEach((file) => newTracks.descriptions[file.name] = newTracks.descriptions[file.name] || "Add description pliz" );
 
@@ -116,13 +100,19 @@ export default function EditSet({ onClose, open }) {
       const feedback = await generalFetch(`sets/${context.collection.set.id}/`, "PATCH", formdata);
       console.log(feedback);
       const editedCollection = {...context.collection};
-      console.log("Yoi", {editedCollection});
+      editedCollection.set.title = form.updateSet.Title;
+      editedCollection.set.description = form.updateSet.Description;
+      Object.keys(form.oldTracks.updateTitles).forEach(key =>
+        editedCollection.tracks[key].title = form.oldTracks[key].Title);
+      Object.keys(form.oldTracks.updateDescriptions).forEach(key =>
+        editedCollection.tracks[key].description = form.oldTracks[key].Description);
+        
       context.setCollection(editedCollection)
     }
     catch (error) {
       console.log(error);
     };
-    console.log({context})
+    if (Files) {console.log("FILES"); window.location.reload();}
     onClose();
   };
 
