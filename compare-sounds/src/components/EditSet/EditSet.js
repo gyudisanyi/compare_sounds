@@ -35,14 +35,14 @@ export default function EditSet({ onClose, open }) {
 
   const { getRootProps, getInputProps } = useDropzone({ onDrop, accept: 'audio/*' });
 
-  const [nameDescr, setNameDescr] = useState({ newTitle: context.collection.set.title, newDescription: context.collection.set.description })
+  const [updateSet, setupdateSet] = useState({ Title: context.collection.set.title, Description: context.collection.set.description })
   const [newTracks, setNewTracks] = useState({ titles: {}, descriptions: {} });
-  const [oldTracks, setOldTracks] = useState({ titles: {}, descriptions: {}, todelete: {} });
+  const [oldTracks, setOldTracks] = useState({ updateTitles: {}, updateDescriptions: {}, todelete: {} });
 
   useEffect(() => {
     setNewTracks({ titles: {}, descriptions: {} });
-    setOldTracks({ titles: {}, descriptions: {}, todelete: {} });
-    setNameDescr({ newTitle: context.collection.set.title, newDescription: context.collection.set.description });
+    setOldTracks({ updateTitles: {}, updateDescriptions: {}, todelete: {} });
+    setupdateSet({ Title: context.collection.set.title, Description: context.collection.set.description });
   }, [context.collection.set]);
 
   const handleClose = () => {
@@ -74,8 +74,8 @@ export default function EditSet({ onClose, open }) {
     setOldTracks(tracksNow);
   }
 
-  const handleNewNameDescr = ({ target }) => {
-    setNameDescr({ ...nameDescr, [target.name]: target.value });
+  const handleUpdateSet = ({ target }) => {
+    setupdateSet({ ...updateSet, [target.name]: target.value });
   }
 
   const handleSubmission = async (event) => {
@@ -84,51 +84,91 @@ export default function EditSet({ onClose, open }) {
     
     const formdata = new FormData();
 
+    Files.forEach((file) => newTracks.titles[file.name] = newTracks.titles[file.name] || file.name );
+    Files.forEach((file) => newTracks.descriptions[file.name] = newTracks.descriptions[file.name] || "Add description pliz" );
+
     const form = {
-      Title: nameDescr.newTitle || context.collection.set.title,
-      Description: nameDescr.newDescription || context.collection.set.description,
-      NewFilenames: Files.map((f) => f.name),
-      TrackTitles: Files.map((f) => newTracks.titles[f.name] || f.name),
-      TrackDescriptions: Files.map((f) => newTracks.descriptions[f.name] || f.name + "No description"),
-      AlteredTitles: Object.keys(oldTracks.titles).filter((k) => !!oldTracks.titles[k]),
-      OldTrackTitles: Object.values(oldTracks.titles).filter((k) => !!k),
-      AlteredDescriptions: Object.keys(oldTracks.descriptions).filter((k) => !!oldTracks.descriptions[k]),
-      OldTrackDescriptions: Object.values(oldTracks.descriptions).filter((k) => !!k),
-      ToDelete: Object.keys(oldTracks.todelete).filter(k => oldTracks.todelete[k]),
-    };
+      updateSet,
+      oldTracks,
+      newTracks
+    }
 
     Files.forEach((file) => formdata.append("Files", file));
     formdata.append("form", JSON.stringify(form))
 
     try {
-      await generalFetch(`sets/${context.collection.set.id}/`, "PATCH", formdata);
+      const feedback = await generalFetch(`sets/${context.collection.set.id}/`, "PATCH", formdata);
+      console.log(feedback);
+      const editedCollection = {...context.collection};
+      editedCollection.set.title = form.updateSet.Title;
+      editedCollection.set.description = form.updateSet.Description;
+      Object.keys(form.oldTracks.updateTitles).forEach(key =>
+        editedCollection.tracks[key].title = form.oldTracks[key].Title);
+      Object.keys(form.oldTracks.updateDescriptions).forEach(key =>
+        editedCollection.tracks[key].description = form.oldTracks[key].Description);
+        
+      context.setCollection(editedCollection)
     }
     catch (error) {
       console.log(error);
     };
+    if (Files) {console.log("FILES"); window.location.reload();}
     onClose();
   };
 
-  const existingTracksList = context.collection.tracks.map((t) => (
-    <div>
+  const existingTracksList = Object.keys(context.collection.tracks).map((key) => (
+    <FormControl fullWidth={true}>
       <FormControlLabel
-        control={<Checkbox name="todelete" checkedIcon={<ClearIcon />} key={`del ${t.id}`} id={`del ${t.id}`} checked={!!oldTracks.todelete[t.id]} />}
-        label="" />
-      <TextField label={`New title for ${t.title}`} name="titles" placeholder={t.title} key={`et ${t.id}`} id={`et ${t.id}`}></TextField>
-      <TextField label="Description" name="descriptions" placeholder={t.description} key={`ed ${t.id}`} id={`ed ${t.id}`}></TextField>
-    </div>)
+        label={`Delete ${context.collection.tracks[key].title}`}
+        control=
+        {<Checkbox
+          name="todelete"
+          checkedIcon={<ClearIcon />} 
+          key={`del ${key}`} 
+          id={`del ${key}`} 
+          checked={!!oldTracks.todelete[key]} />}
+        />
+      <TextField 
+        variant="outlined"
+        label="New title"
+        name="updateTitles" 
+        key={`et ${key}`} id={`et ${key}`} />
+      <TextField 
+        variant="outlined"
+        label="New description" 
+        name="updateDescriptions" 
+        placeholder={context.collection.tracks[key].description} 
+        key={`ed ${key}`} id={`ed ${key}`} />
+    </FormControl>
+    )
   )
 
   const acceptedFileItems = Files.map((file) => (
-    <div key={file.name} id={`b${file.name}`} width="100%">
-      <Button key={file.name} onClick={() => removeFile(file)}><ClearIcon /></Button>
-      <TextField label={`${file.name} title`} name="titles" defaultValue={file.name} key={`t ${file.name}`} id={`t ${file.name}`}></TextField>
-      <TextField label="Description" name="descriptions" defaultValue="Add description" key={`d ${file.name}`} id={`d ${file.name}`}></TextField>
-    </div>
+    <FormControl fullWidth={true}>
+      <Button 
+        key={file.name} 
+        onClick={() => removeFile(file)}>
+        <ClearIcon />
+      </Button>
+      <TextField 
+        variant="outlined"
+        label={`${file.name} title`} 
+        name="titles" 
+        defaultValue={file.name} 
+        key={`t ${file.name}`} 
+        id={`t ${file.name}`} />
+      <TextField 
+        variant="outlined"
+        label="Description" 
+        name="descriptions" 
+        defaultValue="Add description" 
+        key={`d ${file.name}`} 
+        id={`d ${file.name}`} />
+    </FormControl>
   ));
 
   return (
-    <Dialog maxWidth="sm" onClose={handleClose} open={open} fullScreen={fullScreen} scroll="body">
+    <Dialog maxWidth="m" onClose={handleClose} open={open} fullScreen={fullScreen} scroll="body">
 
       <DialogTitle>
         Edit {context.collection.set.title}
@@ -140,9 +180,9 @@ export default function EditSet({ onClose, open }) {
         <FormControl onSubmit={handleSubmission}>
           <Card square>
             <CardContent>
-              <FormGroup row onChange={handleNewNameDescr}>
-                <TextField label="New title" name="newTitle" placeholder="Add new title"></TextField>
-                <TextField label="New description" name="newDescription" placeholder="Add new description"></TextField>
+              <FormGroup row onChange={handleUpdateSet}>
+                <TextField variant="outlined" label="New title" name="Title" placeholder="Add new title"></TextField>
+                <TextField variant="outlined" label="New description" name="Description" placeholder="Add new description"></TextField>
               </FormGroup>
             </CardContent>
           </Card>
@@ -173,9 +213,9 @@ export default function EditSet({ onClose, open }) {
 function DropZone({ getRootProps, getInputProps }) {
 
   return (
-    <Card>
-      <CardContent style={{ backgroundColor: "antiquewhite" }}>
-        <div {...getRootProps({ className: 'dropzone' })}>
+    <Card variant="outlined">
+      <CardContent style={{ padding: "0"}}>
+        <div style={{padding: "2em"}}{...getRootProps({ className: 'dropzone' })}>
           <input {...getInputProps()} />
           <div>Drag 'n' drop / click to upload</div>
           <em>(Only audio will be accepted)</em>

@@ -1,10 +1,12 @@
 import { soundsRepo } from '../repositories/index.js';
+import objectifier from './objectifier.js';
+
 import fs from 'fs-extra';
 
 export const soundsService = {
 
   async getSounds(setId, userId) {
-    return await soundsRepo.getSounds(setId, userId);
+    return objectifier(await soundsRepo.getSounds(setId, userId));
   },
 
   async uploadFiles(Files, setId) {
@@ -19,11 +21,14 @@ export const soundsService = {
   },
 
   async newSounds(
-    NewFilenames,
-    TrackTitles,
-    TrackDescriptions,
+    newTracks,
     setId,
     userId) {
+
+    console.log(newTracks);
+    const NewFilenames = Object.keys(newTracks.titles);
+    const TrackTitles = Object.values(newTracks.titles);
+    const TrackDescriptions = Object.values(newTracks.descriptions);
     return Promise.all(NewFilenames.map((filename, i) =>
         soundsRepo.newSound(
           filename,
@@ -34,19 +39,24 @@ export const soundsService = {
         )));
   },
 
-  async changeTitles(AlteredTitles, OldTrackTitles) {
-    return Promise.all(AlteredTitles.map((trackId, i) =>
-        soundsRepo.changeTitle(trackId, OldTrackTitles[i])
+  async changeTitles(updateTitles) {
+    const AlteredIds = Object.keys(updateTitles);
+    const UpdatedTitles = Object.values(updateTitles);
+    return Promise.all(AlteredIds.map((trackId, i) =>
+        soundsRepo.changeTitle(trackId, UpdatedTitles[i])
       ))
   },
 
-  async changeDescriptions(AlteredDescriptions, OldTrackDescriptions) {
-    return Promise.all(AlteredDescriptions.map((trackId, i) =>
-        soundsRepo.changeDescription(trackId, OldTrackDescriptions[i]
+  async changeDescriptions(updateDescriptions) {
+    const AlteredIds = Object.keys(updateDescriptions);
+    const UpdatedDescriptions = Object.values(updateDescriptions);
+    return Promise.all(AlteredIds.map((trackId, i) =>
+        soundsRepo.changeDescription(trackId, UpdatedDescriptions[i]
         )))
   },
 
   async deleteSounds(ToDelete) {
+    console.log(ToDelete);
     return Promise.all(ToDelete.map((id) =>
         soundsRepo.deleteSound(id)
       ))

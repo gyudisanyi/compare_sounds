@@ -62,29 +62,32 @@ export const setsController = {
         resolve ({fields, files})
       })});
 
+      let formObj=JSON.parse(data.fields.form);
+
+      
       const {
         Title,
         Description,
-        NewFilenames,
-        TrackTitles,
-        TrackDescriptions,
-        AlteredTitles,
-        OldTrackTitles,
-        AlteredDescriptions,
-        OldTrackDescriptions,
-        ToDelete,
-       } = JSON.parse(data.fields.form);
-
+      } = formObj.updateSet;
+      
+      const {
+        updateTitles,
+        updateDescriptions,
+        todelete
+      } = formObj.oldTracks;
+      
       const Files = data.files.Files;
-      let dataz = {}
-      if (Files) dataz += await soundsService.uploadFiles(Files, setId);
-      if (Title) dataz += await setsService.setTitle(Title, setId, userId);
-      if (Description) dataz += await setsService.setDescription(Description, setId, userId);
-      if (NewFilenames) dataz += await soundsService.newSounds(NewFilenames, TrackTitles, TrackDescriptions, setId, userId);
-      if (AlteredTitles) dataz += await soundsService.changeTitles(AlteredTitles, OldTrackTitles);
-      if (AlteredDescriptions) dataz += await soundsService.changeDescriptions(AlteredDescriptions, OldTrackDescriptions);
-      if (ToDelete) dataz += await soundsService.deleteSounds(ToDelete);
-      res.status(200).json(data.fields.form);
+      console.log(formObj);
+      const ToDelete = Object.keys(todelete).filter(k=>todelete[k]);
+
+      if (Files) await soundsService.uploadFiles(Files, setId);
+      if (Title) await setsService.setTitle(Title, setId, userId);
+      if (Description) await setsService.setDescription(Description, setId, userId);
+      if (Object.keys(formObj.newTracks).length > 0) await soundsService.newSounds(formObj.newTracks, setId, userId);
+      if (Object.keys(updateTitles).length>0) await soundsService.changeTitles(updateTitles);
+      if (Object.keys(updateDescriptions).length>0) await soundsService.changeDescriptions(updateDescriptions);
+      if (ToDelete.length>0) await soundsService.deleteSounds(Object.keys(ToDelete));
+      res.status(200).json({hey: "JOE"});
     } catch (error) {
       next(error);
     }

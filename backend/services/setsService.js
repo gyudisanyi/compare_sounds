@@ -1,4 +1,5 @@
 import { setsRepo } from '../repositories/index.js';
+import objectifier from './objectifier.js';
 
 export const setsService = {
   async newSet(userId) {
@@ -10,10 +11,10 @@ export const setsService = {
       return { message: 'Set logically deleted. Admin can revert.'};
     },
   async getUserSets(userId) {
-    return await setsRepo.getUserSets(userId);  
+    return objectifier(await setsRepo.getUserSets(userId));  
   },
   async setData(setId) {
-    return await setsRepo.getSetData(setId);  
+    return await setsRepo.getSetData(setId);
   },
   async setTitle(title, setId, userId) {
     return await setsRepo.setTitle(title, setId, userId);

@@ -6,6 +6,7 @@ export const soundsRepo = {
     return await queryAsync(sql, [setId, userId]);
   },
   async newSound(filename, title, description, setId, userId) {
+    console.log(title);
     const sql = 'INSERT INTO sounds (filename, title, description, set_id, user_id) VALUES (?, ?, ?, ?, ?);'
     return await queryAsync(sql, [filename, title, description, setId, userId]);
   },

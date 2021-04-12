@@ -15,21 +15,23 @@ function Sets() {
   const entryParam = useParams().id;
   const [currentSet, changeCurrentSet] = useState(entryParam);
 
-  const path=useHistory();
+  const path = useHistory();
 
   const trackNodesRef = useCallback((setNode) => {
     console.log("Set audio nodes")
     if (!setNode) { console.log(`No nodes`); return }
     if (!setNode.children) { console.log(`No NodesChildren`); return }
     if (setNode.children.length === 0) { console.log("Empty set"); return }
-    if (setNode.children.length !== collection.tracks.length) { console.log(`children updated`); return }
+    console.log(setNode.children);
     setNode.children[0].muted = false;
-    setTrackNodes(Array.from(setNode.children));
-    console.log("TRACK NODES SET", setNode.children);
+    const newTrackNodes = {}
+    Array.from(setNode.children).forEach(node => newTrackNodes[node.id] = node);
+    setTrackNodes(newTrackNodes);
+    console.log("TRACK NODES SET", newTrackNodes);
   }, [collection]);
 
   const resetOffline = () => {
-    console.log("Reset to offline")
+    console.log("Reset to offline");
     setURL('../');
     changeSets(defaultSets);
     setCollection(defaultCollection());
@@ -40,9 +42,12 @@ function Sets() {
       try {
         const httpResponse = await generalFetch("sets", "GET");
         const response = await httpResponse;
-        if (response.length === 0) { throw new Error("No SETS") }
+        console.log(response);
+        if (response.message || response.length === 0) { throw (response.message || "No SETS") }
+        console.log(response);
         changeSets(response);
-        if (!response.map((set)=>''+set.id).includes(entryParam)) { changeCurrentSet(response[0].id); path.push(`/sets/${response[0].id}`);};
+        const setKeys = Object.keys(response);
+        if (!response[entryParam]) { changeCurrentSet(setKeys[0]); path.push(`/sets/${setKeys[0]}`);};
       } catch (error) {
         resetOffline();
         console.log("sets fetch error", { error })
@@ -56,7 +61,8 @@ function Sets() {
       try {
         const httpResponse = await generalFetch(`sets/${currentSet}`, "GET");
         const response = await httpResponse;
-        if (!response.set) throw new Error("no such set");
+        console.log(response);
+        if (!response.set) throw ({error: "no such set"});
         setCollection(response);
       } catch (error) {
         console.log("collection fetch error", { error })
@@ -73,14 +79,15 @@ function Sets() {
 
   return (
     <div id="main">
-      <GlobalContext.Provider value={{ trackNodes, URL, sets, collection, currentSet, changeCurrentSet }}>
+      <GlobalContext.Provider value={{ trackNodes, URL, sets, collection, setCollection, currentSet, changeCurrentSet }}>
         <Header />
         <Player />
       </GlobalContext.Provider>
         <div id="tracksload" ref={trackNodesRef}>{
-          collection.tracks.map((t, i) => (
-            <audio src={`${URL}audio_src/${isDefault()}/${t.filename}`} key={i} id={i} muted preload="true" />
-          ))}
+          Object.keys(collection.tracks).map((key) => (
+            <audio src={`${URL}audio_src/${isDefault()}/${collection.tracks[key].filename}`} key={key} id={key} muted preload="true" />
+          ))
+          }
         </div>
     </div>
   )

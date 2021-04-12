@@ -40,14 +40,13 @@ export default function Header() {
   const [loginOpen, setLoginOpen] = useState(false);
   const [aboutOpen, setAboutOpen] = useState(false);
 
-
-  const handleMenuClick = async (event) => {
+    const handleMenuClick = async (event) => {
     setAnchorEl(event.currentTarget);
   };
 
   const handleMenuClose = (id) => {
     setAnchorEl(null);
-    if (context.sets.map((set) => set.id).includes(id) || id === context.currentSet) {
+    if (Object.keys(context.sets).includes(id) || id === context.currentSet) {
       context.changeCurrentSet(id);
       path.push(`/sets/${id}`);
     }
@@ -97,12 +96,12 @@ export default function Header() {
   const deleteSet = async () => {
     setAnchorEl(null);
     await generalFetch("sets/"+context.collection.set.id, "DELETE");
-    path.push(`/sets/${context.sets[0].id}`);
+    path.push(`/sets/${Object.keys(context.sets)[0]}`);
     window.location.reload();
   }
 
   const Reload = () => {
-    path.push(`/sets/${context.sets[0].id || 1}`);
+    path.push(`/sets/${Object.keys(context.sets)[0] || 1}`);
     window.location.reload();
   }
 
@@ -120,7 +119,7 @@ export default function Header() {
             open={Boolean(anchorEl)}
             onClose={handleMenuClose}
           >
-            {context.sets[0] ? context.sets.map((set) => (<MenuItem key={set.id} onClick={() => handleMenuClose(set.id)}>{set.title}</MenuItem>)) : "ajjajj"}
+            {Object.keys(context.sets).length > 0 ? Object.keys(context.sets).map((key) => (<MenuItem key={key} onClick={() => handleMenuClose(key)}>{context.sets[key].title}</MenuItem>)) : "ajjajj"}
             <hr />
             <MenuItem disabled={context.URL === "../"} key="addset" id="addset" onClick={newSet}>Add new set</MenuItem>
           </Menu>
@@ -137,7 +136,7 @@ export default function Header() {
             }
             {context.URL === "../"
               ?
-              <Button variant="contained"
+              <Button color="inherit"
                 onClick={Reload}>
                 Reload
               </Button>
