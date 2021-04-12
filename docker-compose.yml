@@ -1,0 +1,44 @@
+version: '3'
+
+services:
+
+  mysql-development:
+    image: mysql:8.0.17
+    command: --default-authentication-plugin=mysql_native_password
+    volumes:
+      - mysqldb:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: helloworld
+      MYSQL_DATABASE: testapp
+    ports:
+      - "3308:3306"
+
+  admin:
+    image: adminer
+    ports:
+      - "8080:8080"
+
+  backend:
+    build: backend
+    volumes:
+      - backend_public:/usr/src/app/public
+    environment:
+      TOKEN_SECRET: "misifej"
+      MYSQL_HOST: "mysql-development"
+      MYSQL_PORT: "3306"
+      MYSQL_USER: "root"
+      MYSQL_PASSWORD: "helloworld"
+      MYSQL_DATABASE: "testapp"
+      WAIT_HOSTS: "mysql-development:3306"
+      WAIT_HOSTS_TIMEOUT: "120"
+            
+    ports:
+      - "9899:8080"
+
+  frontend:
+    build: frontend
+    ports:
+      - "9898:5000"
+volumes:
+  mysqldb:
+  backend_public:
