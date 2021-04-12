@@ -117,25 +117,58 @@ export default function EditSet({ onClose, open }) {
   };
 
   const existingTracksList = Object.keys(context.collection.tracks).map((key) => (
-    <div>
+    <FormControl fullWidth={true}>
       <FormControlLabel
-        control={<Checkbox name="todelete" checkedIcon={<ClearIcon />} key={`del ${key}`} id={`del ${key}`} checked={!!oldTracks.todelete[key]} />}
-        label="" />
-      <TextField label={`New title for ${context.collection.tracks[key].title}`} name="updateTitles" placeholder={context.collection.tracks[key].title} key={`et ${key}`} id={`et ${key}`}></TextField>
-      <TextField label="Description" name="updateDescriptions" placeholder={context.collection.tracks[key].description} key={`ed ${key}`} id={`ed ${key}`}></TextField>
-    </div>)
+        label={`Delete ${context.collection.tracks[key].title}`}
+        control=
+        {<Checkbox
+          name="todelete"
+          checkedIcon={<ClearIcon />} 
+          key={`del ${key}`} 
+          id={`del ${key}`} 
+          checked={!!oldTracks.todelete[key]} />}
+        />
+      <TextField 
+        variant="outlined"
+        label="New title"
+        name="updateTitles" 
+        key={`et ${key}`} id={`et ${key}`} />
+      <TextField 
+        variant="outlined"
+        label="New description" 
+        name="updateDescriptions" 
+        placeholder={context.collection.tracks[key].description} 
+        key={`ed ${key}`} id={`ed ${key}`} />
+    </FormControl>
+    )
   )
 
   const acceptedFileItems = Files.map((file) => (
-    <div key={file.name} id={`b${file.name}`} width="100%">
-      <Button key={file.name} onClick={() => removeFile(file)}><ClearIcon /></Button>
-      <TextField label={`${file.name} title`} name="titles" defaultValue={file.name} key={`t ${file.name}`} id={`t ${file.name}`}></TextField>
-      <TextField label="Description" name="descriptions" defaultValue="Add description" key={`d ${file.name}`} id={`d ${file.name}`}></TextField>
-    </div>
+    <FormControl fullWidth={true}>
+      <Button 
+        key={file.name} 
+        onClick={() => removeFile(file)}>
+        <ClearIcon />
+      </Button>
+      <TextField 
+        variant="outlined"
+        label={`${file.name} title`} 
+        name="titles" 
+        defaultValue={file.name} 
+        key={`t ${file.name}`} 
+        id={`t ${file.name}`} />
+      <TextField 
+        variant="outlined"
+        label="Description" 
+        name="descriptions" 
+        defaultValue="Add description" 
+        key={`d ${file.name}`} 
+        id={`d ${file.name}`} />
+    </FormControl>
   ));
 
   return (
-    <Dialog maxWidth="sm" onClose={handleClose} open={open} fullScreen={fullScreen} scroll="body">
+    <Dialog maxWidth="m" onClose={handleClose} open={open} fullScreen={fullScreen} scroll="body">
 
       <DialogTitle>
         Edit {context.collection.set.title}
@@ -148,8 +181,8 @@ export default function EditSet({ onClose, open }) {
           <Card square>
             <CardContent>
               <FormGroup row onChange={handleUpdateSet}>
-                <TextField label="New title" name="Title" placeholder="Add new title"></TextField>
-                <TextField label="New description" name="Description" placeholder="Add new description"></TextField>
+                <TextField variant="outlined" label="New title" name="Title" placeholder="Add new title"></TextField>
+                <TextField variant="outlined" label="New description" name="Description" placeholder="Add new description"></TextField>
               </FormGroup>
             </CardContent>
           </Card>
@@ -180,9 +213,9 @@ export default function EditSet({ onClose, open }) {
 function DropZone({ getRootProps, getInputProps }) {
 
   return (
-    <Card>
-      <CardContent style={{ backgroundColor: "antiquewhite" }}>
-        <div {...getRootProps({ className: 'dropzone' })}>
+    <Card variant="outlined">
+      <CardContent style={{ padding: "0"}}>
+        <div style={{padding: "2em"}}{...getRootProps({ className: 'dropzone' })}>
           <input {...getInputProps()} />
           <div>Drag 'n' drop / click to upload</div>
           <em>(Only audio will be accepted)</em>

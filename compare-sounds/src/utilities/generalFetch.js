@@ -17,7 +17,7 @@ async function generalFetch(endpoint, method, bodyData = undefined) {
   
   if (bodyData !== undefined) { requestOptions.body = JSON.stringify(bodyData); }
   
-  if (method === "PATCH") {
+  if (method === "PATCH" && endpoint.split('/')[0] !== "loops") {
     console.log(method);
     requestOptions.body = bodyData;
     delete requestOptions.headers['Content-Type'];
@@ -30,10 +30,6 @@ async function generalFetch(endpoint, method, bodyData = undefined) {
   const { message } = response;
   
   if (endpoint === 'login') {
-    return response;
-  }
-
-  if(method === 'PATCH') {
     return response;
   }
 
