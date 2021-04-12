@@ -18,6 +18,7 @@ export const loopsController = {
     const loopsArray=Object.values(loops.loops)
     try {
       const data = await loopsService.updateLoops(loopsArray);
+      const del = await loopsService.deleteLoops(loops.deleted);
       res.status(200).json(data);
     } catch(error) {
       next(error)

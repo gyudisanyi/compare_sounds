@@ -13,5 +13,10 @@ export const loopsService = {
   async updateLoops(loops) {
     return Promise.all(loops.map((loop) =>
       loopsRepo.updateLoop(loop)));
-  }
+  },
+
+  async deleteLoops(loopIDs) {
+    return Promise.all(loopIDs.map((id) =>
+      loopsRepo.deleteLoop(id)));
+  },
 }

@@ -63,7 +63,6 @@ export const setsController = {
       })});
 
       let formObj=JSON.parse(data.fields.form);
-
       
       const {
         Title,
@@ -79,14 +78,14 @@ export const setsController = {
       const Files = data.files.Files;
       console.log(formObj);
       const ToDelete = Object.keys(todelete).filter(k=>todelete[k]);
-
+      console.log(ToDelete);
       if (Files) await soundsService.uploadFiles(Files, setId);
       if (Title) await setsService.setTitle(Title, setId, userId);
       if (Description) await setsService.setDescription(Description, setId, userId);
       if (Object.keys(formObj.newTracks).length > 0) await soundsService.newSounds(formObj.newTracks, setId, userId);
       if (Object.keys(updateTitles).length>0) await soundsService.changeTitles(updateTitles);
       if (Object.keys(updateDescriptions).length>0) await soundsService.changeDescriptions(updateDescriptions);
-      if (ToDelete.length>0) await soundsService.deleteSounds(Object.keys(ToDelete));
+      if (ToDelete.length>0) await soundsService.deleteSounds(ToDelete);
       res.status(200).json({hey: "JOE"});
     } catch (error) {
       next(error);

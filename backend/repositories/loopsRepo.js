@@ -14,6 +14,11 @@ export const loopsRepo = {
   async updateLoop(loop) {
     const sql = 'UPDATE loops SET description=?, start=?, end=? WHERE (idloop=?)';
     return await queryAsync(sql, [loop.description, loop.start, loop.end, loop.id])
+  },
+  
+  async deleteLoop(id) {
+    const sql = 'UPDATE loops SET deleted=NOW() WHERE (idloop=?)';
+    return await queryAsync(sql, [id])
   }
 
 }
