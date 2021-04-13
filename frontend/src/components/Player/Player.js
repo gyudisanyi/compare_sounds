@@ -1,8 +1,10 @@
 import React, { useState, useEffect, useContext, useRef } from 'react';
 import { withStyles, makeStyles } from '@material-ui/core/styles';
 import { Box, Grid, Switch, Button, Slider, Card, CardMedia, CardContent, TextField, } from '@material-ui/core';
-import { FormControl, FormControlLabel, FormGroup, RadioGroup, Radio, Input} from '@material-ui/core';
+import { FormControl, FormControlLabel, FormGroup, RadioGroup, Radio,} from '@material-ui/core';
 import { VolumeUp, VolumeOff } from '@material-ui/icons';
+import { Range } from 'rc-slider';
+import 'rc-slider/assets/index.css';
 
 import GlobalContext from '../../context/GlobalContext';
 import generalFetch from '../../utilities/generalFetch';
@@ -44,7 +46,7 @@ export default function Player() {
   const [paused, setPaused] = useState(true);
   const [looping, setLooping] = useState(false);
   const [actualLoop, setActualLoop] = useState([10, 200])
-  const [customLoop, setCustomLoop] = useState([130, 150]);
+  const [customLoop, setCustomLoop] = useState([130, 250]);
   const [customLoopName, setCustomLoopName] = useState('Loop');
   const [loops, setLoops] = useState([{ range: [846, 890.35], description: "Default loop" }]);
   const [loopsOpen, setLoopsOpen] = useState(false);
@@ -167,7 +169,7 @@ export default function Player() {
     setNowPlaying(value);
   }
 
-  function handleCustomLoop (event, value) {
+  function handleCustomLoop (value) {
     console.log(value);
     setCustomLoop(value);
     setActualLoop(value);
@@ -261,10 +263,12 @@ export default function Player() {
           </Grid>
             Add custom loop:
           <Grid item xs={12}>
-            <LoopBar
+            <Range
+              min={0}
               max={resolution}
-              value={customLoop}
-              onChange={handleCustomLoop}/>
+              trackStyle={{color: "red"}}
+              onAfterChange={handleCustomLoop}/>
+            
           </Grid>
             <FormGroup row label="start" onChange={handleCustomLoopInput}>
               <TextField variant="outlined" label="name" onChange={enterLoopName} />
