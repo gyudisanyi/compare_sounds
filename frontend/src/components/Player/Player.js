@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useContext, useRef } from 'react';
 import { withStyles, makeStyles } from '@material-ui/core/styles';
-import { Grid, Switch, Button, Slider, Card, CardMedia, CardContent, TextField, } from '@material-ui/core';
+import { Box, Grid, Switch, Button, Slider, Card, CardMedia, CardContent, TextField, } from '@material-ui/core';
 import { FormControl, FormControlLabel, FormGroup, RadioGroup, Radio, Input} from '@material-ui/core';
-
+import { VolumeUp, VolumeOff } from '@material-ui/icons';
 
 import GlobalContext from '../../context/GlobalContext';
 import generalFetch from '../../utilities/generalFetch';
@@ -126,6 +126,16 @@ export default function Player() {
     }
   }, [progress, actualLoop, looping, context.trackNodes, nodeKeys]);
 
+  function setVolume(event, value) {
+    if (!nodeKeys) return;
+    nodeKeys.forEach((key) => context.trackNodes[key].volume = value / 100)
+  }
+
+  function mute() {
+    if (!nodeKeys) return;
+    context.trackNodes[nowPlaying].muted = !context.trackNodes[nowPlaying].muted;
+  }
+
   function playPause() {
     if (!context.trackNodes) { console.log("No track nodes"); setPaused(true); return }
     paused
@@ -146,7 +156,6 @@ export default function Player() {
 
   function switchTrack(value) {
     if (!context.trackNodes) {console.log("NO TRCKNDS"); return}
-    
     context.trackNodes[nowPlaying].muted = true;
     try {
       context.trackNodes[value].muted = true;
@@ -200,8 +209,19 @@ export default function Player() {
   return (
     <Card>
       <CardContent>
-        <Grid container spacing={3} justify="center">
+        { context.trackNodes 
+        ? <Grid container spacing={3} justify="center">
           <Grid container xs={3} justify="space-around">
+            <Box display="flex"
+              flexDirection="column"
+              justifyContent="center"
+              alignItems="center">
+              {context.trackNodes[nowPlaying].muted
+                ? <VolumeOff onClick={mute}/>
+                : <VolumeUp onClick={mute}/>
+              }
+              <Slider orientation="vertical" defaultValue="50" onChange={setVolume}/>
+            </Box>
             <Button onClick={playPause} variant="contained" color={paused ? "primary" : "secondary"}>
               ►
             </Button>
@@ -255,6 +275,7 @@ export default function Player() {
             </FormGroup>
             <ManageLoops open={loopsOpen} onClose={handleLoopsClose}/>
         </Grid>
+        : `No tracks to load!`}
       </CardContent>
     </Card>
   )

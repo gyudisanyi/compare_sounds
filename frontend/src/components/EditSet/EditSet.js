@@ -80,11 +80,11 @@ export default function EditSet({ onClose, open }) {
 
   const handleSubmission = async (event) => {
 
-    
+
     const formdata = new FormData();
 
-    Files.forEach((file) => newTracks.titles[file.name] = newTracks.titles[file.name] || file.name );
-    Files.forEach((file) => newTracks.descriptions[file.name] = newTracks.descriptions[file.name] || "Add description pliz" );
+    Files.forEach((file) => newTracks.titles[file.name] = newTracks.titles[file.name] || file.name);
+    Files.forEach((file) => newTracks.descriptions[file.name] = newTracks.descriptions[file.name] || "Add description pliz");
 
     const form = {
       updateSet,
@@ -98,20 +98,20 @@ export default function EditSet({ onClose, open }) {
     try {
       const feedback = await generalFetch(`sets/${context.collection.set.id}/`, "PATCH", formdata);
       console.log(feedback);
-      const editedCollection = {...context.collection};
+      const editedCollection = { ...context.collection };
       editedCollection.set.title = form.updateSet.Title;
       editedCollection.set.description = form.updateSet.Description;
       Object.keys(form.oldTracks.updateTitles).forEach(key =>
         editedCollection.tracks[key].title = form.oldTracks[key].Title);
       Object.keys(form.oldTracks.updateDescriptions).forEach(key =>
         editedCollection.tracks[key].description = form.oldTracks[key].Description);
-        
+
       context.setCollection(editedCollection)
     }
     catch (error) {
       console.log(error);
     };
-    if (Files) {console.log("FILES"); window.location.reload();}
+    if (Files) { console.log("FILES"); window.location.reload(); }
     onClose();
   };
 
@@ -122,46 +122,48 @@ export default function EditSet({ onClose, open }) {
         control=
         {<Checkbox
           name="todelete"
-          checkedIcon={<ClearIcon />} 
-          key={`del ${key}`} 
-          id={`del ${key}`} 
+          checkedIcon={<ClearIcon />}
+          key={`del ${key}`}
+          id={`del ${key}`}
           checked={!!oldTracks.todelete[key]} />}
-        />
-      <TextField 
+      />
+      <TextField
         variant="outlined"
         label="New title"
-        name="updateTitles" 
+        name="updateTitles"
         key={`et ${key}`} id={`et ${key}`} />
-      <TextField 
+      <TextField
         variant="outlined"
-        label="New description" 
-        name="updateDescriptions" 
-        placeholder={context.collection.tracks[key].description} 
+        multiline rows={2}
+        label="New description"
+        name="updateDescriptions"
+        placeholder={context.collection.tracks[key].description}
         key={`ed ${key}`} id={`ed ${key}`} />
     </FormControl>
-    )
+  )
   )
 
   const acceptedFileItems = Files.map((file) => (
     <FormControl key={file.name} fullWidth={true}>
-      <Button 
-        key={file.name} 
+      <Button
+        key={file.name}
         onClick={() => removeFile(file)}>
         <ClearIcon />
       </Button>
-      <TextField 
+      <TextField
         variant="outlined"
-        label={`${file.name} title`} 
-        name="titles" 
-        defaultValue={file.name} 
-        key={`t ${file.name}`} 
+        label={`${file.name} title`}
+        name="titles"
+        defaultValue={file.name}
+        key={`t ${file.name}`}
         id={`t ${file.name}`} />
-      <TextField 
+      <TextField
         variant="outlined"
-        label="Description" 
-        name="descriptions" 
-        defaultValue="Add description" 
-        key={`d ${file.name}`} 
+        multiline rows={2}
+        label="Description"
+        name="descriptions"
+        defaultValue="Add description"
+        key={`d ${file.name}`}
         id={`d ${file.name}`} />
     </FormControl>
   ));
@@ -176,33 +178,27 @@ export default function EditSet({ onClose, open }) {
         </IconButton>
       </DialogTitle>
       <DialogContent>
-        <FormControl onSubmit={handleSubmission}>
+        <FormControl onSubmit={handleSubmission} >
           <Card square>
             <CardContent>
               <FormGroup row onChange={handleUpdateSet}>
-                <TextField variant="outlined" label="New title" name="Title" placeholder="Add new title"></TextField>
-                <TextField variant="outlined" label="New description" name="Description" placeholder="Add new description"></TextField>
+                <TextField variant="outlined" fullWidth label="New title" name="Title" placeholder="Add new title"></TextField>
+                <TextField variant="outlined" fullWidth multiline rows={2} label="New description" name="Description" placeholder="Add new description"></TextField>
               </FormGroup>
             </CardContent>
           </Card>
 
-          <Card square>
-            <CardHeader subheader="Delete or update existing tracks" />
-            <CardContent>
-              <FormGroup row onChange={handleOldTracks}>
-                {existingTracksList}
-              </FormGroup>
-            </CardContent>
-          </Card>
-
-          <DropZone getRootProps={getRootProps} getInputProps={getInputProps} />
+          <FormGroup row onChange={handleOldTracks}>
+            {existingTracksList}
+          </FormGroup>
 
           <FormGroup onChange={handleNewTracks}>
             {acceptedFileItems}
           </FormGroup>
 
-          <Button type="submit" variant="contained" onClick={handleSubmission}>Submit</Button>
+          <DropZone getRootProps={getRootProps} getInputProps={getInputProps} />
 
+          <Button type="submit" variant="contained" color="primary" onClick={handleSubmission}>Submit</Button>
         </FormControl>
       </DialogContent>
     </Dialog>
@@ -212,9 +208,9 @@ export default function EditSet({ onClose, open }) {
 function DropZone({ getRootProps, getInputProps }) {
 
   return (
-    <Card variant="outlined">
-      <CardContent style={{ padding: "0"}}>
-        <div style={{padding: "2em"}}{...getRootProps({ className: 'dropzone' })}>
+    <Card variant="outlined" square>
+      <CardContent style={{ padding: "0", backgroundColor: "lightgray" }}>
+        <div style={{ padding: "2em" }}{...getRootProps({ className: 'dropzone' })}>
           <input {...getInputProps()} />
           <div>Drag 'n' drop / click to upload</div>
           <em>(Only audio will be accepted)</em>
