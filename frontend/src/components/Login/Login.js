@@ -33,9 +33,7 @@ export default function Login({ onClose, open }) {
   }
 
   const login = async (event) => {
-    
-    event.preventDefault();
-    
+        
     try {
       const data = await generalFetch('login', 'POST', userPass);
       console.log({data});
@@ -54,8 +52,6 @@ export default function Login({ onClose, open }) {
 
   }
   const register = async (event) => {
-    
-    event.preventDefault();
     
     try {
       const data = await generalFetch('users', 'POST', userPass);

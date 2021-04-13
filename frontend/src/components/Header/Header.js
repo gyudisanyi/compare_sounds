@@ -99,15 +99,16 @@ export default function Header() {
     path.push(`/sets/${Object.keys(context.sets)[0]}`);
     window.location.reload();
   }
-
+  
   const Reload = () => {
     path.push(`/sets/${Object.keys(context.sets)[0] || 1}`);
     window.location.reload();
   }
-
+  
   return (
     <div className={classes.root}>
       <AppBar position="static">
+        <EditSet open={editOpen} onClose={handleEditClose} />
         <Toolbar>
           <IconButton edge="start" className={classes.menuButton} color="inherit" aria-label="menu" onClick={handleMenuClick}>
             <LibraryMusicTwoToneIcon />
@@ -141,7 +142,6 @@ export default function Header() {
                 Reload
               </Button>
               : ``}
-            <EditSet open={editOpen} onClose={handleEditClose} />
           </Typography>
           <Button color="inherit" onClick={handleAboutOpen}>About</Button>
           {localStorage.getItem('username')

@@ -1,6 +1,6 @@
 import React, { useEffect, useContext, useState } from 'react';
 import { FormGroup, FormControl, FormControlLabel, Checkbox } from '@material-ui/core';
-import { Button, Input, IconButton, Dialog, DialogTitle, DialogContent, Card, CardHeader, CardContent, TextField } from '@material-ui/core';
+import { Button, IconButton, Dialog, DialogTitle, DialogContent, TextField } from '@material-ui/core';
 import ClearIcon from '@material-ui/icons/Clear';
 import CloseIcon from '@material-ui/icons/Close';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
@@ -56,7 +56,7 @@ export default function ManageLoops({ onClose, open }) {
   }
 
   const loopList = Object.keys(loops).map((key) =>
-    <FormControl fullWidth={true}>
+    <FormControl key={key} fullWidth={true}>
       <FormControlLabel
         control=
         {<Checkbox
@@ -97,7 +97,7 @@ export default function ManageLoops({ onClose, open }) {
   )
 
   return (
-    <Dialog maxWidth="m" onClose={handleClose} open={open} fullScreen={fullScreen} scroll="body">
+    <Dialog maxWidth="md" onClose={handleClose} open={open} fullScreen={fullScreen} scroll="body">
       <DialogTitle>
         Manage loops
         <IconButton className={classes.closeButton} aria-label="close" onClick={handleClose}>

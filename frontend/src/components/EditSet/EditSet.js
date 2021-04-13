@@ -80,7 +80,6 @@ export default function EditSet({ onClose, open }) {
 
   const handleSubmission = async (event) => {
 
-    event.preventDefault();
     
     const formdata = new FormData();
 
@@ -117,7 +116,7 @@ export default function EditSet({ onClose, open }) {
   };
 
   const existingTracksList = Object.keys(context.collection.tracks).map((key) => (
-    <FormControl fullWidth={true}>
+    <FormControl key={key} fullWidth={true}>
       <FormControlLabel
         label={`Delete ${context.collection.tracks[key].title}`}
         control=
@@ -144,7 +143,7 @@ export default function EditSet({ onClose, open }) {
   )
 
   const acceptedFileItems = Files.map((file) => (
-    <FormControl fullWidth={true}>
+    <FormControl key={file.name} fullWidth={true}>
       <Button 
         key={file.name} 
         onClick={() => removeFile(file)}>
@@ -168,7 +167,7 @@ export default function EditSet({ onClose, open }) {
   ));
 
   return (
-    <Dialog maxWidth="m" onClose={handleClose} open={open} fullScreen={fullScreen} scroll="body">
+    <Dialog maxWidth="md" onClose={handleClose} open={open} fullScreen={fullScreen} scroll="body">
 
       <DialogTitle>
         Edit {context.collection.set.title}
