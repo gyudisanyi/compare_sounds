@@ -64,13 +64,6 @@ export default function Player() {
     markLabel: { transform: "translateX(0%)" },
   })(Slider);
 
-  const LoopBar = withStyles({
-    track: { color: actualLoop[0] === customLoop[0] && actualLoop[1] === customLoop[1] 
-      ? "rgb(239, 2, 88)" : "rgb(62, 80, 179)"},
-    thumb: { color: actualLoop[0] === customLoop[0] && actualLoop[1] === customLoop[1] 
-      ? "rgb(239, 2, 88)" : "rgb(62, 80, 179)"},
-  })(Slider);
-
   const handleLoopsOpen = () => {
     setLoopsOpen(true);
   }
@@ -214,6 +207,7 @@ export default function Player() {
         { context.trackNodes 
         ? <Grid container spacing={3} justify="center">
           <Grid container xs={3} justify="space-around">
+          {context.trackNodes[nowPlaying] ?
             <Box display="flex"
               flexDirection="column"
               justifyContent="center"
@@ -224,6 +218,8 @@ export default function Player() {
               }
               <Slider orientation="vertical" defaultValue="50" onChange={setVolume}/>
             </Box>
+            : ``
+          }
             <Button onClick={playPause} variant="contained" color={paused ? "primary" : "secondary"}>
               ►
             </Button>
