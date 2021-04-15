@@ -1,4 +1,5 @@
 import React, { useEffect, useCallback, useContext, useState } from 'react';
+import { useHistory } from 'react-router-dom';
 import { useDropzone } from 'react-dropzone';
 import { FormGroup, FormControl, FormControlLabel, Checkbox } from '@material-ui/core';
 import { Button, IconButton, Dialog, DialogTitle, DialogContent, Card, CardHeader, CardContent, TextField } from '@material-ui/core';
@@ -20,6 +21,8 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function EditSet({ onClose, open }) {
+
+  const path = useHistory();
 
   const classes = useStyles();
   const theme = useTheme();
@@ -76,6 +79,14 @@ export default function EditSet({ onClose, open }) {
 
   const handleUpdateSet = ({ target }) => {
     setupdateSet({ ...updateSet, [target.name]: target.value });
+  }
+
+  
+  const deleteSet = async () => {
+    await generalFetch("sets/"+context.collection.set.id, "DELETE");
+    path.push(`/sets/${Object.keys(context.sets)[0]}`);
+    onClose();
+    window.location.reload();
   }
 
   const handleSubmission = async (event) => {
@@ -199,6 +210,8 @@ export default function EditSet({ onClose, open }) {
           <DropZone getRootProps={getRootProps} getInputProps={getInputProps} />
 
           <Button type="submit" variant="contained" color="primary" onClick={handleSubmission}>Submit</Button>
+          
+          <Button color="inherit" onClick={deleteSet}>Delete</Button>
         </FormControl>
       </DialogContent>
     </Dialog>

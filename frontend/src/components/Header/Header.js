@@ -13,9 +13,7 @@ import GlobalContext from '../../context/GlobalContext';
 
 import generalFetch from '../../utilities/generalFetch';
 
-import Login from '../../components/Login/Login';
 import EditSet from '../EditSet/EditSet';
-import About from '../About/About';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -37,8 +35,6 @@ export default function Header() {
   
   const [anchorEl, setAnchorEl] = useState(null);
   const [editOpen, setEditOpen] = useState(false);
-  const [loginOpen, setLoginOpen] = useState(false);
-  const [aboutOpen, setAboutOpen] = useState(false);
 
     const handleMenuClick = async (event) => {
     setAnchorEl(event.currentTarget);
@@ -52,30 +48,6 @@ export default function Header() {
     }
   };
   
-
-  const handleLoginOpen = () => {
-    setLoginOpen(true);
-  }
-
-  const handleLoginClose = () => {
-    setLoginOpen(false);
-    if (localStorage.getItem('username')) {
-    window.location.reload();
-    }
-  }
-
-  const emptyLocalStorage = () => {
-    localStorage.clear();
-    window.location.reload();
-  }
-  const handleAboutOpen = () => {
-    setAboutOpen(true);
-  }
-
-  const handleAboutClose = () => {
-    setAboutOpen(false);
-  }
-
   const handleEditOpen = () => {
     setAnchorEl(null);
     setEditOpen(true);
@@ -93,12 +65,6 @@ export default function Header() {
     setEditOpen(true);
   }
 
-  const deleteSet = async () => {
-    setAnchorEl(null);
-    await generalFetch("sets/"+context.collection.set.id, "DELETE");
-    path.push(`/sets/${Object.keys(context.sets)[0]}`);
-    window.location.reload();
-  }
   
   const Reload = () => {
     path.push(`/sets/${Object.keys(context.sets)[0] || 1}`);
@@ -122,20 +88,19 @@ export default function Header() {
           >
             {Object.keys(context.sets).length > 0 ? Object.keys(context.sets).map((key) => (<MenuItem key={key} onClick={() => handleMenuClose(key)}>{context.sets[key].title}</MenuItem>)) : "ajjajj"}
             <hr />
-            <MenuItem disabled={context.URL === "../"} key="addset" id="addset" onClick={newSet}>Add new set</MenuItem>
+            <MenuItem disabled={context.url === "../"} key="addset" id="addset" onClick={newSet}>Add new set</MenuItem>
           </Menu>
           <Typography variant="h6" className={classes.title}>
-            {context.URL === "../" ? "OFFLINE " : ""}{context.collection.set.title}
+            {context.collection.set.title}
             {parseInt(localStorage.getItem('userid')) === context.collection.set.user_id
               ?
               <>
                 <Button color="inherit" onClick={handleEditOpen}>Edit</Button>
-                <Button color="inherit" onClick={deleteSet}>Delete</Button>
               </>
               :
               ` by ${context.collection.set.username}`
             }
-            {context.URL === "../"
+            {context.url === "../"
               ?
               <Button color="inherit"
                 onClick={Reload}>
@@ -143,13 +108,6 @@ export default function Header() {
               </Button>
               : ``}
           </Typography>
-          <Button color="inherit" onClick={handleAboutOpen}>About</Button>
-          {localStorage.getItem('username')
-            ?
-              <Button color="inherit" onClick={emptyLocalStorage}>Logout {localStorage.getItem('username')}</Button>
-            : <Button color="inherit" onClick={handleLoginOpen}>Login / register</Button>}
-          <Login open={loginOpen} onClose={handleLoginClose} />
-          <About open={aboutOpen} onClose={handleAboutClose} />
         </Toolbar>
       </AppBar>
     </div>

@@ -4,11 +4,11 @@ import generalFetch from '../../utilities/generalFetch';
 import GlobalContext from '../../context/GlobalContext';
 import { defaultCollection, defaultSets } from '../../defaults';
 import Header from '../../components/Header/Header';
-import Player from '../../components/Player/Player';
+import Player from '../../components/Player/Player2';
 
 function Sets() {
 
-  const [URL, setURL] = useState(process.env.REACT_APP_API_URL);
+  const [url, setURL] = useState(process.env.REACT_APP_API_URL);
   const [sets, changeSets] = useState(defaultSets());
   const [collection, setCollection] = useState(defaultCollection());
   const [trackNodes, setTrackNodes] = useState();
@@ -73,23 +73,24 @@ function Sets() {
   }, [currentSet]);
 
   const isDefault = () => {
-    if (URL === '../') {return 1}
+    if (url === '../') {return 1}
     return currentSet;
   }
 
   return (
-    <div id="main">
-      <GlobalContext.Provider value={{ trackNodes, URL, sets, collection, setCollection, currentSet, changeCurrentSet }}>
+      <GlobalContext.Provider value={{ trackNodes, url, sets, collection, setCollection, currentSet, changeCurrentSet }}>
         <Header />
-        <Player />
-      </GlobalContext.Provider>
+        { trackNodes && collection.tracks
+        ? <Player />
+        : `Empty set: please upload stuff!`
+        }
         <div id="tracksload" ref={trackNodesRef}>{
           Object.keys(collection.tracks).map((key) => (
-            <audio src={`${URL}audio_src/${isDefault()}/${collection.tracks[key].filename}`} key={key} id={key} muted preload="true" />
+            <audio src={`${url}audio_src/${isDefault()}/${collection.tracks[key].filename}`} key={key} id={key} muted preload="true" />
           ))
           }
         </div>
-    </div>
+      </GlobalContext.Provider>
   )
 
 }
