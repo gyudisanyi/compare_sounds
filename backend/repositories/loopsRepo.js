@@ -1,9 +1,9 @@
 import queryAsync from '../database.js';
 
 export const loopsRepo = {
-  async getLoops(setId, userId) {
-    const sql = 'SELECT idloop AS id, start, end, description FROM loops WHERE set_id = ? AND user_id = ? AND deleted IS NULL ORDER BY start ASC;'
-    return await queryAsync(sql, [setId, userId]);
+  async getLoops(setId) {
+    const sql = 'SELECT idloop AS id, start, end, description FROM loops WHERE set_id = ? AND deleted IS NULL ORDER BY start ASC;'
+    return await queryAsync(sql, [setId]);
   },
 
   async newLoop(setId, userId, loop) {

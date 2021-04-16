@@ -15,6 +15,7 @@ export const loginService = {
     }
 
     const user = await usersRepo.getUserByUsername(username);
+    console.log(user)
     if (!user[0]) {
       throw { message: 'No such user!', status: 400 };
     }
@@ -24,19 +25,19 @@ export const loginService = {
       throw { message: 'Username and password do not match!', status: 400 };
     }
 
-
     const token = this.generateAccessToken({
-      id: user[0].iduser,
       usertype: user[0].user_type,
-      userid: user[0].iduser,
+      userid: user[0].id,
       username,
     });
     const returnData = {
       username,
       usertype: user[0].user_type,
-      userid: user[0].iduser,
+      userid: user[0].id,
       token,
     };
+
+    console.log(returnData);
 
     return returnData;
   },

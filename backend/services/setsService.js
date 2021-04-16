@@ -10,11 +10,18 @@ export const setsService = {
       await setsRepo.deleteSet(setId);
       return { message: 'Set logically deleted. Admin can revert.'};
     },
+  async getAllSets() {
+    return objectifier(await setsRepo.getAllSets());  
+  },
   async getUserSets(userId) {
     return objectifier(await setsRepo.getUserSets(userId));  
   },
   async setData(setId) {
-    return await setsRepo.getSetData(setId);
+    const set = await setsRepo.getSetData(setId);
+    if (!set[0]) {
+      throw { message: 'No such set!', status: 400 };
+    }
+    return set[0];
   },
   async setTitle(title, setId, userId) {
     return await setsRepo.setTitle(title, setId, userId);

@@ -5,12 +5,16 @@ export const setsRepo = {
     const sql = "INSERT INTO sets (title, description, user_id) VALUES ('Empty set', 'Add description', ?);";
     return await queryAsync(sql, [userId]);
   },
-  async getUserSets(userId) {
-    const sql = 'SELECT idset AS id, description, title FROM sets WHERE user_id = ? AND deleted IS NULL';
-    return await queryAsync(sql, [userId]);
+  async getAllSets() {
+    const sql = 'SELECT idset AS id, description, title FROM sets WHERE deleted IS NULL';
+    return await queryAsync(sql);
+  },
+  async getUserSets(id) {
+    const sql = 'SELECT idset AS id, description, title, img_url FROM sets WHERE user_id = ? AND deleted IS NULL';
+    return await queryAsync(sql, [id]);
   },
   async getSetData(setId) {
-    const sql = 'SELECT idset AS id, user_id, username, description, title FROM sets JOIN users ON user_id = iduser WHERE idset = ? AND deleted IS NULL';
+    const sql = 'SELECT idset AS id, user_id, username, description, title, img_url FROM sets JOIN users ON user_id = iduser WHERE idset = ? AND deleted IS NULL';
     return await queryAsync(sql, [setId]);
   },
   async deleteSet(setId) {

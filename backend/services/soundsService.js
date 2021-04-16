@@ -6,7 +6,7 @@ import fs from 'fs-extra';
 export const soundsService = {
 
   async getSounds(setId, userId) {
-    return objectifier(await soundsRepo.getSounds(setId, userId));
+    return objectifier(await soundsRepo.getSounds(setId));
   },
 
   async uploadFiles(Files, setId) {

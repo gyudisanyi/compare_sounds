@@ -14,13 +14,14 @@ export default function Player() {
   const context = useContext(GlobalContext);
   const {trackNodes, collection, url} = context;
   const {tracks, set} = collection;
-  console.log({tracks});
-  const [nowPlaying, setNowPlaying] = useState();
+  console.log(Object.keys(tracks)[0]);
+  const [nowPlaying, setNowPlaying] = useState(Object.keys(tracks)[0]);
   const nodeKeys = Object.keys(tracks);
   const theme = useTheme();
   const bigScr = useMediaQuery(theme.breakpoints.up('sm'));
 
   useEffect (() => {
+    console.log("YOOO")
     setNowPlaying(Object.keys(tracks)[0])
   },[])
 

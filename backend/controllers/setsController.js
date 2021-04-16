@@ -24,9 +24,20 @@ export const setsController = {
     }
   },
 
+  
+  async allSets(req, res, next) {
+    try {
+      const sets = await setsService.getAllSets();
+      res.status(200).json(sets);
+    } catch (error) {
+      next(error);
+    }
+  },
+
   async userSets(req, res, next) {
     try {
-      const userId = req.user.id;
+      const userId = req.user.id || req.params.userId;
+      console.log(userId);
       const sets = await setsService.getUserSets(userId);
       res.status(200).json(sets);
     } catch (error) {
@@ -37,11 +48,12 @@ export const setsController = {
   async getSetContents(req, res, next) {
     try {
       const { setId } = req.params;
-      const userId = req.user.id;
-      const setData = await setsService.setData(setId);
-      const sounds = await soundsService.getSounds(setId, userId);
-      const loops = await loopsService.getLoops(setId, userId);
-      const data = { set: setData[0], tracks: sounds, loops };
+      const set = await setsService.setData(setId);
+      const tracks = await soundsService.getSounds(setId);
+      const loops = await loopsService.getLoops(setId);
+      const data = { set, tracks, loops };
+      if (!data.tracks[0]) delete data.tracks;
+      if (!data.loops[0]) delete data.loops;
       res.status(200).json(data);
     } catch (error) {
       next(error);

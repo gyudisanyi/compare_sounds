@@ -7,11 +7,11 @@ export const usersRepo = {
     return newUser;
   },
   async getUserByUsername(username) {
-    const sql = 'SELECT iduser, username, user_type, password_hash as passwordHash FROM users WHERE username=?;';
+    const sql = 'SELECT iduser AS id, username, user_type, password_hash as passwordHash FROM users WHERE username=?;';
     return await queryAsync(sql, [username]);
   },
   async getUserById(userId) {
-    const sql = 'SELECT iduser, username, user_type, password_hash as passwordHash FROM users WHERE iduser=?;';
+    const sql = 'SELECT iduser AS id, username, user_type, password_hash as passwordHash FROM users WHERE iduser=?;';
     return await queryAsync(sql, [userId]);
   },
   async getPassword(username) {
@@ -20,7 +20,7 @@ export const usersRepo = {
   },
 
   async getAllUsers() {
-    const sql = 'SELECT iduser, username, user_type FROM users';
+    const sql = 'SELECT iduser AS id, username, user_type FROM users';
     return await queryAsync(sql, []);
   },
 };

@@ -1,9 +1,9 @@
 import queryAsync from '../database.js';
 
 export const soundsRepo = {
-  async getSounds(setId, userId) {
-    const sql = 'SELECT idsound AS id, title, filename, description, img_url FROM sounds WHERE set_id = ? and user_id = ? AND deleted IS NULL;'
-    return await queryAsync(sql, [setId, userId]);
+  async getSounds(setId) {
+    const sql = 'SELECT idsound AS id, title, filename, description, img_url FROM sounds WHERE set_id = ? AND deleted IS NULL;'
+    return await queryAsync(sql, [setId]);
   },
   async newSound(filename, title, description, setId, userId) {
     console.log(title);

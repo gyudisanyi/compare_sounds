@@ -13,7 +13,6 @@ async function generalFetch(endpoint, method, bodyData = undefined) {
     const token = localStorage.getItem('token');
     requestOptions.headers.Authorization = `Bearer ${token}`;
   }
-
   
   if (bodyData !== undefined) { requestOptions.body = JSON.stringify(bodyData); }
   
@@ -26,6 +25,7 @@ async function generalFetch(endpoint, method, bodyData = undefined) {
   const httpResponse = await fetch(`${process.env.REACT_APP_API_URL+endpoint}`, requestOptions);
   
   const response = await httpResponse.json();
+  console.log(response);
   const { status } = httpResponse;
   const { message } = response;
   
