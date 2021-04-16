@@ -5,7 +5,7 @@ export const setsController = {
 
   async newSet(req, res, next) {
     try {
-      const userId = req.user.id;
+      const userId = req.user.userid;
       const newSetId = await setsService.newSet(userId);
       res.status(201).json({"newSetId":newSetId});
     } catch (error) {
@@ -36,7 +36,7 @@ export const setsController = {
 
   async userSets(req, res, next) {
     try {
-      const userId = req.user.id || req.params.userId;
+      const userId = req.user.userid || req.params.userId;
       console.log(userId);
       const sets = await setsService.getUserSets(userId);
       res.status(200).json(sets);
@@ -52,8 +52,6 @@ export const setsController = {
       const tracks = await soundsService.getSounds(setId);
       const loops = await loopsService.getLoops(setId);
       const data = { set, tracks, loops };
-      if (!data.tracks[0]) delete data.tracks;
-      if (!data.loops[0]) delete data.loops;
       res.status(200).json(data);
     } catch (error) {
       next(error);
@@ -64,7 +62,7 @@ export const setsController = {
     try {
       const form = formidable({multiples: true});
       const { setId } = req.params;
-      const userId = req.user.id;
+      const userId = req.user.userid;
       let data = await new Promise((resolve, reject) => {
       form.parse(req, (err, fields, files) => {
         if (err) {

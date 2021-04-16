@@ -1,10 +1,22 @@
-import React from 'react';
-import {GridListTileBar, } from '@material-ui/core';
+import React, {useState} from 'react';
+import {GridListTileBar} from '@material-ui/core';
+import IconButton from '@material-ui/core/IconButton';
+import { InsertPhoto } from '@material-ui/icons/';
+import UploadImage from '../UploadImage/UploadImage';
 
 export default function SetListItem({set}) {
   const {id, title, description, img_url} = set;
   const url = process.env.REACT_APP_API_URL;
-  console.log({set})
+  
+  const [ imgUploadOpen, setImgUploadOpen ] = useState(false);
+
+  const handleImgOpen = () => {
+    setImgUploadOpen(true);
+  }
+
+  const handleImgClose = () => {
+    setImgUploadOpen(false);
+  }
 
   return (
     <>
@@ -12,7 +24,13 @@ export default function SetListItem({set}) {
       <GridListTileBar
         title={title}
         subtitle={description}
-        />
+        actionIcon={
+          <IconButton onClick={handleImgOpen} aria-label={`change pic`} color="secondary">
+            <InsertPhoto/>
+          </IconButton>
+        }
+      />
+      <UploadImage open={imgUploadOpen} onClose={handleImgClose} setId={id} trackId={0} />
     </>
   )
 }

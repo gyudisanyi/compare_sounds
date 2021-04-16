@@ -3,7 +3,7 @@ import { loopsService } from "../services/index.js";
 export const loopsController = {
   async newLoop(req, res, next) {
     const setId = req.params.setId;
-    const userId = req.user.id;
+    const userId = req.user.userid;
     const loop = req.body;
     try {
       const returnData = await loopsService.newLoop(setId, userId, loop);

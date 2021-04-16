@@ -5,8 +5,8 @@ import config from '../config.js';
 
 export const loginService = {
 
-  generateAccessToken({ id, username, usertype }) {
-    return jwt.sign({ id, username, usertype }, config.secret || 'someOtherSecret', { expiresIn: '1800000s' });
+  generateAccessToken({ username, usertype, userid }) {
+    return jwt.sign({ username, usertype, userid }, config.secret || 'someOtherSecret', { expiresIn: '1800000s' });
   },
 
   async getToken(username, password) {

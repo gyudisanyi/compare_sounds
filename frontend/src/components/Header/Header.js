@@ -32,7 +32,7 @@ export default function Header() {
   
   const path = useHistory();
   const context = useContext(GlobalContext);
-  
+  console.log({context})
   const [anchorEl, setAnchorEl] = useState(null);
   const [editOpen, setEditOpen] = useState(false);
 

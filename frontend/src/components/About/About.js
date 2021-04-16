@@ -13,7 +13,7 @@ export default function About({ onClose, open }) {
         <CardContent>
           <DialogTitle>About CompareSounds</DialogTitle>
           I didd that
-      </CardContent>
+        </CardContent>
       </Card>
     </Dialog>
   )

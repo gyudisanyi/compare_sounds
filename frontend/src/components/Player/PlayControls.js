@@ -5,8 +5,6 @@ import { VolumeUp, VolumeOff } from '@material-ui/icons';
 export default function PlayControls({props}) {
   const { trackNodes, nodeKeys, nowPlaying, bigScr } = props;
 
-  console.log(trackNodes)
-
   const [paused, setPaused] = useState(true);
   const [volume, setVolume] = useState(50);
   const [muted, setMuted] = useState(false)
@@ -34,7 +32,7 @@ export default function PlayControls({props}) {
       <Box display="flex"
         flexDirection={bigScr ? "column" : "row"}
         justifyContent={bigScr ? "center" : "stretch"}
-        minWidth={!bigScr?"7em":""}
+        minWidth={!bigScr?"80%":""}
         minHeight={bigScr?"7em":""}
         alignItems="center">
         { muted 

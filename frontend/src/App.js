@@ -5,6 +5,7 @@ import {
   Route,
 } from "react-router-dom";
 
+import Set from './pages/Set/Set';
 import Sets from './pages/Sets/Sets';
 import User from './pages/User/User';
 import Users from './pages/Users/Users';
@@ -24,6 +25,9 @@ export default function App() {
               <Users />
             </Route>
             <Route path="/sets/:id">
+              <Set />
+            </Route>
+            <Route path="/sets/">
               <Sets />
             </Route>
             <Route path="/:id">

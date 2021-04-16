@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { Card, CardContent, CardMedia } from '@material-ui/core';
+import UploadImage from '../UploadImage/UploadImage';
 
 const useStyles = makeStyles({
   root: {
@@ -21,18 +22,32 @@ const useStyles = makeStyles({
 })
 
 export default function TrackDescription({props}) {
-  console.log(props)
+
   const { track, url, set} = props;
   const { description, img_url } = track;
   const classes = useStyles();
+  const [ imgUploadOpen, setImgUploadOpen ] = useState(false);
+
+  const handleImgOpen = () => {
+    setImgUploadOpen(true);
+  }
+
+  const handleImgClose = () => {
+    setImgUploadOpen(false);
+  }
 
   return (
+
     <Card className={classes.root} raised>
       <CardContent className={classes.description}>{description}</CardContent>
       <CardMedia
-      className={classes.media}
-      image={`${url+'audio_src/'+set}/img/${img_url}`}
-              />
+        style={{ backgroundColor: "gray" }}
+        onClick={handleImgOpen}
+        className={classes.media}
+        image={`${url + 'audio_src/' + set}/img/${img_url}`
+        }
+      />
+      <UploadImage open={imgUploadOpen} onClose={handleImgClose} setId={set} trackId={track.id} />
     </Card>
 
   )

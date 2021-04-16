@@ -8,24 +8,24 @@ import PlayControls from './PlayControls';
 import TrackDescription from './TrackDescription';
 import TracksList from './TracksList';
 import ProgressBar from './ProgressBar';
-import LoopBar from './LoopBar';
 
 export default function Player() {
   const context = useContext(GlobalContext);
-  const {trackNodes, collection, url} = context;
-  const {tracks, set} = collection;
-  console.log(Object.keys(tracks)[0]);
-  const [nowPlaying, setNowPlaying] = useState(Object.keys(tracks)[0]);
+  const url = process.env.REACT_APP_API_URL;
+  const { trackNodes } = context;
+  const { tracks, set } = context.setData;
+  const [nowPlaying, setNowPlaying] = useState();
   const nodeKeys = Object.keys(tracks);
   const theme = useTheme();
   const bigScr = useMediaQuery(theme.breakpoints.up('sm'));
 
   useEffect (() => {
-    console.log("YOOO")
-    setNowPlaying(Object.keys(tracks)[0])
+    try {
+      setNowPlaying(Object.keys(tracks)[0])
+    } catch {
+      console.log("NO TRX")
+    }
   },[])
-
-  console.log(nowPlaying, {tracks}, {trackNodes})
 
   return (
     <Card>
@@ -37,11 +37,10 @@ export default function Player() {
         <Grid item xs={12} sm={2}><PlayControls props={{trackNodes, nodeKeys, nowPlaying, bigScr}}/></Grid>
       </Grid>
       <Grid container>
-        <Grid item xs={12}><ProgressBar props={{loops: ""}}/></Grid>
-        <Grid item xs={12}><LoopBar /></Grid>
+        <Grid item xs={12}><ProgressBar /></Grid>
       </Grid>
       </CardContent>
-      : `Empty set. Plz upload stuff!` }
+      : `tracks pliz` }
     </Card>
   )
 }

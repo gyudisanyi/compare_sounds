@@ -21,5 +21,11 @@ export const soundsRepo = {
   async deleteSound(soundId) {
     const sql = 'UPDATE sounds SET deleted=NOW() WHERE idsound=?';
     return await queryAsync(sql, [soundId]);
+  },
+
+  async addImage(trackId, name) {
+    const sql = 'UPDATE sounds SET img_url=? WHERE idsound=?';
+    return await queryAsync(sql, [name, trackId])
   }
+
 }

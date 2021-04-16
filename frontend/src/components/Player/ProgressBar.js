@@ -9,11 +9,13 @@ export default function ProgressBar() {
   const resolution = 1000;
 
   const context = useContext(GlobalContext);
+  const  { loops } = context.setData;
+  const [actualLoop, setActualLoop] = useState([10, 200])
 
-  const [looping, setLooping] = useState(false);
   const [snap, setSnap] = useState(false);
+  const [looping, setLooping] = useState(false);
+  const [customLoop, setCustomLoop] = useState([130, 250]);
 
-  const { loops } = context.collection;
   const loopsArray = Object.values(Object.values(loops))
     .sort((a, b) => a.start - b.start)
     .map((loop) => ({ range: [loop.start, loop.end], description: loop.description }));
@@ -36,6 +38,7 @@ export default function ProgressBar() {
     markActive: { backgroundColor: secondaryColor },
     markLabel: { transform: "translateX(0%)" },
   })(Slider);
+
   const [progress, setProgress] = useState(0);
 
   useEffect(() => {
@@ -44,14 +47,34 @@ export default function ProgressBar() {
     });
   }, []);
 
+  useEffect(() => {
+    
+    if (!looping) return;
+    if (progress >= actualLoop[1]) {
+      allTracks.forEach((track) => track.currentTime = actualLoop[0] / resolution * track.duration)
+    }
+
+  }, [progress, actualLoop, looping, allTracks])
+
   const seek = (value) => {
-    // const loopsAhead = loops.filter((loop) => loop.range[1] > value);
-    // const nextLoop = loopsAhead[0] ? loopsAhead[0].range : [0, 1000];
-    // if (!loopsAhead[0]) { setLooping(false) };
-    // setActualLoop(nextLoop);
-    // if (!context.trackNodes[nodeKeys[0]]) return;
+    const loopsAhead = loopsArray.filter((loop) => loop.range[1] > value);
+    const nextLoop = loopsAhead[0] ? loopsAhead[0].range : [0, 1000];
+    if (!loopsAhead[0]) { setLooping(false) };
+    setActualLoop(nextLoop);
+    if (!allTracks[0]) return;
     let seekSeconds = (value / resolution) * allTracks[0].duration;
     allTracks.forEach((trackNode) => trackNode.currentTime = seekSeconds || 0);
+  }
+
+  function handleCustomLoop (value) {
+    setCustomLoop(value);
+    setActualLoop(value);
+    setLooping(true);
+  }
+
+  function isItActual() {
+    if (actualLoop[0] === customLoop[0] && actualLoop[1] === customLoop[1]) return 'secondary';
+    return 'primary';
   }
 
   return (
@@ -60,7 +83,20 @@ export default function ProgressBar() {
         <FormControlLabel key={`loop`} control={<Switch checked={looping} onClick={() => setLooping(o => !o)} />} label="Loops" labelPlacement="end" />
         <FormControlLabel key={`snap`} control={<Switch checked={snap} onClick={() => setSnap(o => !o)} />} label="Snap" labelPlacement="end" />
       </FormControl>
-      <ProgressBar step={snap ? null : 1} marks={marks} max={resolution} value={progress} valueLabelDisplay="auto" onChange={(e, value) => seek(value)} />
+      <ProgressBar
+        step={snap ? null : 1} 
+        marks={marks} 
+        max={resolution} 
+        value={progress} 
+        valueLabelDisplay="auto" 
+        onChange={(e, value) => seek(value)} />
+      <Slider 
+        max={resolution}
+        value={customLoop}
+        color={isItActual()}
+        onChange={(e, value) => handleCustomLoop(value)}/>
+        
+
     </>
   )
 }

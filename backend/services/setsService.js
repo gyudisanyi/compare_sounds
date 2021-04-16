@@ -1,6 +1,8 @@
 import { setsRepo } from '../repositories/index.js';
 import objectifier from './objectifier.js';
 
+import fs from 'fs-extra';
+
 export const setsService = {
   async newSet(userId) {
     let Data = await setsRepo.newSet(userId);
@@ -28,6 +30,13 @@ export const setsService = {
   },
   async setDescription(description, setId, userId) {
     return await setsRepo.setDescription(description, setId, userId);
+  },
+  async uploadImage(image, setId) {
+    const uploadPath = `./public/audio_src/${setId}/img/`;
+    console.log(uploadPath);
+    await fs.ensureFile(uploadPath+image.name);
+    await fs.copy(image.path, uploadPath+image.name);
+    return await setsRepo.addImage(setId, image.name);
   },
 
 }

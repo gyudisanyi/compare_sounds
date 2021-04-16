@@ -29,6 +29,7 @@ export default function EditSet({ onClose, open }) {
   const fullScreen = useMediaQuery(theme.breakpoints.down('sm'));
 
   const context = useContext(GlobalContext);
+  const { set, tracks } = context.setData;
 
   const [Files, setFiles] = useState([]);
 
@@ -38,15 +39,15 @@ export default function EditSet({ onClose, open }) {
 
   const { getRootProps, getInputProps } = useDropzone({ onDrop });
 
-  const [updateSet, setupdateSet] = useState({ Title: context.collection.set.title, Description: context.collection.set.description })
+  const [updateSet, setupdateSet] = useState({ Title: set.title, Description: set.description })
   const [newTracks, setNewTracks] = useState({ titles: {}, descriptions: {} });
   const [oldTracks, setOldTracks] = useState({ updateTitles: {}, updateDescriptions: {}, todelete: {} });
 
   useEffect(() => {
     setNewTracks({ titles: {}, descriptions: {} });
     setOldTracks({ updateTitles: {}, updateDescriptions: {}, todelete: {} });
-    setupdateSet({ Title: context.collection.set.title, Description: context.collection.set.description });
-  }, [context.collection.set]);
+    setupdateSet({ Title: set.title, Description: set.description });
+  }, [set]);
 
   const handleClose = () => {
     onClose();
@@ -83,7 +84,7 @@ export default function EditSet({ onClose, open }) {
 
   
   const deleteSet = async () => {
-    await generalFetch("sets/"+context.collection.set.id, "DELETE");
+    await generalFetch("sets/"+set.id, "DELETE");
     path.push(`/sets/${Object.keys(context.sets)[0]}`);
     onClose();
     window.location.reload();
@@ -107,7 +108,7 @@ export default function EditSet({ onClose, open }) {
     formdata.append("form", JSON.stringify(form))
 
     try {
-      const feedback = await generalFetch(`sets/${context.collection.set.id}/`, "PATCH", formdata);
+      const feedback = await generalFetch(`sets/${set.id}/`, "PATCH", formdata);
       console.log(feedback);
       const editedCollection = { ...context.collection };
       editedCollection.set.title = form.updateSet.Title;
@@ -126,10 +127,10 @@ export default function EditSet({ onClose, open }) {
     onClose();
   };
 
-  const existingTracksList = Object.keys(context.collection.tracks).map((key) => (
+  const existingTracksList = Object.keys(tracks).map((key) => (
     <FormControl key={key} fullWidth={true}>
       <FormControlLabel
-        label={`Delete ${context.collection.tracks[key].title}`}
+        label={`Delete ${tracks[key].title}`}
         control=
         {<Checkbox
           name="todelete"
@@ -148,7 +149,7 @@ export default function EditSet({ onClose, open }) {
         multiline rows={2}
         label="New description"
         name="updateDescriptions"
-        placeholder={context.collection.tracks[key].description}
+        placeholder={tracks[key].description}
         key={`ed ${key}`} id={`ed ${key}`} />
     </FormControl>
   )
@@ -183,7 +184,7 @@ export default function EditSet({ onClose, open }) {
     <Dialog maxWidth="md" onClose={handleClose} open={open} fullScreen={fullScreen} scroll="body">
 
       <DialogTitle>
-        Edit {context.collection.set.title}
+        Edit {set.title}
         <IconButton className={classes.closeButton} aria-label="close" onClick={handleClose}>
           <CloseIcon />
         </IconButton>
@@ -206,7 +207,7 @@ export default function EditSet({ onClose, open }) {
           <FormGroup onChange={handleNewTracks}>
             {acceptedFileItems}
           </FormGroup>
-
+          
           <DropZone getRootProps={getRootProps} getInputProps={getInputProps} />
 
           <Button type="submit" variant="contained" color="primary" onClick={handleSubmission}>Submit</Button>
