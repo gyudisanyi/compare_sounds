@@ -14,7 +14,7 @@ export const loopsController = {
   },
   async editLoops(req, res, next) {
     const loops = req.body;
-    Object.keys(loops.loops).forEach((key) => loops.loops[key].id = key);
+    console.log(loops);
     const loopsArray=Object.values(loops.loops)
     try {
       const data = await loopsService.updateLoops(loopsArray);

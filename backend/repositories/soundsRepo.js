@@ -5,10 +5,9 @@ export const soundsRepo = {
     const sql = 'SELECT idsound AS id, title, filename, description, img_url, duration FROM sounds WHERE set_id = ? AND deleted IS NULL;'
     return await queryAsync(sql, [setId]);
   },
-  async newSound(filename, title, description, setId, userId) {
-    
-    const sql = 'INSERT INTO sounds (filename, title, description, set_id, user_id) VALUES (?, ?, ?, ?, ?);'
-    return await queryAsync(sql, [filename, title, description, setId, userId]);
+  async newSound(name, duration, setId, userId) {
+    const sql = 'INSERT INTO sounds (title, description, filename, duration, set_id, user_id) VALUES ("Add title", "Add description", ?, ?, ?, ?);'
+    return await queryAsync(sql, [name, duration, setId, userId]);
   },
   async changeTitle(soundId, title) {
     const sql = 'UPDATE sounds SET title=? WHERE idsound=?;';

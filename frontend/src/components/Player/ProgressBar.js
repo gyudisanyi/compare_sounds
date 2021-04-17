@@ -1,6 +1,19 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { withStyles } from '@material-ui/core/styles';
-import { Slider, Switch, FormControl, FormControlLabel } from '@material-ui/core';
+import { 
+  Slider,
+  Switch,
+  Box, 
+  FormControl, 
+  FormControlLabel, 
+  FormGroup, 
+  TextField, 
+  Button } from '@material-ui/core';
+
+import generalFetch from '../../utilities/generalFetch';
+
+import ManageLoops from '../ManageLoops/ManageLoops';
+
 import rangesToGradient from '../../utilities/rangesToGradient';
 import GlobalContext from '../../context/GlobalContext';
 
@@ -8,14 +21,16 @@ export default function ProgressBar({props}) {
 
   const {progress, resolution} = props
   const context = useContext(GlobalContext);
-  const  { loops } = context.setData;
-  const duration = context.setData.set.duration;
-  console.log(duration, progress);
+  const  { loops, set } = context.setData;
+  const { duration, username } = set;
+  const own = (username === localStorage.getItem('username'))
   const [actualLoop, setActualLoop] = useState([10, 200])
 
   const [snap, setSnap] = useState(false);
   const [looping, setLooping] = useState(false);
   const [customLoop, setCustomLoop] = useState([130, 250]);
+  const [customLoopName, setCustomLoopName] = useState('Loop');
+  const [loopsOpen, setLoopsOpen] = useState(false);
 
   const loopsArray = Object.values(Object.values(loops))
     .sort((a, b) => a.start - b.start)
@@ -39,6 +54,14 @@ export default function ProgressBar({props}) {
     markActive: { backgroundColor: secondaryColor },
     markLabel: { transform: "translateX(0%)" },
   })(Slider);
+
+  const handleLoopsOpen = () => {
+    setLoopsOpen(true);
+  }
+
+  const handleLoopsClose = () => {
+    setLoopsOpen(false);
+  }
 
   useEffect(() => {
     if (progress >= resolution) {
@@ -67,6 +90,40 @@ export default function ProgressBar({props}) {
     setLooping(true);
   }
 
+  function handleCustomLoopInput ({target}) {
+    console.log({target});
+    const newLoop=[...customLoop];
+    newLoop[target.id]=[target.value];
+    setCustomLoop(newLoop);
+    setActualLoop(newLoop);
+    setLooping(true);
+  }
+
+  const buttontext = () => {
+    if (!own) return `You can save loops for your own sets.`
+    try {
+      if (Object.keys(loops).length > 4) return `Max 5 loops`
+    } catch {
+      console.log("Ach so")
+    }
+    return `Save loop`
+  }
+
+  async function saveCustomLoop (event) {
+    const loopData = {
+      description: customLoopName || "Loop",
+      start: customLoop[0],
+      end: customLoop[1],
+    }
+    const res = await generalFetch('loops/'+set.id, "POST", loopData);
+    console.log(res);
+    window.location.reload();
+  }
+
+  function enterLoopName (event) {
+    setCustomLoopName(event.target.value);
+  }
+
   function isItActual() {
     if (actualLoop[0] === customLoop[0] && actualLoop[1] === customLoop[1]) return 'secondary';
     return 'primary';
@@ -76,7 +133,10 @@ export default function ProgressBar({props}) {
     <>
       <FormControl>
         <FormControlLabel key={`loop`} control={<Switch checked={looping} onClick={() => setLooping(o => !o)} />} label="Loops" labelPlacement="end" />
+      { marks[0] ?
         <FormControlLabel key={`snap`} control={<Switch checked={snap} onClick={() => setSnap(o => !o)} />} label="Snap" labelPlacement="end" />
+      : ``
+      }
       </FormControl>
       <ProgressBar
         step={snap ? null : 1} 
@@ -89,8 +149,22 @@ export default function ProgressBar({props}) {
         max={resolution}
         value={customLoop}
         color={isItActual()}
-        onChange={(e, value) => handleCustomLoop(value)}/>
-        
+        onChange={(e, value) => handleCustomLoop(value)} />
+      <FormGroup row label="custom loop" onChange={handleCustomLoopInput}>
+        <TextField variant="outlined" label="name" onChange={enterLoopName} />
+        <Box width={80}>
+          <TextField variant="outlined" label="start" type="number" id="0" value={customLoop[0]} />
+        </Box>
+        <Box width={80}>
+          <TextField variant="outlined" label="end" type="number" id="1" value={customLoop[1]} />
+        </Box>
+      </FormGroup>
+        <Button type="submit" disabled={buttontext() !== `Save loop`} onClick={saveCustomLoop}>{buttontext()}</Button>
+        { own ?
+          <Button onClick={handleLoopsOpen}>Manage saved loops</Button>
+          : ``
+        }
+      <ManageLoops open={loopsOpen} onClose={handleLoopsClose} />
 
     </>
   )
