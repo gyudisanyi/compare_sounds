@@ -1,8 +1,7 @@
-import React, { useEffect, useCallback, useContext, useState } from 'react';
+import React, { useEffect, useContext, useState } from 'react';
 import { useHistory } from 'react-router-dom';
-import { useDropzone } from 'react-dropzone';
 import { FormGroup, FormControl, FormControlLabel, Checkbox } from '@material-ui/core';
-import { Button, IconButton, Dialog, DialogTitle, DialogContent, Card, CardHeader, CardContent, TextField } from '@material-ui/core';
+import { Button, IconButton, Dialog, DialogTitle, DialogContent, Card, CardContent, TextField } from '@material-ui/core';
 import ClearIcon from '@material-ui/icons/Clear';
 import CloseIcon from '@material-ui/icons/Close';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
@@ -31,45 +30,16 @@ export default function EditSet({ onClose, open }) {
   const context = useContext(GlobalContext);
   const { set, tracks } = context.setData;
 
-  const [Files, setFiles] = useState([]);
-
-  const onDrop = useCallback(acceptedFiles => {
-
-    setFiles([...Files, ...acceptedFiles])
-
-  }, [Files])
-
-  const { getRootProps, getInputProps } = useDropzone({ onDrop, accept: 'audio/*' });
-
   const [updateSet, setupdateSet] = useState({ Title: set.title, Description: set.description })
-  const [newTracks, setNewTracks] = useState({ titles: {}, descriptions: {} });
   const [oldTracks, setOldTracks] = useState({ updateTitles: {}, updateDescriptions: {}, todelete: {} });
 
   useEffect(() => {
-    setNewTracks({ titles: {}, descriptions: {} });
     setOldTracks({ updateTitles: {}, updateDescriptions: {}, todelete: {} });
     setupdateSet({ Title: set.title, Description: set.description });
   }, [set]);
 
   const handleClose = () => {
     onClose();
-  }
-
-  const handleNewTracks = ({ target }) => {
-    const tracksNow = { ...newTracks };
-    const id = target.id.split(' ')[1];
-    tracksNow[target.name][id] = target.value || id;
-    setNewTracks(tracksNow);
-  }
-
-  const removeFile = (file) => {
-    const newFiles = [...Files];
-    newFiles.splice(newFiles.indexOf(file), 1);
-    setFiles(newFiles);
-    const tracksNow = { ...newTracks };
-    delete tracksNow.titles[file.name];
-    delete tracksNow.descriptions[file.name];
-    setNewTracks(tracksNow);
   }
 
   const handleOldTracks = ({ target }) => {
@@ -96,18 +66,11 @@ export default function EditSet({ onClose, open }) {
     
     const formdata = new FormData();
 
-    Files.forEach((file) => {
-      newTracks.titles[file.name] = newTracks.titles[file.name] || file.name;
-      newTracks.descriptions[file.name] = newTracks.descriptions[file.name] || "Add description";
-    });
-
     const form = {
       updateSet,
       oldTracks,
-      newTracks
     }
 
-    Files.forEach((file) => formdata.append("Files", file));
     formdata.append("form", JSON.stringify(form))
 
     try {
@@ -126,8 +89,7 @@ export default function EditSet({ onClose, open }) {
     catch (error) {
       console.log(error);
     };
-    return;
-    if (Files) { console.log("FILES"); window.location.reload(); }
+    window.location.reload(); 
     onClose();
   };
 
@@ -156,33 +118,8 @@ export default function EditSet({ onClose, open }) {
         placeholder={tracks[key].description}
         key={`ed ${key}`} id={`ed ${key}`} />
     </FormControl>
-  )
-  )
-
-  const acceptedFileItems = Files.map((file) => (
-    <FormControl key={file.name} fullWidth={true}>
-      <Button
-        key={file.name}
-        onClick={() => removeFile(file)}>
-        <ClearIcon />
-      </Button>
-      <TextField
-        variant="outlined"
-        label={`${file.name} title`}
-        name="titles"
-        defaultValue={file.name}
-        key={`t ${file.name}`}
-        id={`t ${file.name}`} />
-      <TextField
-        variant="outlined"
-        multiline rows={2}
-        label="Description"
-        name="descriptions"
-        defaultValue="Add description"
-        key={`d ${file.name}`}
-        id={`d ${file.name}`} />
-    </FormControl>
-  ));
+  ))
+  
 
   return (
     <Dialog maxWidth="md" onClose={handleClose} open={open} fullScreen={fullScreen} scroll="body">
@@ -203,19 +140,10 @@ export default function EditSet({ onClose, open }) {
               </FormGroup>
             </CardContent>
           </Card>
-
           <FormGroup row onChange={handleOldTracks}>
             {existingTracksList}
           </FormGroup>
-
-          <FormGroup onChange={handleNewTracks}>
-            {acceptedFileItems}
-          </FormGroup>
-          
-          <DropZone getRootProps={getRootProps} getInputProps={getInputProps} />
-
           <Button type="submit" variant="contained" color="primary" onClick={handleSubmission}>Submit</Button>
-          
           <Button color="inherit" onClick={deleteSet}>Delete</Button>
         </FormControl>
       </DialogContent>
