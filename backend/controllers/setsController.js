@@ -73,7 +73,7 @@ export const setsController = {
         resolve ({fields, files})
       })});
 
-      let formObj=JSON.parse(data.fields.form);
+      let formObj = JSON.parse(data.fields.form);
       
       const {
         Title,
@@ -87,8 +87,7 @@ export const setsController = {
       } = formObj.oldTracks;
       
       const Files = data.files.Files;
-      console.log(Files);
-      return;
+      console.log(formObj);
       const ToDelete = Object.keys(todelete).filter(k=>todelete[k]);
       
       if (Files) await soundsService.uploadFiles(Files, setId);

@@ -1,10 +1,13 @@
-import React from 'react';
-import { FormControl, FormControlLabel, RadioGroup, Radio} from '@material-ui/core';
+import React, { useState } from 'react';
+import { Button, FormControl, FormControlLabel, RadioGroup, Radio} from '@material-ui/core';
+import UploadTracks from '../UploadTracks/UploadTracks';
 
 export default function TracksList({ props }) {
   
-  const { trackNodes, nodeKeys, tracks, nowPlaying, setNowPlaying } = props;
+  const { trackNodes, nodeKeys, tracks, nowPlaying, setNowPlaying, userId } = props;
   
+  const [ uploadOpen, setUploadOpen ] = useState(false);
+
   function switchTrack(value) {
     trackNodes[nowPlaying].muted = true;
     try {
@@ -17,8 +20,16 @@ export default function TracksList({ props }) {
     setNowPlaying(value);
   }
 
-  return (
+  const handleUploadOpen = () => {
+    setUploadOpen(true);
+  }
 
+  const handleUploadClose = () => {
+    setUploadOpen(false);
+  }
+
+  return (
+    <>
     <FormControl>
       <RadioGroup row aria-label="sources" name="source" value={nowPlaying}>
         {Object.keys(tracks).map((key) =>
@@ -26,5 +37,12 @@ export default function TracksList({ props }) {
         )}
       </RadioGroup>
     </FormControl>
+    { parseInt(localStorage.getItem('userid')) === userId 
+      ? <>
+        <Button onClick={handleUploadOpen}>Add tracks (up to {4 - Object.keys(tracks).length} more)</Button>
+        <UploadTracks open={uploadOpen} onClose={handleUploadClose} maxFiles={4 - Object.keys(tracks).length}/>
+        </>
+      : ``}
+    </>
   )
 }

@@ -10,7 +10,6 @@ export default function ProgressBar({props}) {
   const context = useContext(GlobalContext);
   const  { loops } = context.setData;
   const duration = context.setData.set.duration;
-  console.log(duration, progress);
   const [actualLoop, setActualLoop] = useState([10, 200])
 
   const [snap, setSnap] = useState(false);

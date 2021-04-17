@@ -6,6 +6,7 @@ import {
   loginController,
   usersController,
   setsController,
+  soundsController,
   loopsController,
   imagesController,
 } from '../controllers/index.js';
@@ -19,6 +20,7 @@ router.get('/sets', setsController.allSets);
 router.get('/user/:username', usersController.getUserSets);
 router.use(authHandler);
 router.patch('/img/:setId', imagesController.newImage);
+router.post('/sounds/:setId', soundsController.newSounds);
 router.post('/loops/:setId', loopsController.newLoop);
 router.patch('/loops/:setId', loopsController.editLoops);
 router.post('/sets/new', setsController.newSet);

@@ -9,15 +9,13 @@ export const soundsService = {
     return objectifier(await soundsRepo.getSounds(setId));
   },
 
-  async uploadFiles(Files, setId) {
+  async uploadSound(sound, duration, setId, userId) {
+    const { name } = sound;
     const uploadPath = `./public/audio_src/${setId}/`;
-    if (!Array.isArray(Files)) { Files = [Files] };
-    await Promise.all(Files.map((file) =>
-      fs.ensureFile(uploadPath+file.name)
-    ));
-    return Promise.all(Files.map((file) =>
-        fs.copy(file.path, uploadPath+file.name)
-    ));
+    await fs.ensureFile(uploadPath+name)
+    await fs.copy(sound.path, uploadPath+name)
+    console.log("SERV", name, duration, setId, userId);
+    return await soundsRepo.newSound(name, duration, setId, userId);
   },
 
   async uploadImage(image, setId, trackId) {

@@ -11,7 +11,6 @@ import { useTheme, makeStyles } from '@material-ui/core/styles';
 import generalFetch from '../../utilities/generalFetch';
 
 import GlobalContext from '../../context/GlobalContext';
-import { FileCopySharp } from '@material-ui/icons';
 
 const useStyles = makeStyles((theme) => ({
   closeButton: {
@@ -114,7 +113,6 @@ export default function EditSet({ onClose, open }) {
     try {
       const feedback = await generalFetch(`sets/${set.id}/`, "PATCH", formdata);
       console.log(feedback);
-      return;
       const editedCollection = { ...context.collection };
       editedCollection.set.title = form.updateSet.Title;
       editedCollection.set.description = form.updateSet.Description;

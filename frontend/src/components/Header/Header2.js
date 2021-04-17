@@ -131,13 +131,6 @@ export default function Header() {
                   :
                   ` by ${set.username}`
                 }
-                {context.url === "../"
-                  ?
-                  <Button color="inherit"
-                    onClick={Reload}>
-                    Reload
-              </Button>
-                  : ``}
               </Typography>
             </Toolbar>
           </>

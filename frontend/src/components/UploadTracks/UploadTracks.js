@@ -1,7 +1,9 @@
-import React from 'react';
-import { DialogTitle, Dialog, Card, CardContent, Button, IconButton } from '@material-ui/core';
+import React, { useContext } from 'react';
+import { DialogTitle, Dialog, Card, CardContent, IconButton } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import CloseIcon from '@material-ui/icons/Close';
+
+import GlobalContext from '../../context/GlobalContext';
 
 import 'react-dropzone-uploader/dist/styles.css'
 import Dropzone from 'react-dropzone-uploader'
@@ -19,16 +21,18 @@ const requestHeaders = {
   Authorization: `Bearer ${localStorage.getItem('token')}`,
 }
 
-export default function UploadImage({ onClose, open, setId, trackId }) {
+export default function UploadTracks({ onClose, open, maxFiles }) {
 
+  const context = useContext(GlobalContext);
+  const setId = context.setData.set.id;
   const classes = useStyles();
 
   const getUploadParams = ({ file, meta }) => {
-    const url = process.env.REACT_APP_API_URL+'img/'+setId;
+    const url = process.env.REACT_APP_API_URL+'sounds/'+setId;
     const body = new FormData()
     body.append('Files', file);
-    body.append('Id', trackId);
-    return { url, method: "PATCH", headers: requestHeaders, body, meta: { fileUrl: `${url}/${encodeURIComponent(meta.name)}` } }
+    body.append('durations', meta.duration);
+    return { url, method: "POST", headers: requestHeaders, body, meta: { fileUrl: `${url}/${encodeURIComponent(meta.name)}` } }
   }
 
   const handleChangeStatus = ({ meta }, status) => {
@@ -52,19 +56,19 @@ export default function UploadImage({ onClose, open, setId, trackId }) {
       <Card>
         <CardContent>
           <DialogTitle>
-            Upload image
+            Upload tracks
             <IconButton className={classes.closeButton} aria-label="close" onClick={handleClose}>
               <CloseIcon />
             </IconButton>
           </DialogTitle>
           <Dropzone
             getUploadParams={getUploadParams}
-            maxFiles={1}
-            multiple={false}
+            maxFiles={maxFiles}
+            multiple={true}
+            inputWithFilesContent={(files, extra) => (extra.reject ? 'Audio files only' :`${maxFiles - files.length} more`)}
             onChangeStatus={handleChangeStatus}
             onSubmit={handleSubmit}
-            accept="image/*"
-            inputContent={(files, extra) => (extra.reject ? 'Image files only' : 'Drag Files')}
+            accept="audio/*"
             styles={{
               dropzone: { width: 400, height: 200 },
               dropzoneReject: { borderColor: 'red', backgroundColor: '#DAA' },

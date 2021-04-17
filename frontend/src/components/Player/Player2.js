@@ -18,6 +18,7 @@ export default function Player() {
 
   const { tracks, set } = context.setData;
   const { duration } = set;
+  const userId = set.user_id;
   const first = Object.keys(tracks)[0];
   
   const [paused, setPaused] = useState(true);
@@ -61,7 +62,7 @@ export default function Player() {
       <CardContent>
       <Grid container direction={bigScr ? 'row-reverse' : 'column'}>
         <Grid item xs={12} sm={6}><TrackDescription props={{track: tracks[nowPlaying], url, set: set.id}}/></Grid>
-        <Grid item xs={12} sm={4}><TracksList props={{trackNodes, nodeKeys, tracks, nowPlaying, setNowPlaying}}/></Grid>
+        <Grid item xs={12} sm={4}><TracksList props={{trackNodes, nodeKeys, tracks, nowPlaying, setNowPlaying, userId}}/></Grid>
         <Grid item xs={12} sm={2}><PlayControls props={{trackNodes, nodeKeys, nowPlaying, bigScr, paused, setPaused}}/></Grid>
       </Grid>
       <Grid container>
