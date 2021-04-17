@@ -3,9 +3,7 @@ import { Button, Box, Slider } from '@material-ui/core';
 import { VolumeUp, VolumeOff } from '@material-ui/icons';
 
 export default function PlayControls({props}) {
-  const { trackNodes, nodeKeys, nowPlaying, bigScr } = props;
-
-  const [paused, setPaused] = useState(true);
+  const { trackNodes, nodeKeys, nowPlaying, bigScr, paused, setPaused } = props;
   const [volume, setVolume] = useState(50);
   const [muted, setMuted] = useState(false)
 

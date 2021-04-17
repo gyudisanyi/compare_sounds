@@ -4,12 +4,13 @@ import { Slider, Switch, FormControl, FormControlLabel } from '@material-ui/core
 import rangesToGradient from '../../utilities/rangesToGradient';
 import GlobalContext from '../../context/GlobalContext';
 
-export default function ProgressBar() {
+export default function ProgressBar({props}) {
 
-  const resolution = 1000;
-
+  const {progress, resolution} = props
   const context = useContext(GlobalContext);
   const  { loops } = context.setData;
+  const duration = context.setData.set.duration;
+  console.log(duration, progress);
   const [actualLoop, setActualLoop] = useState([10, 200])
 
   const [snap, setSnap] = useState(false);
@@ -39,22 +40,16 @@ export default function ProgressBar() {
     markLabel: { transform: "translateX(0%)" },
   })(Slider);
 
-  const [progress, setProgress] = useState(0);
-
   useEffect(() => {
-    allTracks[0].addEventListener('timeupdate', ({ target }) => {
-      setProgress((target.currentTime / target.duration) * resolution);
-    });
-  }, []);
-
-  useEffect(() => {
-    
+    if (progress >= resolution) {
+      allTracks.forEach((track) => track.currentTime = 0)
+    }
     if (!looping) return;
     if (progress >= actualLoop[1]) {
       allTracks.forEach((track) => track.currentTime = actualLoop[0] / resolution * track.duration)
     }
 
-  }, [progress, actualLoop, looping, allTracks])
+  }, [progress, resolution, actualLoop, looping, allTracks])
 
   const seek = (value) => {
     const loopsAhead = loopsArray.filter((loop) => loop.range[1] > value);
@@ -62,7 +57,7 @@ export default function ProgressBar() {
     if (!loopsAhead[0]) { setLooping(false) };
     setActualLoop(nextLoop);
     if (!allTracks[0]) return;
-    let seekSeconds = (value / resolution) * allTracks[0].duration;
+    let seekSeconds = (value / resolution) * duration;
     allTracks.forEach((trackNode) => trackNode.currentTime = seekSeconds || 0);
   }
 

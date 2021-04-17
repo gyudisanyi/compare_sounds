@@ -33,7 +33,7 @@ export const setsService = {
   },
   async uploadImage(image, setId) {
     const uploadPath = `./public/audio_src/${setId}/img/`;
-    console.log(uploadPath);
+    
     await fs.ensureFile(uploadPath+image.name);
     await fs.copy(image.path, uploadPath+image.name);
     return await setsRepo.addImage(setId, image.name);

@@ -15,7 +15,7 @@ export const loginService = {
     }
 
     const user = await usersRepo.getUserByUsername(username);
-    console.log(user)
+    
     if (!user[0]) {
       throw { message: 'No such user!', status: 400 };
     }
@@ -36,8 +36,6 @@ export const loginService = {
       userid: user[0].id,
       token,
     };
-
-    console.log(returnData);
 
     return returnData;
   },

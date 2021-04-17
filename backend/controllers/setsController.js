@@ -37,7 +37,6 @@ export const setsController = {
   async userSets(req, res, next) {
     try {
       const userId = req.user.userid || req.params.userId;
-      console.log(userId);
       const sets = await setsService.getUserSets(userId);
       res.status(200).json(sets);
     } catch (error) {
@@ -50,6 +49,8 @@ export const setsController = {
       const { setId } = req.params;
       const set = await setsService.setData(setId);
       const tracks = await soundsService.getSounds(setId);
+      console.log(Math.min(...Object.values(tracks).map(t => t.duration)));
+      set["duration"] = Math.min(...Object.values(tracks).map(t => t.duration));
       const loops = await loopsService.getLoops(setId);
       const data = { set, tracks, loops };
       res.status(200).json(data);
@@ -86,9 +87,10 @@ export const setsController = {
       } = formObj.oldTracks;
       
       const Files = data.files.Files;
-      console.log(formObj);
+      console.log(Files);
+      return;
       const ToDelete = Object.keys(todelete).filter(k=>todelete[k]);
-      console.log(ToDelete);
+      
       if (Files) await soundsService.uploadFiles(Files, setId);
       if (Title) await setsService.setTitle(Title, setId, userId);
       if (Description) await setsService.setDescription(Description, setId, userId);

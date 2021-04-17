@@ -11,6 +11,7 @@ import { useTheme, makeStyles } from '@material-ui/core/styles';
 import generalFetch from '../../utilities/generalFetch';
 
 import GlobalContext from '../../context/GlobalContext';
+import { FileCopySharp } from '@material-ui/icons';
 
 const useStyles = makeStyles((theme) => ({
   closeButton: {
@@ -34,10 +35,12 @@ export default function EditSet({ onClose, open }) {
   const [Files, setFiles] = useState([]);
 
   const onDrop = useCallback(acceptedFiles => {
+
     setFiles([...Files, ...acceptedFiles])
+
   }, [Files])
 
-  const { getRootProps, getInputProps } = useDropzone({ onDrop });
+  const { getRootProps, getInputProps } = useDropzone({ onDrop, accept: 'audio/*' });
 
   const [updateSet, setupdateSet] = useState({ Title: set.title, Description: set.description })
   const [newTracks, setNewTracks] = useState({ titles: {}, descriptions: {} });
@@ -91,12 +94,13 @@ export default function EditSet({ onClose, open }) {
   }
 
   const handleSubmission = async (event) => {
-
-
+    
     const formdata = new FormData();
 
-    Files.forEach((file) => newTracks.titles[file.name] = newTracks.titles[file.name] || file.name);
-    Files.forEach((file) => newTracks.descriptions[file.name] = newTracks.descriptions[file.name] || "Add description pliz");
+    Files.forEach((file) => {
+      newTracks.titles[file.name] = newTracks.titles[file.name] || file.name;
+      newTracks.descriptions[file.name] = newTracks.descriptions[file.name] || "Add description";
+    });
 
     const form = {
       updateSet,
@@ -110,6 +114,7 @@ export default function EditSet({ onClose, open }) {
     try {
       const feedback = await generalFetch(`sets/${set.id}/`, "PATCH", formdata);
       console.log(feedback);
+      return;
       const editedCollection = { ...context.collection };
       editedCollection.set.title = form.updateSet.Title;
       editedCollection.set.description = form.updateSet.Description;
@@ -123,6 +128,7 @@ export default function EditSet({ onClose, open }) {
     catch (error) {
       console.log(error);
     };
+    return;
     if (Files) { console.log("FILES"); window.location.reload(); }
     onClose();
   };

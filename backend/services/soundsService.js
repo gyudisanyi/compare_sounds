@@ -22,7 +22,7 @@ export const soundsService = {
 
   async uploadImage(image, setId, trackId) {
     const uploadPath = `./public/audio_src/${setId}/img/`;
-    console.log(uploadPath);
+    
     await fs.ensureFile(uploadPath+image.name);
     await fs.copy(image.path, uploadPath+image.name);
     return await soundsRepo.addImage(trackId, image.name);
@@ -33,7 +33,6 @@ export const soundsService = {
     setId,
     userId) {
 
-    console.log(newTracks);
     const NewFilenames = Object.keys(newTracks.titles);
     const TrackTitles = Object.values(newTracks.titles);
     const TrackDescriptions = Object.values(newTracks.descriptions);
@@ -64,7 +63,7 @@ export const soundsService = {
   },
 
   async deleteSounds(ToDelete) {
-    console.log(ToDelete);
+    
     return Promise.all(ToDelete.map((id) =>
         soundsRepo.deleteSound(id)
       ))

@@ -38,7 +38,6 @@ function queryAsync(sql, queryParameters) {
         reject(error); // error
         return;
       }
-      // console.log(result);
       resolve(result); // success
     });
   });

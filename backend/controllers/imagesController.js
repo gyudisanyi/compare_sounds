@@ -8,7 +8,6 @@ export const imagesController = {
       const form = formidable();
       const userId = req.user.userid;
       const setId = req.params.setId;
-      console.log(userId, setId, "IMGYO");
       let data = await new Promise((resolve, reject) => {
         form.parse(req, (err, fields, files) => {
           if (err) {

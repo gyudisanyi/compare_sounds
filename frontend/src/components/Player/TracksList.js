@@ -2,7 +2,7 @@ import React from 'react';
 import { FormControl, FormControlLabel, RadioGroup, Radio} from '@material-ui/core';
 
 export default function TracksList({ props }) {
-  console.log(props)
+  
   const { trackNodes, nodeKeys, tracks, nowPlaying, setNowPlaying } = props;
   
   function switchTrack(value) {
