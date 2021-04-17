@@ -3,7 +3,8 @@ import { DialogTitle, Dialog, Card, CardContent, Button, IconButton } from '@mat
 import { makeStyles } from '@material-ui/core/styles';
 import CloseIcon from '@material-ui/icons/Close';
 
-import { useDropzone } from 'react-dropzone';
+import 'react-dropzone-uploader/dist/styles.css'
+import Dropzone from 'react-dropzone-uploader'
 
 import generalFetch from '../../utilities/generalFetch';
 
@@ -15,64 +16,66 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function UploadImage ({ onClose, open, setId, trackId }) {
+const requestHeaders = {
+  Accept: 'application/json',
+  Authorization: `Bearer ${localStorage.getItem('token')}`,
+}
+
+export default function UploadImage({ onClose, open, setId, trackId }) {
 
   const classes = useStyles();
-  
-  const { acceptedFiles, getRootProps, getInputProps } = useDropzone({ multiple: false, accept: 'image/jpeg, image/png' });
 
-  const handleSubmit = async () => {
-    console.log(acceptedFiles)
-    const formdata = new FormData();
-    formdata.append('Id', trackId)
-    formdata.append('Files', acceptedFiles[0]);
-    try {
-      const feedback = await generalFetch(`img/${setId}`, "PATCH", formdata);
-      console.log(feedback);
-    } catch (error) {
-      console.log(error);
-    };
-    // window.location.reload();
-    // onClose();
+  const getUploadParams = ({ file, meta }) => {
+    const url = process.env.REACT_APP_API_URL+'img/'+setId;
+    const body = new FormData()
+    body.append('Files', file);
+    body.append('Id', trackId);
+    return { url, method: "PATCH", headers: requestHeaders, body, meta: { fileUrl: `${url}/${encodeURIComponent(meta.name)}` } }
+  }
+
+  const handleChangeStatus = ({ meta }, status) => {
+    console.log(status, meta)
+  }
+
+  const handleSubmit = (files, allFiles) => {
+    console.log(files.map(f => f.meta))
+    allFiles.forEach(f => f.remove())
+    window.location.reload();
+    onClose();
+    
   }
 
   const handleClose = () => {
     onClose();
   }
 
-  const accepted = !!acceptedFiles
-  
   return (
-    <Dialog maxWidth="sm" onClose={handleClose} open={open}>
+    <Dialog onClose={handleClose} open={open}>
       <Card>
         <CardContent>
           <DialogTitle>
             Upload image
             <IconButton className={classes.closeButton} aria-label="close" onClick={handleClose}>
               <CloseIcon />
-            </IconButton>          
+            </IconButton>
           </DialogTitle>
-          {accepted}
-          <DropZone getRootProps={getRootProps} getInputProps={getInputProps} />
-          <Button type="submit" variant="contained" color="primary" onClick={handleSubmit}>Submit</Button>
+          <Dropzone
+            getUploadParams={getUploadParams}
+            maxFiles={1}
+            multiple={false}
+            onChangeStatus={handleChangeStatus}
+            onSubmit={handleSubmit}
+            accept="image/*"
+            inputContent={(files, extra) => (extra.reject ? 'Image files only' : 'Drag Files')}
+            styles={{
+              dropzone: { width: 400, height: 200 },
+              dropzoneReject: { borderColor: 'red', backgroundColor: '#DAA' },
+              inputLabel: (files, extra) => (extra.reject ? { color: 'red' } : {}),
+            }}
+          />
         </CardContent>
       </Card>
     </Dialog>
   )
 
-}
-
-function DropZone({ getRootProps, getInputProps }) {
-
-  return (
-    <Card variant="outlined" square>
-      <CardContent style={{ padding: "0", backgroundColor: "lightgray" }}>
-        <div style={{ padding: "2em" }}{...getRootProps({ className: 'dropzone' })}>
-          <input {...getInputProps()} />
-          <div>Drag 'n' drop / click to upload</div>
-          <em>(JPG, PNG will be accepted)</em>
-        </div>
-      </CardContent>
-    </Card>
-  )
 }

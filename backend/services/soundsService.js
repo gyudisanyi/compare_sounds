@@ -22,7 +22,6 @@ export const soundsService = {
 
   async uploadImage(image, setId, trackId) {
     const uploadPath = `./public/audio_src/${setId}/img/`;
-    
     await fs.ensureFile(uploadPath+image.name);
     await fs.copy(image.path, uploadPath+image.name);
     return await soundsRepo.addImage(trackId, image.name);
