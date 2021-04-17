@@ -1,6 +1,6 @@
 import React, { useEffect, useContext, useState } from 'react';
 import { FormGroup, FormControl, FormControlLabel, Checkbox } from '@material-ui/core';
-import { Button, IconButton, Dialog, DialogTitle, DialogContent, TextField } from '@material-ui/core';
+import { Button, Box, Input, IconButton, Dialog, DialogTitle, DialogContent, TextField } from '@material-ui/core';
 import ClearIcon from '@material-ui/icons/Clear';
 import CloseIcon from '@material-ui/icons/Close';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
@@ -23,21 +23,22 @@ export default function ManageLoops({ onClose, open }) {
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down('sm'));
   const context = useContext(GlobalContext);
+  const { loops, set } = context.setData;
 
   const handleClose = () => {
     onClose();
   }
 
-  const [loops, setLoops] = useState(context.collection.loops);
+  const [loopset, setLoops] = useState(loops);
 
   useEffect(() => {
-    setLoops(context.collection.loops);
-  }, [context.collection.loops])
+    setLoops(loops);
+  }, [])
 
   function handleChange({ target }) {
     const act = target.id.split(' ')[0];
     const key = target.id.split(' ')[1];
-    const updatedLoops = { ...loops }
+    const updatedLoops = { ...loopset }
     updatedLoops[key][act] = target.value || target.checked;
     console.log(updatedLoops);
     setLoops(updatedLoops);
@@ -45,18 +46,20 @@ export default function ManageLoops({ onClose, open }) {
   }
 
   async function submitLoops() {
-    console.log(loops);
+    console.log(loopset);
     const loopsData = {
-      loops,
-      deleted: Object.keys(loops).filter((k) => loops[k].deleted)
+      loops: loopset,
+      deleted: Object.keys(loopset).filter((k) => loopset[k].deleted)
     }
     if (!loopsData.deleted[0]) {delete loopsData.deleted};
-    const res = await generalFetch('loops/'+context.collection.set.id, "PATCH", loopsData)
+    const res = await generalFetch('loops/'+set.id, "PATCH", loopsData)
     console.log(res);
+    window.location.reload();
+    onClose();
   }
 
-  const loopList = Object.keys(loops).map((key) =>
-    <FormControl key={key} fullWidth={true}>
+  const loopList = Object.keys(loopset).map((key) =>
+    <FormControl key={key}>
       <FormControlLabel
         control=
         {<Checkbox
@@ -64,35 +67,42 @@ export default function ManageLoops({ onClose, open }) {
           checkedIcon={<ClearIcon />}
           key={`deleted ${key}`}
           id={`deleted ${key}`}
-          checked={!!loops[key].deleted} />}
+          checked={!!loopset[key].deleted} />}
           label="Delete" />
       <TextField
         margin="dense"
         variant="outlined"
         size="small"
         label="description"
-        defaultValue={loops[key].description}
+        defaultValue={loopset[key].description}
         id={`description ${key}`} />
-      <TextField
+      <Box width={60}>
+      <TextField fullWidth
+        type="number"
         margin="dense"
         variant="outlined"
+        style={{width: '1/4'}}
         size="small"
         label="start"
-        type="number"
         id={`start ${key}`}
-        value={loops[key].start}>
+        value={loopset[key].start}>
         Start
-    </TextField>
+      </TextField>
+      </Box>
+      <Box width={60}>
+
       <TextField
         margin="dense"
         variant="outlined"
+        width={60}
         size="small"
         label="end"
         type="number"
         id={`end ${key}`}
-        value={loops[key].end}>
+        value={loopset[key].end}>
         End
       </TextField>
+      </Box>
     </FormControl>
   )
 
