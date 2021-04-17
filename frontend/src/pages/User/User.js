@@ -13,7 +13,6 @@ export default function Users() {
 
   const entryParam = useParams().id;
 
-
   useEffect(() => {
     async function fetchData() {
       try {
@@ -35,7 +34,7 @@ export default function Users() {
       <CardHeader title={`${entryParam}'s sets`} subheader={localStorage.getItem('username') === entryParam ? `That's you` : ``} />
       <CardContent>
         {sets
-          ? <SetList sets={sets} />
+          ? <SetList sets={sets} own={localStorage.getItem('username') === entryParam}/>
           : `${message}` || `Fetching sets...`
         }
       </CardContent>

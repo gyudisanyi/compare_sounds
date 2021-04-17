@@ -6,11 +6,11 @@ export const setsRepo = {
     return await queryAsync(sql, [userId]);
   },
   async getAllSets() {
-    const sql = 'SELECT idset AS id, description, title FROM sets WHERE deleted IS NULL';
+    const sql = 'SELECT idset AS id, description, title, FROM sets WHERE deleted IS NULL AND published IS NOT NULL';
     return await queryAsync(sql);
   },
   async getUserSets(id) {
-    const sql = 'SELECT idset AS id, description, title, img_url FROM sets WHERE user_id = ? AND deleted IS NULL';
+    const sql = 'SELECT idset AS id, description, title, img_url, published FROM sets WHERE user_id = ? AND deleted IS NULL';
     return await queryAsync(sql, [id]);
   },
   async getSetData(setId) {

@@ -89,7 +89,6 @@ export const setsController = {
       console.log(formObj);
       const ToDelete = Object.keys(todelete).filter(k=>todelete[k]);
       console.log(ToDelete)
-      if (Files) await soundsService.uploadFiles(Files, setId);
       if (Title) await setsService.setTitle(Title, setId, userId);
       if (Description) await setsService.setDescription(Description, setId, userId);
       if (Object.keys(updateTitles).length>0) await soundsService.changeTitles(updateTitles);

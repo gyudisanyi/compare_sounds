@@ -32,6 +32,7 @@ export default function Header() {
 
   const context = useContext(GlobalContext);
   const { set } = context.setData;
+  const { own } = set
 
   const [setList, getSetList] = useState({});
   const [message, setMessage] = useState();
@@ -88,18 +89,13 @@ export default function Header() {
     setEditOpen(true);
   }
 
-  const Reload = () => {
-    path.push(`/sets/${setList.map(set => set.id)[0] || 1}`);
-    window.location.reload();
-  }
-
   return (
     <div className={classes.root}>
       <AppBar position="static">
         {set
           ?
           <>
-            <EditSet open={editOpen} onClose={handleEditClose} />
+            <EditSet open={editOpen} setList={setList} onClose={handleEditClose} />
             <Toolbar>
               <IconButton edge="start" className={classes.menuButton} color="inherit" aria-label="menu" onClick={handleMenuClick}>
                 <LibraryMusicTwoToneIcon />
@@ -118,12 +114,16 @@ export default function Header() {
                     {set.title}
                   </MenuItem>))
                   : "No sets to list"}
-                <hr />
-                <MenuItem disabled={context.url === "../"} key="addset" id="addset" onClick={newSet}>Add new set</MenuItem>
+                {own ?
+                <>
+                  <hr />
+                  <MenuItem key="addset" id="addset" onClick={newSet}>Add new set</MenuItem>
+                </>
+                  : ``}
               </Menu>
               <Typography variant="h6" className={classes.title}>
                 {set.title}
-                {parseInt(localStorage.getItem('userid')) === set.user_id
+                {own
                   ?
                   <>
                     <Button color="inherit" onClick={handleEditOpen}>Edit</Button>

@@ -7,6 +7,7 @@ import GlobalContext from '../../context/GlobalContext';
 
 import Header from '../../components/Header/Header2';
 import Player from '../../components/Player/Player2';
+import SetStarter from '../../components/SetStarter/SetStarter';
 
 export default function Set({username}) {
 
@@ -36,6 +37,9 @@ export default function Set({username}) {
       try {
         const response = await generalFetch("sets/"+setId, "GET");
         console.log({response});
+        if (parseInt(response.set.user_id) === parseInt(localStorage.getItem('userid'))) {
+          response.set[`own`] = true
+        }
         if (response.message) setMessage(response.message);
         setSetData(response);
       } catch (error) {
@@ -64,7 +68,7 @@ export default function Set({username}) {
           }
           { trackNodes
             ? <Player />
-            : ``
+            : <SetStarter setId={setId}/>
           }
 
         </GlobalContext.Provider>

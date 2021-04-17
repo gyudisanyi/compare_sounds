@@ -19,7 +19,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function EditSet({ onClose, open }) {
+export default function EditSet({ onClose, setList, open }) {
 
   const path = useHistory();
 
@@ -57,7 +57,11 @@ export default function EditSet({ onClose, open }) {
   
   const deleteSet = async () => {
     await generalFetch("sets/"+set.id, "DELETE");
-    path.push(`/sets/${Object.keys(context.sets)[0]}`);
+    try {
+      path.push(`/sets/${setList.map(set => set.id)[0] || 1}`);
+    } catch {
+      path.push('/');
+    }
     onClose();
     window.location.reload();
   }
@@ -76,15 +80,6 @@ export default function EditSet({ onClose, open }) {
     try {
       const feedback = await generalFetch(`sets/${set.id}/`, "PATCH", formdata);
       console.log(feedback);
-      const editedCollection = { ...context.collection };
-      editedCollection.set.title = form.updateSet.Title;
-      editedCollection.set.description = form.updateSet.Description;
-      Object.keys(form.oldTracks.updateTitles).forEach(key =>
-        editedCollection.tracks[key].title = form.oldTracks[key].Title);
-      Object.keys(form.oldTracks.updateDescriptions).forEach(key =>
-        editedCollection.tracks[key].description = form.oldTracks[key].Description);
-
-      context.setCollection(editedCollection)
     }
     catch (error) {
       console.log(error);

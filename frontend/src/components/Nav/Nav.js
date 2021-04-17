@@ -41,6 +41,10 @@ export default function Nav() {
       <BrowserRouter forceRefresh={true} >
         <ButtonGroup style={{alignItems: "flex-end"}}>
           <Link to="/"><Button variant="text" color="inherit">Home</Button></Link>
+          { localStorage.getItem('username') ?
+          <Link to={`/${localStorage.getItem('username')}`}><Button variant="text" color="inherit">Your sets</Button></Link>
+          : ``
+          }
           <Link to="/sets/1"><Button variant="text" color="inherit">Browse {bigScr ? `collections` : ``}</Button></Link>
         </ButtonGroup>
       </BrowserRouter>

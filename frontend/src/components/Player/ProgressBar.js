@@ -22,8 +22,8 @@ export default function ProgressBar({props}) {
   const {progress, resolution} = props
   const context = useContext(GlobalContext);
   const  { loops, set } = context.setData;
-  const { duration, username } = set;
-  const own = (username === localStorage.getItem('username'))
+  const { duration } = set;
+  const { own } = set;
   const [actualLoop, setActualLoop] = useState([10, 200])
 
   const [snap, setSnap] = useState(false);

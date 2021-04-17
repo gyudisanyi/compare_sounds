@@ -1,12 +1,14 @@
 import React, {useState} from 'react';
-import {GridListTileBar} from '@material-ui/core';
-import IconButton from '@material-ui/core/IconButton';
-import { InsertPhoto } from '@material-ui/icons/';
+import { Card, CardContent, CardActionArea, CardMedia, Button, CardHeader} from '@material-ui/core';
 import UploadImage from '../UploadImage/UploadImage';
+import { useHistory } from 'react-router';
 
-export default function SetListItem({set}) {
+export default function SetListItem({set, own}) {
+
   const {id, title, description, img_url} = set;
+  
   const url = process.env.REACT_APP_API_URL;
+  const path=useHistory();
   
   const [ imgUploadOpen, setImgUploadOpen ] = useState(false);
 
@@ -19,18 +21,20 @@ export default function SetListItem({set}) {
   }
 
   return (
-    <>
-      <img src={`${url + 'audio_src/' + id}/img/${img_url}`} alt="title" width="100%"/>
-      <GridListTileBar
-        title={title}
-        subtitle={description}
-        actionIcon={
-          <IconButton onClick={handleImgOpen} aria-label={`change pic`} color="secondary">
-            <InsertPhoto/>
-          </IconButton>
-        }
-      />
-      <UploadImage open={imgUploadOpen} onClose={handleImgClose} setId={id} trackId={0} />
-    </>
+    <Card>
+      <CardActionArea onClick={() => path.push('sets/' + id)}>
+        <CardHeader title={title} subheader={description}/>
+          <img src={`${url + 'audio_src/' + id}/img/${img_url}`}
+         alt={title} />
+      </CardActionArea>
+        { own ?
+          <>
+          <Button onClick={handleImgOpen} aria-label={`change pic`} color="secondary">
+            Change photo
+          </Button>
+          <UploadImage open={imgUploadOpen} onClose={handleImgClose} setId={id} trackId={0} />
+          </>
+        : ``}
+    </Card>
   )
 }
