@@ -2,7 +2,7 @@ import { registrationService, setsService } from '../services/index.js';
 
 export const registrationController = {
   async post(req, res, next) {
-    const blacklist = ['user', 'users', 'set', 'sets']
+    const blacklist = ['user', 'users', 'set', 'sets', 'undefined', 'home', 'collections']
     try {
       const {
         username, password,

@@ -75,8 +75,14 @@ export default function Login({ onClose, open }) {
       <DialogContent>
         <FormControl onSubmit={login}>
           <FormGroup row onChange={handleChange}>
-            <TextField label="Username" name="username"></TextField>
-            <TextField label="Password" type="password" name="password"></TextField>
+            <TextField 
+              label="Username" 
+              name="username" 
+              InputProps={{ inputProps: {maxlength: 50}}} />
+            <TextField 
+              label="Password" 
+              type="password" 
+              name="password" />
           </FormGroup>
           {message}
           <Button type="submit" variant="contained" color="primary" onClick={(event) => login(event)}>Login</Button>

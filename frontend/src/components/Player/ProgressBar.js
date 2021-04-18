@@ -91,9 +91,9 @@ export default function ProgressBar({props}) {
   }
 
   function handleCustomLoopInput ({target}) {
-    console.log({target});
     const newLoop=[...customLoop];
-    newLoop[target.id]=[target.value];
+    let value = Math.min(Math.max(target.value, 0), 1000);
+    newLoop[target.id]=[value];
     setCustomLoop(newLoop);
     setActualLoop(newLoop);
     setLooping(true);
@@ -121,7 +121,7 @@ export default function ProgressBar({props}) {
   }
 
   function enterLoopName (event) {
-    setCustomLoopName(event.target.value);
+    setCustomLoopName(event.target.value.substring(0,29));
   }
 
   function isItActual() {
@@ -150,16 +150,34 @@ export default function ProgressBar({props}) {
         value={customLoop}
         color={isItActual()}
         onChange={(e, value) => handleCustomLoop(value)} />
+      <Box width={200}>
+        <TextField 
+            label="name (max 30)" 
+            variant="outlined"
+            value={customLoopName} 
+            onChange={enterLoopName} />
+      </Box>
       <FormGroup row label="custom loop" onChange={handleCustomLoopInput}>
-        <TextField variant="outlined" label="name" onChange={enterLoopName} />
-        <Box width={80}>
-          <TextField variant="outlined" label="start" type="number" id="0" value={customLoop[0]} />
+        <Box width={100}>
+          <TextField 
+            label="start" 
+            type="number" 
+            InputProps={{ inputProps: {step: 0.01}}}
+            id="0" 
+            variant="outlined" 
+            value={customLoop[0]} />
         </Box>
-        <Box width={80}>
-          <TextField variant="outlined" label="end" type="number" id="1" value={customLoop[1]} />
+        <Box width={100}>
+          <TextField 
+            label="end" 
+            type="number"
+            InputProps={{ inputProps: {step: 0.01}}}
+            id="1" 
+            variant="outlined" 
+            value={customLoop[1]} />
         </Box>
       </FormGroup>
-        <Button type="submit" disabled={buttontext() !== `Save loop`} onClick={saveCustomLoop}>{buttontext()}</Button>
+        <Button type="submit" disabled={buttontext() !== `Save loop`} onClick={saveCustomLoop}>{buttontext()} ({5 - Object.keys(loops).length})</Button>
         { own ?
           <Button onClick={handleLoopsOpen}>Manage saved loops</Button>
           : ``

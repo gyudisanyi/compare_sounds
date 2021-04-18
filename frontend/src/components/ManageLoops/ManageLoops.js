@@ -38,8 +38,15 @@ export default function ManageLoops({ onClose, open }) {
   function handleChange({ target }) {
     const act = target.id.split(' ')[0];
     const key = target.id.split(' ')[1];
+    let { value } = target;
+    console.log(act);
+    switch (act) {
+      case 'description': value = value.substring(0,29); break;
+      case 'deleted': break;
+      default: break;
+    }
     const updatedLoops = { ...loopset }
-    updatedLoops[key][act] = target.value || target.checked;
+    updatedLoops[key][act] = value || target.checked;
     console.log(updatedLoops);
     setLoops(updatedLoops);
     return;
@@ -61,6 +68,7 @@ export default function ManageLoops({ onClose, open }) {
   const loopList = Object.keys(loopset).map((key) =>
     <FormControl key={key}>
       <FormControlLabel
+        label={`delete ${loopset[key].description}`}
         control=
         {<Checkbox
           name="delete"
@@ -68,41 +76,38 @@ export default function ManageLoops({ onClose, open }) {
           key={`deleted ${key}`}
           id={`deleted ${key}`}
           checked={!!loopset[key].deleted} />}
-          label="Delete" />
+           />
       <TextField
+        label="Description (max 30)"
         margin="dense"
         variant="outlined"
         size="small"
-        label="description"
-        defaultValue={loopset[key].description}
+        value={loopset[key].description}
         id={`description ${key}`} />
-      <Box width={60}>
-      <TextField fullWidth
+      <Box width={100}>
+      <TextField
+        label="start"
         type="number"
+        InputProps={{ inputProps: {step: 0.01, min: 0, max: 1000}}}
         margin="dense"
         variant="outlined"
-        style={{width: '1/4'}}
         size="small"
-        label="start"
         id={`start ${key}`}
-        value={loopset[key].start}>
-        Start
-      </TextField>
+        value={loopset[key].start} />
       </Box>
-      <Box width={60}>
-
+      <Box width={100}>
       <TextField
+        label="end"
+        type="number"
+        InputProps={{ inputProps: {step: 0.01, min: 0, max: 1000}}}
         margin="dense"
         variant="outlined"
         width={60}
         size="small"
-        label="end"
-        type="number"
         id={`end ${key}`}
-        value={loopset[key].end}>
-        End
-      </TextField>
+        value={loopset[key].end} />
       </Box>
+      <hr/>
     </FormControl>
   )
 

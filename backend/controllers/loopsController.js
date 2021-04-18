@@ -14,7 +14,6 @@ export const loopsController = {
   },
   async editLoops(req, res, next) {
     const loops = req.body;
-    console.log(loops);
     const loopsArray=Object.values(loops.loops)
     try {
       const data = await loopsService.updateLoops(loopsArray);

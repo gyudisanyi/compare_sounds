@@ -6,7 +6,7 @@ import {
 } from "react-router-dom";
 
 import Set from './pages/Set/Set';
-import Sets from './pages/Sets/Sets';
+import SetsPage from './pages/SetsPage/SetsPage';
 import User from './pages/User/User';
 import Users from './pages/Users/Users';
 import Home from './pages/Home/Home';
@@ -28,7 +28,7 @@ export default function App() {
               <Set />
             </Route>
             <Route path="/sets/">
-              <Sets />
+              <SetsPage />
             </Route>
             <Route path="/:id">
               <User />

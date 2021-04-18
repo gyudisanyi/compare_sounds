@@ -130,8 +130,21 @@ export default function EditSet({ onClose, setList, open }) {
           <Card square>
             <CardContent>
               <FormGroup row onChange={handleUpdateSet}>
-                <TextField variant="outlined" fullWidth label="New title" name="Title" placeholder="Add new title"></TextField>
-                <TextField variant="outlined" fullWidth multiline rows={2} label="New description" name="Description" placeholder="Add new description"></TextField>
+                <TextField 
+                  label="New title (50)" 
+                  variant="outlined" 
+                  fullWidth 
+                  name="Title" 
+                  InputProps={{ inputProps: {maxlength: 50}}}
+                  placeholder="Add new title" />
+                <TextField 
+                  label="New description (250)" 
+                  variant="outlined" 
+                  fullWidth 
+                  multiline rows={3} 
+                  InputProps={{ inputProps: {maxlength: 250}}}
+                  name="Description" 
+                  placeholder="Add new description"></TextField>
               </FormGroup>
             </CardContent>
           </Card>
@@ -143,20 +156,5 @@ export default function EditSet({ onClose, setList, open }) {
         </FormControl>
       </DialogContent>
     </Dialog>
-  )
-}
-
-function DropZone({ getRootProps, getInputProps }) {
-
-  return (
-    <Card variant="outlined" square>
-      <CardContent style={{ padding: "0", backgroundColor: "lightgray" }}>
-        <div style={{ padding: "2em" }}{...getRootProps({ className: 'dropzone' })}>
-          <input {...getInputProps()} />
-          <div>Drag 'n' drop / click to upload</div>
-          <em>(Only audio will be accepted)</em>
-        </div>
-      </CardContent>
-    </Card>
   )
 }

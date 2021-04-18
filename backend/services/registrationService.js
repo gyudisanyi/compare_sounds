@@ -19,6 +19,13 @@ export const registrationService = {
         status: 400,
       };
     }
+    
+    if (username.length > 49) {
+      throw {
+        message: 'Username too long',
+        status: 400,
+      };
+    }
 
     if (!usernameFormat.test(String(username))) {
       throw {

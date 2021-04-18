@@ -6,16 +6,16 @@ export const soundsRepo = {
     return await queryAsync(sql, [setId]);
   },
   async newSound(name, duration, setId, userId) {
-    const sql = 'INSERT INTO sounds (title, description, filename, duration, set_id, user_id) VALUES ("Add title", "Add description", ?, ?, ?, ?);'
-    return await queryAsync(sql, [name, duration, setId, userId]);
+    const sql = 'INSERT INTO sounds (title, description, filename, duration, set_id, user_id) VALUES (?, ?, ?, ?, ?, ?);'
+    return await queryAsync(sql, [name.substring(0, 49), name.substring(0, 249), name, duration, setId, userId]);
   },
   async changeTitle(soundId, title) {
     const sql = 'UPDATE sounds SET title=? WHERE idsound=?;';
-    return await queryAsync(sql, [title, soundId]);
+    return await queryAsync(sql, [title.substring(0,49), soundId]);
   },
   async changeDescription(soundId, description) {
     const sql = 'UPDATE sounds SET description=? WHERE idsound=?;';
-    return await queryAsync(sql, [description, soundId]);
+    return await queryAsync(sql, [descriptionsubstring(0,249), soundId]);
   },
   async deleteSound(soundId) {
     const sql = 'UPDATE sounds SET deleted=NOW() WHERE idsound=?';

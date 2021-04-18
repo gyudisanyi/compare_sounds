@@ -2,11 +2,11 @@ import queryAsync from '../database.js';
 
 export const setsRepo = {
   async newSet(userId) {
-    const sql = "INSERT INTO sets (title, description, user_id) VALUES ('Empty set', 'Add description', ?);";
+    const sql = "INSERT INTO sets (title, description, user_id) VALUES ('New set', 'Add description', ?);";
     return await queryAsync(sql, [userId]);
   },
   async getAllSets() {
-    const sql = 'SELECT idset AS id, description, title, FROM sets WHERE deleted IS NULL AND published IS NOT NULL';
+    const sql = 'SELECT idset AS id, description, title, img_url, published FROM sets WHERE deleted IS NULL';
     return await queryAsync(sql);
   },
   async getUserSets(id) {
@@ -23,11 +23,11 @@ export const setsRepo = {
   },
   async setTitle(title, setId, userId) {
     const sql = 'UPDATE sets SET title=? WHERE idset=? AND user_id=?';
-    return await queryAsync(sql, [title, setId, userId]);
+    return await queryAsync(sql, [title.substring(0,29), setId, userId]);
   },
   async setDescription(description, setId, userId) {
     const sql = 'UPDATE sets SET description=? WHERE idset=? AND user_id=?';
-    return await queryAsync(sql, [description, setId, userId]);
+    return await queryAsync(sql, [description.substring(0,29), setId, userId]);
   },
   async addImage(setId, name) {
     const sql = 'UPDATE sets SET img_url=? WHERE idset=?';

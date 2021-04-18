@@ -3,7 +3,7 @@ import queryAsync from '../database.js';
 export const usersRepo = {
   async insertNewUser(username, hashedPassword) {
     const sql = 'INSERT INTO users (username, password_hash, user_type) VALUES (?, ?, ?);';
-    const newUser = await queryAsync(sql, [username, hashedPassword, 'user']);
+    const newUser = await queryAsync(sql, [username.substring(0,49), hashedPassword, 'user']);
     return newUser;
   },
   async getUserByUsername(username) {

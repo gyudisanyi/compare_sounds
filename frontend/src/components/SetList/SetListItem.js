@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import { Card, CardContent, CardActionArea, CardMedia, Button, CardHeader} from '@material-ui/core';
+import { Card, CardActionArea, Button, CardHeader} from '@material-ui/core';
 import UploadImage from '../UploadImage/UploadImage';
 import { useHistory } from 'react-router';
 

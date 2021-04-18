@@ -26,9 +26,15 @@ export const setsService = {
     return set[0];
   },
   async setTitle(title, setId, userId) {
+    if (title.length > 50) {
+       throw { message: 'Set title too long!', status: 400}
+      }
     return await setsRepo.setTitle(title, setId, userId);
   },
   async setDescription(description, setId, userId) {
+    if (description.length > 250) {
+      throw { message: 'Set description too long!', status: 400}
+     }
     return await setsRepo.setDescription(description, setId, userId);
   },
   async uploadImage(image, setId) {
