@@ -16,10 +16,10 @@ exports.setup = function(options, seedLink) {
 
 exports.up = function(db) {
   const queryPromises = [];
-  queryPromises.push(db.insert('sets', [`idset`, `title`, `description`, `img_url`], [`1`, `Atmosphere set`, `For init`, `cover.JPG`]));
-  queryPromises.push(db.insert('sounds', [`set_id`, `title`, `description`, `filename`, `img_url`], [`1`, `Original eq`, `How it sounds`, `5A.mp3`, `slug.JPG`]));
-  queryPromises.push(db.insert('sounds', [`set_id`, `title`, `description`, `filename`, `img_url`], [`1`, `Excessive eq`, `Distorted FUBAR`, `5B.mp3`, `ant.JPG`]));
-  queryPromises.push(db.insert('loops', [`set_id`, `description`, `start`, `end`], [`1`, `Bass kicks in`, `710`, `800`]));
+  queryPromises.push(db.insert('sets', [`idset`, `title`, `description`, `img_url`], [`1`, `Atmosphere distortion`, `Short snippet distorted with EQ`, `cover.JPG`]));
+  queryPromises.push(db.insert('sounds', [`set_id`, `title`, `description`, `filename`, `img_url`], [`1`, `Original sound`, `This is how it sounds on the album.`, `5A.mp3`, `slug.JPG`]));
+  queryPromises.push(db.insert('sounds', [`set_id`, `title`, `description`, `filename`, `img_url`], [`1`, `Excessive EQ distortion`, `Distorted beyond repair with abusive equalization.`, `5B.mp3`, `ant.JPG`]));
+  queryPromises.push(db.insert('loops', [`set_id`, `description`, `start`, `end`], [`1`, `Los Angeles HA!`, `710`, `800`]));
   
   return Promise.all(queryPromises);
 };

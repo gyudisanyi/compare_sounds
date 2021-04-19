@@ -32,8 +32,7 @@ export default function Header() {
 
   const context = useContext(GlobalContext);
   const { set } = context.setData;
-  const { own } = set
-
+  const { own } = set;
   const [setList, getSetList] = useState({});
   const [message, setMessage] = useState();
   const [published, setPublished] = useState(set.published);
@@ -48,7 +47,6 @@ export default function Header() {
     async function fetchData() {
       try {
         const response = await generalFetch("user/" + set.username, "GET");
-        console.log({ response });
         if (response.message) setMessage(response.message);
         if (response.data) getSetList(Object.values(response.data));
 
@@ -58,7 +56,6 @@ export default function Header() {
       }
     }
     fetchData();
-
   }, [])
 
   const publish = async () => {
@@ -89,7 +86,6 @@ export default function Header() {
   const newSet = async () => {
     setAnchorEl(null);
     const res = await generalFetch("sets/new", "POST");
-    console.log(res.newSetId);
     path.push(`/sets/${res.newSetId}`);
     setEditOpen(true);
   }

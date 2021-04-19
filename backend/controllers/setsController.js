@@ -108,7 +108,6 @@ export const setsController = {
         todelete
       } = formObj.oldTracks;
       
-      console.log(formObj);
       const ToDelete = Object.keys(todelete).filter(k=>todelete[k]);
       if (Title) await setsService.setTitle(Title, setId);
       if (Description) await setsService.setDescription(Description, setId);

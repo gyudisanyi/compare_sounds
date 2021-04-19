@@ -25,7 +25,7 @@ exports.up = function(db) {
     type: 'real'
   }));
   queryPromises.push(db.runSql('UPDATE sets SET published=NOW() WHERE idset=1'));
-  queryPromises.push(db.runSql('UPDATE sounds SET duration=14 WHERE set_id=1'));
+  queryPromises.push(db.runSql('UPDATE sounds SET duration=14.968163 WHERE set_id=1'));
 
   return Promise.all(queryPromises);
 

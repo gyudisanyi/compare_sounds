@@ -48,13 +48,25 @@ export default function SetStarter({setId, own}) {
             onSubmit={handleSubmit}
             accept="audio/*"
             styles={{
-              dropzone: { width: 400, height: 200 },
+              dropzone: { width: 350, height: 200 },
               dropzoneReject: { borderColor: 'red', backgroundColor: '#DAA' },
               inputLabel: (files, extra) => (extra.reject ? { color: 'red' } : {}),
             }}
           />
         : ``
       }
+      <p><strong>TIP: </strong>Upload (or record with your Android device) sounds worth comparing.
+      <br/>Such as:
+        <ul>
+          <li>different mixes of the same song, </li>
+          <li>demonstrations of blatant plagiarism,</li>
+          <li> audio quality drop due to compression, </li>
+        </ul>
+        or whatever looks fun.
+      </p>
+      <p>Use snippets of similar duration: your collection's play length will default to the shortest track's. You can export tracks from a DAW like <a href="https://www.audacityteam.org/">AudaCity (free)</a>.</p>
+      <p>You can edit titles, descriptions and add images then. </p>
+      <p>You can publish this collection and share its URL, or a link to <a href={`/${username}`}>all of your sets</a>.</p>
       </CardContent>
       </>
       : 

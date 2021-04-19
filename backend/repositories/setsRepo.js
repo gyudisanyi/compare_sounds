@@ -37,8 +37,8 @@ export const setsRepo = {
     return await queryAsync(sql, [title.substring(0,29), setId]);
   },
   async setDescription(description, setId) {
-    const sql = 'UPDATE sets SET description=? WHERE idset=? AND user_id=?';
-    return await queryAsync(sql, [description.substring(0,29), setId]);
+    const sql = 'UPDATE sets SET description=? WHERE idset=?';
+    return await queryAsync(sql, [description.substring(0,249), setId]);
   },
   async addImage(setId, name) {
     const sql = 'UPDATE sets SET img_url=? WHERE idset=?';

@@ -67,6 +67,10 @@ export default function EditSet({ onClose, setList, open }) {
     window.location.reload();
   }
 
+  const keyed = async (e) => {
+    if (e.key === "Enter") handleSubmission();
+  }
+
   const handleSubmission = async (event) => {
     
     const formdata = new FormData();
@@ -79,8 +83,7 @@ export default function EditSet({ onClose, setList, open }) {
     formdata.append("form", JSON.stringify(form))
 
     try {
-      const feedback = await generalFetch(`sets/${set.id}/`, "PATCH", formdata);
-      console.log(feedback);
+      await generalFetch(`sets/${set.id}/`, "PATCH", formdata);
     }
     catch (error) {
       console.log(error);
@@ -105,12 +108,15 @@ export default function EditSet({ onClose, setList, open }) {
         variant="outlined"
         label="New title"
         name="updateTitles"
+        defaultValue={tracks[key].title}
+        placeholder={tracks[key].title}
         key={`et ${key}`} id={`et ${key}`} />
       <TextField
         variant="outlined"
         multiline rows={2}
         label="New description"
         name="updateDescriptions"
+        defaultValue={tracks[key].description}
         placeholder={tracks[key].description}
         key={`ed ${key}`} id={`ed ${key}`} />
     </FormControl>
@@ -127,7 +133,7 @@ export default function EditSet({ onClose, setList, open }) {
         </IconButton>
       </DialogTitle>
       <DialogContent>
-        <FormControl onSubmit={handleSubmission} >
+        <FormControl onSubmit={handleSubmission} onKeyPress={(e) => keyed(e)} >
           <Card square>
             <CardContent>
               <FormGroup row onChange={handleUpdateSet}>
@@ -136,6 +142,7 @@ export default function EditSet({ onClose, setList, open }) {
                   variant="outlined" 
                   fullWidth 
                   name="Title" 
+                  defaultValue={set.title}
                   InputProps={{ inputProps: {maxlength: 50}}}
                   placeholder="Add new title" />
                 <TextField 
@@ -145,6 +152,7 @@ export default function EditSet({ onClose, setList, open }) {
                   multiline rows={3} 
                   InputProps={{ inputProps: {maxlength: 250}}}
                   name="Description" 
+                  defaultValue={set.description}
                   placeholder="Add new description"></TextField>
               </FormGroup>
             </CardContent>

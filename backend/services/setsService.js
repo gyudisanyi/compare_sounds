@@ -20,7 +20,6 @@ export const setsService = {
   
   async publishSet(setId) {
       const publish = await setsRepo.publishSet(setId);
-      console.log(publish);
     return publish;
   },
 

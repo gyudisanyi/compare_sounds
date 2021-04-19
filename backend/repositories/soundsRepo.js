@@ -15,7 +15,7 @@ export const soundsRepo = {
   },
   async changeDescription(soundId, description) {
     const sql = 'UPDATE sounds SET description=? WHERE idsound=?;';
-    return await queryAsync(sql, [descriptionsubstring(0,249), soundId]);
+    return await queryAsync(sql, [description.substring(0,249), soundId]);
   },
   async deleteSound(soundId) {
     const sql = 'UPDATE sounds SET deleted=NOW() WHERE idsound=?';

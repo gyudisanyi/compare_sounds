@@ -1,5 +1,4 @@
 import React from 'react';
-import { useLocation } from 'react-router-dom'
 import {Grid, Button} from '@material-ui/core';
 import SetListItem from './SetListItem';
 
@@ -12,7 +11,7 @@ export default function SetList({sets, own}) {
             <Grid item >
               { own ?
               <>
-                <Button variant={set.published ? "contained" : "text"} color={set.published ? "secondary" : "default"}>Publish{set.published ? "ed" : ""}</Button>
+                <Button variant={set.published ? "contained" : "text"} color={set.published ? "secondary" : "default"}>{set.published ? "Published" : ""}</Button>
                 <SetListItem set={set} own={own}/>
               </>
               : 

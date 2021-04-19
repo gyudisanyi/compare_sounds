@@ -33,11 +33,14 @@ export default function Login({ onClose, open }) {
     setUserPass({...userPass, [target.name]: target.value});
   }
 
-  const login = async (event) => {
+  const keyed = async (e) => {
+    if (e.key === "Enter") login();
+  }
+
+  const login = async () => {
         
     try {
       const data = await generalFetch('login', 'POST', userPass);
-      console.log({data});
       if (data.message) {setMessage(data.message); throw new Error(data.message)}
       if (data.token && data.username && data.usertype && data.userid) {
         localStorage.setItem('token', data.token);
@@ -52,7 +55,7 @@ export default function Login({ onClose, open }) {
     }
 
   }
-  const register = async (event) => {
+  const register = async () => {
     
     try {
       const data = await generalFetch('users', 'POST', userPass);
@@ -73,7 +76,7 @@ export default function Login({ onClose, open }) {
         </IconButton>
       </DialogTitle>
       <DialogContent>
-        <FormControl onSubmit={login}>
+        <FormControl onSubmit={login} onKeyPress={(e) => keyed(e)}>
           <FormGroup row onChange={handleChange}>
             <TextField 
               label="Username" 
@@ -85,8 +88,8 @@ export default function Login({ onClose, open }) {
               name="password" />
           </FormGroup>
           {message}
-          <Button type="submit" variant="contained" color="primary" onClick={(event) => login(event)}>Login</Button>
-          <Button type="submit" variant="contained" onClick={(event) => register(event)}>Register</Button>
+          <Button type="submit" variant="contained" color="primary" onClick={() => login()}>Login</Button>
+          <Button type="submit" variant="contained" onClick={() => register()}>Register</Button>
         </FormControl>
       </DialogContent>
     </Dialog>

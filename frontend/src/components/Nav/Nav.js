@@ -45,7 +45,7 @@ export default function Nav() {
           <Link to={`/${localStorage.getItem('username')}`}><Button variant="text" color="inherit">Your sets</Button></Link>
           : ``
           }
-          <Link to="/sets"><Button variant="text" color="inherit">Browse {bigScr ? `collections` : ``}</Button></Link>
+          <Link to="/sets"><Button variant="text" color="inherit">Browse {bigScr ? `sets` : ``}</Button></Link>
         </ButtonGroup>
       </BrowserRouter>
       
