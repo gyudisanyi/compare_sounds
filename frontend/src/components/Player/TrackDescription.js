@@ -21,14 +21,14 @@ const useStyles = makeStyles({
   }
 })
 
-export default function TrackDescription({props}) {
+export default function TrackDescription({track, url, setId, own}) {
 
-  const { track, url, set} = props;
   const { description, img_url } = track;
   const classes = useStyles();
   const [ imgUploadOpen, setImgUploadOpen ] = useState(false);
 
   const handleImgOpen = () => {
+    if (!own) return;
     setImgUploadOpen(true);
   }
 
@@ -44,10 +44,10 @@ export default function TrackDescription({props}) {
         style={{ backgroundColor: "gray" }}
         onClick={handleImgOpen}
         className={classes.media}
-        image={`${url + 'audio_src/' + set}/img/${img_url}`
+        image={`${url + 'audio_src/' + setId}/img/${img_url}`
         }
       />
-      <UploadImage open={imgUploadOpen} onClose={handleImgClose} setId={set} trackId={track.id} />
+      <UploadImage open={imgUploadOpen} onClose={handleImgClose} setId={setId} trackId={track.id} />
     </Card>
 
   )

@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
 import { makeStyles } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
@@ -29,25 +29,55 @@ const useStyles = makeStyles((theme) => ({
 
 export default function Header() {
   const classes = useStyles();
-  
-  const path = useHistory();
+
   const context = useContext(GlobalContext);
-  console.log({context})
+  const { set } = context.setData;
+  const { own } = set
+
+  const [setList, getSetList] = useState({});
+  const [message, setMessage] = useState();
+  const [published, setPublished] = useState(set.published);
+
+  const path = useHistory();
+
   const [anchorEl, setAnchorEl] = useState(null);
   const [editOpen, setEditOpen] = useState(false);
 
-    const handleMenuClick = async (event) => {
+
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const response = await generalFetch("user/" + set.username, "GET");
+        console.log({ response });
+        if (response.message) setMessage(response.message);
+        if (response.data) getSetList(Object.values(response.data));
+
+      } catch (error) {
+        if (error.message) setMessage(error.message);
+        console.log({ error })
+      }
+    }
+    fetchData();
+
+  }, [])
+
+  const publish = async () => {
+    await generalFetch('publish/'+set.id, 'PATCH');
+    setPublished(p => !p)
+  }
+
+  const handleMenuClick = async (event) => {
     setAnchorEl(event.currentTarget);
   };
 
   const handleMenuClose = (id) => {
     setAnchorEl(null);
-    if (Object.keys(context.sets).includes(id) || id === context.currentSet) {
-      context.changeCurrentSet(id);
+    if (setList.map(set => set.id).includes(id) || id === set.id) {
       path.push(`/sets/${id}`);
+      window.location.reload();
     }
   };
-  
+
   const handleEditOpen = () => {
     setAnchorEl(null);
     setEditOpen(true);
@@ -60,55 +90,60 @@ export default function Header() {
     setAnchorEl(null);
     const res = await generalFetch("sets/new", "POST");
     console.log(res.newSetId);
-    context.changeCurrentSet(res.newSetId);
     path.push(`/sets/${res.newSetId}`);
     setEditOpen(true);
   }
 
-  
-  const Reload = () => {
-    path.push(`/sets/${Object.keys(context.sets)[0] || 1}`);
-    window.location.reload();
-  }
-  
   return (
     <div className={classes.root}>
       <AppBar position="static">
-        <EditSet open={editOpen} onClose={handleEditClose} />
-        <Toolbar>
-          <IconButton edge="start" className={classes.menuButton} color="inherit" aria-label="menu" onClick={handleMenuClick}>
-            <LibraryMusicTwoToneIcon />
-          </IconButton>
-          <Menu
-            id="collections-menu"
-            anchorEl={anchorEl}
-            keepMounted
-            open={Boolean(anchorEl)}
-            onClose={handleMenuClose}
-          >
-            {Object.keys(context.sets).length > 0 ? Object.keys(context.sets).map((key) => (<MenuItem key={key} onClick={() => handleMenuClose(key)}>{context.sets[key].title}</MenuItem>)) : "ajjajj"}
-            <hr />
-            <MenuItem disabled={context.url === "../"} key="addset" id="addset" onClick={newSet}>Add new set</MenuItem>
-          </Menu>
-          <Typography variant="h6" className={classes.title}>
-            {context.collection.set.title}
-            {parseInt(localStorage.getItem('userid')) === context.collection.set.user_id
-              ?
-              <>
-                <Button color="inherit" onClick={handleEditOpen}>Edit</Button>
-              </>
-              :
-              ` by ${context.collection.set.username}`
-            }
-            {context.url === "../"
-              ?
-              <Button color="inherit"
-                onClick={Reload}>
-                Reload
-              </Button>
-              : ``}
-          </Typography>
-        </Toolbar>
+        {set
+          ?
+          <>
+            <EditSet open={editOpen} setList={setList} onClose={handleEditClose} />
+            <Toolbar>
+              <IconButton edge="start" className={classes.menuButton} color="inherit" aria-label="menu" onClick={handleMenuClick}>
+                <LibraryMusicTwoToneIcon />
+              </IconButton>
+              <Menu
+                id="collections-menu"
+                anchorEl={anchorEl}
+                keepMounted
+                open={Boolean(anchorEl)}
+                onClose={handleMenuClose}
+              >
+                {setList.length > 0 ?
+                  setList.map((set) =>
+                  (<MenuItem key={set.id}
+                    onClick={() => handleMenuClose(set.id)}>
+                    {set.title}
+                  </MenuItem>))
+                  : "No sets to list"}
+                {own ?
+                <>
+                  <hr />
+                  <MenuItem key="addset" id="addset" onClick={newSet}>Add new set</MenuItem>
+                </>
+                  : ``}
+              </Menu>
+              <Typography variant="h6" className={classes.title}>
+                {set.title}
+                {own
+                  ?
+                  <>
+                    <Button color="inherit" onClick={handleEditOpen}>{` Edit `}</Button>
+                    <Button variant={published ? "text" : "contained"} onClick={publish}>{published ? ` unpublish ` : ` publish `}</Button>
+                  </>
+                  :
+                  ` by ${set.username}`
+                }
+              </Typography>
+            </Toolbar>
+          </>
+          : <Typography variant="h6" className={classes.title}>
+            {message || `No such set`}
+        </Typography>
+        }
       </AppBar>
     </div>
   );

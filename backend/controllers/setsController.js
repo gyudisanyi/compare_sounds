@@ -13,10 +13,23 @@ export const setsController = {
     }
   },
 
+  async publishSet(req, res, next) {
+    try {
+      const { setId } = req.params;
+      const userId = req.user.userid;
+      await setsService.authUser(setId, userId);
+      const publish = await setsService.publishSet(setId);
+      res.status(200).json({message: publish.message});
+    } catch (error) {
+      next(error);
+    }
+  },
+
   async deleteSet(req, res, next) {
     try {
-      
       const { setId } = req.params;
+      const userId = req.user.userid;
+      await setsService.authUser(setId, userId);
       const deleted = await setsService.deleteSet(setId);
       res.status(200).json({message: deleted.message});
     } catch (error) {
@@ -49,8 +62,14 @@ export const setsController = {
       const { setId } = req.params;
       const set = await setsService.setData(setId);
       const tracks = await soundsService.getSounds(setId);
-      console.log(Math.min(...Object.values(tracks).map(t => t.duration)));
-      set["duration"] = Math.min(...Object.values(tracks).map(t => t.duration));
+      let minDuration = 0;
+      let shortestTrackId = 0;
+      if (Object.values(tracks).length > 0) {
+        minDuration = Math.min(...Object.values(tracks).map(t => t.duration));
+        shortestTrackId = (Object.values(tracks).filter(t => t.duration == minDuration))[0].id
+      }
+      set["duration"] = minDuration;
+      set["shortest"] = shortestTrackId;
       const loops = await loopsService.getLoops(setId);
       const data = { set, tracks, loops };
       res.status(200).json(data);
@@ -64,6 +83,9 @@ export const setsController = {
       const form = formidable({multiples: true});
       const { setId } = req.params;
       const userId = req.user.userid;
+
+      await setsService.authUser(setId, userId);
+
       let data = await new Promise((resolve, reject) => {
       form.parse(req, (err, fields) => {
         if (err) {
@@ -88,8 +110,8 @@ export const setsController = {
       
       console.log(formObj);
       const ToDelete = Object.keys(todelete).filter(k=>todelete[k]);
-      if (Title) await setsService.setTitle(Title, setId, userId);
-      if (Description) await setsService.setDescription(Description, setId, userId);
+      if (Title) await setsService.setTitle(Title, setId);
+      if (Description) await setsService.setDescription(Description, setId);
       if (Object.keys(updateTitles).length>0) await soundsService.changeTitles(updateTitles);
       if (Object.keys(updateDescriptions).length>0) await soundsService.changeDescriptions(updateDescriptions);
       if (ToDelete.length>0) await soundsService.deleteSounds(ToDelete);

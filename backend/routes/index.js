@@ -24,6 +24,7 @@ router.post('/sounds/:setId', soundsController.newSounds);
 router.post('/loops/:setId', loopsController.newLoop);
 router.patch('/loops/:setId', loopsController.editLoops);
 router.post('/sets/new', setsController.newSet);
+router.patch('/publish/:setId', setsController.publishSet);
 router.delete('/sets/:setId', setsController.deleteSet);
 router.patch('/sets/:setId', setsController.editSets);
 

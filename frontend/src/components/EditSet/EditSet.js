@@ -32,6 +32,7 @@ export default function EditSet({ onClose, setList, open }) {
 
   const [updateSet, setupdateSet] = useState({ Title: set.title, Description: set.description })
   const [oldTracks, setOldTracks] = useState({ updateTitles: {}, updateDescriptions: {}, todelete: {} });
+  const [deletions, setDeletions] = useState(0);
 
   useEffect(() => {
     setOldTracks({ updateTitles: {}, updateDescriptions: {}, todelete: {} });
@@ -46,7 +47,7 @@ export default function EditSet({ onClose, setList, open }) {
     const tracksNow = { ...oldTracks };
     const id = target.id.split(' ')[1];
     tracksNow[target.name][id] = target.value || target.checked;
-
+    if (target.name === `todelete`) {setDeletions(Object.keys(oldTracks.todelete).filter(k => oldTracks.todelete[k]).length)}
     setOldTracks(tracksNow);
   }
 
@@ -151,8 +152,8 @@ export default function EditSet({ onClose, setList, open }) {
           <FormGroup row onChange={handleOldTracks}>
             {existingTracksList}
           </FormGroup>
-          <Button type="submit" variant="contained" color="primary" onClick={handleSubmission}>Submit</Button>
-          <Button color="inherit" onClick={deleteSet}>Delete</Button>
+          <Button name="save" type="submit" variant="contained" color="primary" onClick={handleSubmission}>Save {deletions > 0 ? `(${deletions} deletions)` : ``}</Button>
+          <Button color="inherit" onClick={deleteSet}>Delete set</Button>
         </FormControl>
       </DialogContent>
     </Dialog>

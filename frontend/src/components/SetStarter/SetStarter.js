@@ -9,9 +9,10 @@ const requestHeaders = {
   Authorization: `Bearer ${localStorage.getItem('token')}`,
 }
 
-export default function SetStarter({setId}) {
+export default function SetStarter({setId, own}) {
 
-  const username = localStorage.getItem('username')
+  const username = localStorage.getItem('username');
+  console.log({own})
   
   const getUploadParams = ({ file, meta }) => {
     const url = process.env.REACT_APP_API_URL+'sounds/'+setId;
@@ -35,8 +36,9 @@ export default function SetStarter({setId}) {
     <Card>
       { username ?
       <>
-      <CardHeader title={`Hey ${username}!`} subheader="Welcome to this brand new set! Start by dropping up to 4 audio files in here!" />
+      <CardHeader title={`Hey ${username}!`} subheader={ own ? "Welcome to this brand new set! Start by dropping up to 4 audio files in here!" : "What are you doing in someone else's empty set?" } />
       <CardContent>
+      { own ?
       <Dropzone
             getUploadParams={getUploadParams}
             maxFiles={4}
@@ -51,6 +53,8 @@ export default function SetStarter({setId}) {
               inputLabel: (files, extra) => (extra.reject ? { color: 'red' } : {}),
             }}
           />
+        : ``
+      }
       </CardContent>
       </>
       : 

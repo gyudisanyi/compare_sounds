@@ -68,11 +68,14 @@ export default function ProgressBar({props}) {
       allTracks.forEach((track) => track.currentTime = 0)
     }
     if (!looping) return;
+
+    if (!actualLoop[0]) {setActualLoop(customLoop)}
+
     if (progress >= actualLoop[1]) {
       allTracks.forEach((track) => track.currentTime = actualLoop[0] / resolution * track.duration)
     }
 
-  }, [progress, resolution, actualLoop, looping, allTracks])
+  }, [progress, resolution, actualLoop, looping, allTracks, customLoop])
 
   const seek = (value) => {
     const loopsAhead = loopsArray.filter((loop) => loop.range[1] > value);
@@ -134,7 +137,7 @@ export default function ProgressBar({props}) {
       <FormControl>
         <FormControlLabel key={`loop`} control={<Switch checked={looping} onClick={() => setLooping(o => !o)} />} label="Loops" labelPlacement="end" />
       { marks[0] ?
-        <FormControlLabel key={`snap`} control={<Switch checked={snap} onClick={() => setSnap(o => !o)} />} label="Snap" labelPlacement="end" />
+        <FormControlLabel key={`snap`} control={<Switch checked={snap} onClick={() => {setSnap(o => !o); setLooping(true)}} />} label="Snap" labelPlacement="end" />
       : ``
       }
       </FormControl>

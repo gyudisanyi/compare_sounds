@@ -14,7 +14,6 @@ export const soundsService = {
     const uploadPath = `./public/audio_src/${setId}/`;
     await fs.ensureFile(uploadPath+name)
     await fs.copy(sound.path, uploadPath+name)
-    console.log("SERV", name, duration, setId, userId);
     return await soundsRepo.newSound(name, duration, setId, userId);
   },
 

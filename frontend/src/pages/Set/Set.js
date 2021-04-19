@@ -5,8 +5,8 @@ import generalFetch from '../../utilities/generalFetch';
 
 import GlobalContext from '../../context/GlobalContext';
 
-import Header from '../../components/Header/Header2';
-import Player from '../../components/Player/Player2';
+import Header from '../../components/Header/Header';
+import Player from '../../components/Player/Player';
 import SetStarter from '../../components/SetStarter/SetStarter';
 
 export default function Set({username}) {
@@ -37,10 +37,10 @@ export default function Set({username}) {
       try {
         const response = await generalFetch("sets/"+setId, "GET");
         console.log({response});
-        if (parseInt(response.set.user_id) === parseInt(localStorage.getItem('userid'))) {
-          response.set[`own`] = true
+        if (response.message) {setMessage(response.message); throw (response.message)}
+        if (response.set && parseInt(response.set.user_id ) === parseInt(localStorage.getItem('userid'))) {
+          response.set[`own`] = true;
         }
-        if (response.message) setMessage(response.message);
         setSetData(response);
       } catch (error) {
         if (error.message) setMessage(error.message);
@@ -68,11 +68,11 @@ export default function Set({username}) {
           }
           { trackNodes
             ? <Player />
-            : <SetStarter setId={setId}/>
+            : <SetStarter setId={setId} own={setData.set.own}/>
           }
 
         </GlobalContext.Provider>
-        : (<Card>`${message}` || `Fetching data . . . `</Card>)
+        : (<Card><h2>{message || `Fetching data . . . `}</h2></Card>)
       }
     </>
   )

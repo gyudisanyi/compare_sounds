@@ -9,7 +9,7 @@ export const registrationController = {
       } = req.body;
       if (blacklist.includes(username.toLowerCase()))
         throw {
-          message: 'Invalid username.',
+          message: 'Forbidden username. Nice try!',
           status: 400,
         };
 

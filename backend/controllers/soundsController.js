@@ -18,7 +18,6 @@ export const soundsController = {
         })});
       const sound = data.files.Files;
       const duration = data.fields.durations;
-      console.log("CONT", sound.name, duration, setId, userId);
       await soundsService.uploadSound(sound, duration, setId, userId);
       res.status(200).json({message: "Tracks added"})
     } catch (error) {

@@ -8,7 +8,7 @@ export default function SetListItem({set, own}) {
   const {id, title, description, img_url} = set;
   
   const url = process.env.REACT_APP_API_URL;
-  const path=useHistory();
+  const path = useHistory();
   
   const [ imgUploadOpen, setImgUploadOpen ] = useState(false);
 
@@ -22,7 +22,7 @@ export default function SetListItem({set, own}) {
 
   return (
     <Card>
-      <CardActionArea onClick={() => path.push('sets/' + id)}>
+      <CardActionArea onClick={() => path.push('/sets/' + id)}>
         <CardHeader title={title} subheader={description}/>
           <img src={`${url + 'audio_src/' + id}/img/${img_url}`}
          alt={title} />
