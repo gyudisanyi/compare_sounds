@@ -1,7 +1,21 @@
 import React, {useState} from 'react';
-import { Card, CardActionArea, Button, CardHeader} from '@material-ui/core';
+import { Button, Card, CardActionArea, CardContent, CardMedia, CardHeader } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
 import UploadImage from '../UploadImage/UploadImage';
 import { useHistory } from 'react-router';
+
+const useStyles = makeStyles({
+  root: {
+    display: 'flex',
+    flexDirection: 'column',
+  },
+  media: {
+    width: '100%',
+    minHeight: 120,
+    backgroundPositionY: 'top',
+    backgroundPositionX: 'right',
+  }
+})
 
 export default function SetListItem({set, own}) {
 
@@ -10,6 +24,8 @@ export default function SetListItem({set, own}) {
   const url = process.env.REACT_APP_API_URL;
   const path = useHistory();
   
+  const classes = useStyles();
+
   const [ imgUploadOpen, setImgUploadOpen ] = useState(false);
 
   const handleImgOpen = () => {
@@ -21,11 +37,16 @@ export default function SetListItem({set, own}) {
   }
 
   return (
-    <Card>
+    <Card className={classes.root} raised>
       <CardActionArea onClick={() => path.push('/sets/' + id)}>
         <CardHeader title={title} subheader={description}/>
-          <img src={`${url + 'audio_src/' + id}/img/${img_url}`}
-         alt={title} />
+        <CardContent>
+          <CardMedia
+            style={{ backgroundColor: "gray" }}
+            className={classes.media}
+            image={`${url + 'audio_src/' + id}/img/${img_url}`}
+          />
+        </CardContent>
       </CardActionArea>
         { own ?
           <>

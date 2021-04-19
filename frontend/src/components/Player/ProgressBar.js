@@ -24,10 +24,11 @@ export default function ProgressBar({props}) {
   const  { loops, set } = context.setData;
   const { duration } = set;
   const { own } = set;
-  const [actualLoop, setActualLoop] = useState([10, 200])
 
   const [snap, setSnap] = useState(false);
   const [looping, setLooping] = useState(false);
+  
+  const [actualLoop, setActualLoop] = useState([])
   const [customLoop, setCustomLoop] = useState([130, 250]);
   const [customLoopName, setCustomLoopName] = useState('Loop');
   const [loopsOpen, setLoopsOpen] = useState(false);
@@ -76,6 +77,11 @@ export default function ProgressBar({props}) {
     }
 
   }, [progress, resolution, actualLoop, looping, allTracks, customLoop])
+
+  const snapper = () => {
+    if (!snap && !looping) {setLooping(true)};
+    setSnap(o => !o);
+  }
 
   const seek = (value) => {
     const loopsAhead = loopsArray.filter((loop) => loop.range[1] > value);
@@ -128,7 +134,7 @@ export default function ProgressBar({props}) {
   }
 
   function isItActual() {
-    if (actualLoop[0] === customLoop[0] && actualLoop[1] === customLoop[1]) return 'secondary';
+    if (looping && actualLoop[0] === customLoop[0] && actualLoop[1] === customLoop[1]) return 'secondary';
     return 'primary';
   }
 
@@ -137,7 +143,7 @@ export default function ProgressBar({props}) {
       <FormControl>
         <FormControlLabel key={`loop`} control={<Switch checked={looping} onClick={() => setLooping(o => !o)} />} label="Loops" labelPlacement="end" />
       { marks[0] ?
-        <FormControlLabel key={`snap`} control={<Switch checked={snap} onClick={() => {setSnap(o => !o); setLooping(true)}} />} label="Snap" labelPlacement="end" />
+        <FormControlLabel key={`snap`} control={<Switch checked={snap} onClick={snapper} />} label="Snap" labelPlacement="end" />
       : ``
       }
       </FormControl>

@@ -30,9 +30,9 @@ export default function SetsPage() {
     <Card>
       <CardHeader title="Others' sets" />
       <CardContent>
-        {sets?
-        <SetList sets={sets} own={false}/>
-        : 'fetching'
+        {sets
+          ? <SetList sets={sets} own={false}/>
+          : `${message}` || `Fetching sets...`
         }
       </CardContent>
     </Card>
