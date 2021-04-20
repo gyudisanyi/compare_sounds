@@ -7,6 +7,7 @@ import {
 
 import Set from './pages/Set/Set';
 import SetsPage from './pages/SetsPage/SetsPage';
+import UsersPage from './pages/UsersPage/UsersPage';
 import User from './pages/User/User';
 import Home from './pages/Home/Home';
 import Nav from "./components/Nav/Nav";
@@ -25,6 +26,9 @@ export default function App() {
             </Route>
             <Route exact path="/sets">
               <SetsPage />
+            </Route>
+            <Route exact path="/users">
+              <UsersPage />
             </Route>
             <Route path="/:id">
               <User />

@@ -4,6 +4,14 @@ import objectifier from './objectifier.js';
 
 export const usersService = {
 
+  async getUsers() {
+    const users = await usersRepo.getUsers();
+    if (!users[0]) {
+      throw { message: 'No users!', status: 400 };
+    }
+    return users;
+  },
+
   async getSetsByUsername(username) {
     const user = await usersRepo.getUserByUsername(username);
     if (!user[0]) {

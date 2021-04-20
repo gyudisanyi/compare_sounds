@@ -14,6 +14,7 @@ import {
 const router = express.Router();
 
 router.post('/users', registrationController.post);
+router.get('/users', usersController.getUsers);
 router.post('/login', loginController.post);
 router.get('/sets/:setId', setsController.getSetContents);
 router.get('/sets', setsController.allSets);
