@@ -38,7 +38,7 @@ services:
   frontend:
     build: frontend
     ports:
-      - "9898:5000"
+      - "443:5000"
 
   backend_public_monitor:
     image: pierrezemb/gostatic

@@ -4,3 +4,5 @@ node_modules/
 public/audio_src/
 yarn.lock
 package-lock.json
+fullchain.pem
+privkey.pem

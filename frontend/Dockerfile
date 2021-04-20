@@ -19,4 +19,4 @@ RUN yarn global add serve
 COPY . .
 RUN yarn build
 EXPOSE 5000
-CMD [ "serve", "-s", "build" ]
+CMD [ "serve", "-s", "build", "--ssl-cert", "fullchain.pem", "--ssl-key", "privkey.pem" ]
