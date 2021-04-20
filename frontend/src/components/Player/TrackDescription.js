@@ -44,8 +44,7 @@ export default function TrackDescription({track, url, setId, own}) {
         style={{ backgroundColor: "gray" }}
         onClick={handleImgOpen}
         className={classes.media}
-        image={`${url + 'audio_src/' + setId}/img/${img_url}`
-        }
+        image={img_url ? `${url + 'audio_src/' + setId}/img/${img_url}` : ``}
       />
       <UploadImage open={imgUploadOpen} onClose={handleImgClose} setId={setId} trackId={track.id} />
     </Card>

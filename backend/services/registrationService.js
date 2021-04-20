@@ -7,7 +7,7 @@ export const registrationService = {
     const newUser = await usersRepo.insertNewUser(username, hashedPassword);
     return {
       insertId: newUser.insertId,
-      message: 'Successful registration. User and empty set was added to database.',
+      message: 'Welcome! A new set was made for you to complete and share!',
     };
   },
   
@@ -53,9 +53,9 @@ export const registrationService = {
       };
     }
 
-    if (password.length < 6) {
+    if (password.length < 4) {
       throw {
-        message: 'Password is too short. Minimum 6 characters.',
+        message: 'Password is too short. Minimum 4 characters.',
         status: 400,
       };
     }

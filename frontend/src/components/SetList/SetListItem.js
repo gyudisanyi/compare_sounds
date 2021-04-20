@@ -44,7 +44,7 @@ export default function SetListItem({set, own}) {
           <CardMedia
             style={{ backgroundColor: "gray" }}
             className={classes.media}
-            image={`${url + 'audio_src/' + id}/img/${img_url}`}
+            image={img_url ? `${url + 'audio_src/' + id}/img/${img_url}` : ``}
           />
         </CardContent>
       </CardActionArea>

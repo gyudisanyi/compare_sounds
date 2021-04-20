@@ -27,7 +27,8 @@ export default function Home() {
       <CardHeader title="Welcome to Compare Sounds!" subheader="I'll help you cross-reference sounds and share it with others." />
       <CardContent>
         Please <Button variant="text" color="inherit" onClick={handleLoginOpen}>Login / register</Button> and start playing!<br/>
-        Or just <Button variant="text" color="inherit" onClick={() => path.push('../sets')}>browse sets</Button> made by others.
+        Or just <Button variant="text" color="inherit" onClick={() => path.push('../sets')}>browse sets</Button> made by others.<br/>
+        Optionally, feel free to hit the <Button variant="text" color="secondary" onClick={()=> path.push('../sets/1')}> What the hell is this</Button> button!
       </CardContent>
       <Login open={loginOpen} onClose={handleLoginClose} />
     </Card>

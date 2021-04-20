@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
-import { Card, CardHeader, CardContent } from '@material-ui/core';
+import { useParams, useHistory } from 'react-router-dom';
+import { Button, Card, CardHeader, CardContent } from '@material-ui/core';
 
 import generalFetch from '../../utilities/generalFetch';
 
@@ -12,6 +12,8 @@ export default function Users() {
   const [message, setMessage] = useState();
 
   const entryParam = useParams().id;
+  const path = useHistory();
+
 
   useEffect(() => {
     async function fetchData() {
@@ -29,10 +31,19 @@ export default function Users() {
 
   }, [entryParam])
 
+  const newSet = async () => {
+    const res = await generalFetch("sets/new", "POST");
+    path.push(`/sets/${res.newSetId}`);
+  }
+
   return (
     <Card>
       <CardHeader title={`${entryParam}'s sets`} subheader={localStorage.getItem('username') === entryParam ? `That's you` : ``} />
       <CardContent>
+      {localStorage.getItem('username') === entryParam 
+        ? <Button id="addset" variant="contained" color="primary" onClick={newSet}>Add new set</Button>
+        : ``}
+        <br/>
         {sets
           ? <SetList sets={sets} own={localStorage.getItem('username') === entryParam}/>
           : `${message}` || `Fetching sets...`

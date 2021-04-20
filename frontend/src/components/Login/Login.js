@@ -90,7 +90,9 @@ export default function Login({ onClose, open }) {
           {message}
           <Button type="submit" variant="contained" color="primary" onClick={() => login()}>Login</Button>
           <Button type="submit" variant="contained" onClick={() => register()}>Register</Button>
-          Your username will link to your page.
+          Your username will link to your page.<br/>
+          Your password is stored securely. No third parties.<br/>
+          <span>If you forgot it, <a href="mailto: soundscompare@gmail.com">drop me a line</a> to get another one.</span>
         </FormControl>
       </DialogContent>
     </Dialog>

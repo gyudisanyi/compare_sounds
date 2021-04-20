@@ -32,7 +32,7 @@ DB.connect((err) => {
 });
 
 function queryAsync(sql, queryParameters) {
-  
+  DB.connect();
   return new Promise((resolve, reject) => {
     DB.query(sql, queryParameters, (error, result) => {
       if (error) {

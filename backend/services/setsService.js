@@ -25,7 +25,7 @@ export const setsService = {
 
   async deleteSet(setId) {
       await setsRepo.deleteSet(setId);
-      return { message: 'Set logically deleted. Admin can revert.'};
+      return { message: 'Set deleted.'};
     },
 
   async getAllSets() {
@@ -33,7 +33,8 @@ export const setsService = {
   },
 
   async getUserSets(userId) {
-    return objectifier(await setsRepo.getUserSets(userId));  
+    const sets = await setsRepo.getUserSets(userId);
+    return objectifier(sets);
   },
 
   async setData(setId) {
