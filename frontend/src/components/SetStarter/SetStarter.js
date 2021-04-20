@@ -56,6 +56,8 @@ export default function SetStarter({setId, own}) {
           />
         : ``
       }
+      { own ?
+      <>
       <p><strong>TIP: </strong>Upload (or record with your Android device) sounds worth comparing.
       <br/>Such as:
         <ul>
@@ -68,6 +70,8 @@ export default function SetStarter({setId, own}) {
       <p>Use snippets of similar duration: your collection's play length will default to the shortest track's. You can export tracks from a DAW like <a href="https://www.audacityteam.org/">Audacity (free)</a>.</p>
       <p>You can edit titles, descriptions, save interesting loops and add images after that. </p>
       <p>You can publish this collection and share its URL, or a link to <a href={`/${username}`}>all of your sets</a>.</p>
+      </>
+      : ``}
       </CardContent>
       </>
       : 

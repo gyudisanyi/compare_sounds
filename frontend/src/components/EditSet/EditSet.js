@@ -161,7 +161,7 @@ export default function EditSet({ onClose, setList, open }) {
             {existingTracksList}
           </FormGroup>
           <Button name="save" type="submit" variant="contained" color="primary" onClick={handleSubmission}>Save {deletions > 0 ? `(${deletions} deletions)` : ``}</Button>
-          <Button color="inherit" onClick={deleteSet}>Delete set</Button>
+          <Button color="secondary" onClick={deleteSet}>Delete set</Button>
         </FormControl>
       </DialogContent>
     </Dialog>

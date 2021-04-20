@@ -33,7 +33,8 @@ export const setsService = {
   },
 
   async getUserSets(userId) {
-    return objectifier(await setsRepo.getUserSets(userId));  
+    const sets = await setsRepo.getUserSets(userId);
+    return objectifier(sets);
   },
 
   async setData(setId) {

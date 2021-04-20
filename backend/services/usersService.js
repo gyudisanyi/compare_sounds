@@ -18,7 +18,11 @@ export const usersService = {
       throw { message: 'No such user!', status: 400 };
     }
     const { id } = user[0];
-    return await setsRepo.getUserSets(id)
+    const sets = await setsRepo.getUserSets(id);
+    if (!sets[0]) {
+      throw { message: 'This user does not have published sets.', status: 400 };
+    }
+    return sets;
   },
 
 };
