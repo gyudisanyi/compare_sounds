@@ -27,7 +27,7 @@ export default function TheApp() {
         I had to explore and discover things I wasn't expecting.
       </p>
       <p>
-        I call it the nested rabbithole methodology. For the IT equivalent of <i>Ulysses</i> and <i>En attendant Godot</i> check the github repo.
+        I call it Nested Rabbithole Methodology. For the IT equivalent of <i>Ulysses</i> and <i>En attendant Godot</i> check <a href="https://github.com/gyudisanyi/compare_sounds/">the github repo</a>!
       </p>        
       <p>Thanks! Start playing!</p>
     </>

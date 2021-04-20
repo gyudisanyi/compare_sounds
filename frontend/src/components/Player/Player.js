@@ -60,7 +60,7 @@ export default function Player() {
     <Card>
       { trackNodes && tracks[nowPlaying] ?
       <CardContent>
-      <Grid container direction={bigScr ? 'row-reverse' : 'column'}>
+      <Grid container spacing={2} direction={bigScr ? 'row-reverse' : 'column'}>
         <Grid item xs={12} sm={6}><TrackDescription track={tracks[nowPlaying]} url={url} setId={set.id} own={set.own}/></Grid>
         <Grid item xs={12} sm={4}><TracksList props={{trackNodes, nodeKeys, tracks, nowPlaying, setNowPlaying, userId}}/></Grid>
         <Grid item xs={12} sm={2}><PlayControls props={{trackNodes, nodeKeys, nowPlaying, bigScr, paused, setPaused}}/></Grid>

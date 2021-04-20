@@ -6,12 +6,12 @@ export default function WhatsNext() {
     <>
       <h4>What's next</h4>
       <p>
-        Features are basic. I went for the minimum viable product.
+        Features and looks are basic. I went for the minimum viable product.
       </p>
       <p>
         What's to add asap is editing option to sounds and images. 
         Now the set's playing length defaults to that of the shortest track, 
-        and you have to be lucky with images. 
+        and you have to be smart or lucky with images. Text edits will be integrated into the player surface.
       </p>
       <p>
         What's more substantial is audio handling. 

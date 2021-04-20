@@ -90,6 +90,7 @@ export default function Login({ onClose, open }) {
           {message}
           <Button type="submit" variant="contained" color="primary" onClick={() => login()}>Login</Button>
           <Button type="submit" variant="contained" onClick={() => register()}>Register</Button>
+          Your username will link to your page.
         </FormControl>
       </DialogContent>
     </Dialog>

@@ -8,7 +8,7 @@ export default function WhatsNext() {
       <p>
         I'm a late bloomer in coding. The seeds were sown in my childhood years, some sprouts 
         - amusing network breach stories - got me a reputation in weeks into highschool 
-        and a principals'notice.
+        and a warning note by the headmaster.
       </p>
       <p>
         I didn't keep on coding much in my adult years. My other interests drove me to a 
