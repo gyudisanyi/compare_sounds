@@ -13,6 +13,8 @@ Also, mind me, it is about audio - I'll love to hear people using it in unexpect
 <img width="95%" alt="scratching" src="https://news.bpmsupreme.com/wp-content/uploads/2016/09/Basic-scratch-techniques-blog-update-121019.jpg" />
 
 This is my first complete app, I did it on my own but not alone. Had great help from my friend dzac and of course strangers from the internet. 
-I had to explore and discover things I wasn't expecting. I call it the nested rabbithole methodology. For the IT equivalent of <i>Ulysses</i> and <i>En attendant Godot</i> check the commits.
+I had to explore and discover things I wasn't expecting.
+
+I call it Nested Rabbithole Methodology. For the IT equivalent of <i>Ulysses</i> and <i>En attendant Godot</i> check the commits.
 
 Thanks! Start playing!
