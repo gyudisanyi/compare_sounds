@@ -1,12 +1,12 @@
 # compare_sounds v.0.0.0.7345
 
-This is a React/NodeJS+MySQL app <a href="http://cs.sanyi.space/"> living </a> in composed AWS dockers. A personal project as a proof to myself and those interested of what I can do now.
+This is a React/NodeJS+MySQL app <a href="https://cs.sanyi.space/"> living </a> in composed AWS dockers. A personal project as a proof to myself and those interested of what I can do now.
 
 Also quite a lot of fun to use. Might even be useful.
 
 As a musician I always would have appreciated an easy way to cross-reference comparable audio on the fly, just switching tracks without needing to load them into any DAW. This can even be shared, neat.
 
-I made <a href="http://cs.sanyi.space/sanyi"> examples </a> with several use cases in mind.
+I made <a href="https://cs.sanyi.space/sanyi"> examples </a> with several use cases in mind.
 
 Also, mind me, it is about audio - I'll love to hear people using it in unexpected ways!
 
