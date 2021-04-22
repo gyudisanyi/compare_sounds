@@ -1,6 +1,5 @@
 import React from 'react';
-import {Grid, Button, Snackbar, IconButton} from '@material-ui/core';
-import CloseIcon from '@material-ui/icons/Close';
+import {Grid, Button, Snackbar } from '@material-ui/core';
 import SetListItem from './SetListItem';
 
 export default function SetList({sets, own}) {
