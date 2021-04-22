@@ -7,8 +7,8 @@ import errorHandler from './middlewares/error-handler.js';
 const app = express();
 const port = 8080;
 
-const privateKey  = fs.readFileSync('sslcert/server.key', 'utf8');
-const certificate = fs.readFileSync('sslcert/server.crt', 'utf8');
+const privateKey  = fs.readFileSync('./localhost+1-key.pem', 'utf8');
+const certificate = fs.readFileSync('./localhost+1.pem', 'utf8');
 
 const credentials = {key: privateKey, cert: certificate};
 
