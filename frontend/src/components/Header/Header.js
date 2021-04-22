@@ -1,13 +1,17 @@
 import React, { useContext, useState, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
+
 import { makeStyles } from '@material-ui/core/styles';
-import AppBar from '@material-ui/core/AppBar';
-import Toolbar from '@material-ui/core/Toolbar';
-import Typography from '@material-ui/core/Typography';
-import Menu from '@material-ui/core/Menu';
-import MenuItem from '@material-ui/core/MenuItem';
-import Button from '@material-ui/core/Button';
+import {
+  AppBar,
+  Toolbar,
+  Typography,
+  Menu,
+  MenuItem,
+  Button,
+  Snackbar } from '@material-ui/core';
 import LibraryMusicTwoToneIcon from '@material-ui/icons/LibraryMusicTwoTone';
+import ShareIcon from '@material-ui/icons/Share';
 import IconButton from '@material-ui/core/IconButton';
 import GlobalContext from '../../context/GlobalContext';
 
@@ -90,6 +94,25 @@ export default function Header() {
     setEditOpen(true);
   }
 
+  const [open, setOpen] = React.useState(false);
+
+  const handleClick = () => {
+    setOpen(true);
+  };
+
+  const handleClose = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+
+    setOpen(false);
+  };
+
+  const share = () => {
+    handleClick();
+    navigator.clipboard.writeText(window.location.href);
+  }
+
   return (
     <div className={classes.root}>
       <AppBar position="static">
@@ -123,12 +146,13 @@ export default function Header() {
                   : ``}
               </Menu>
               <Typography variant="h6" className={classes.title}>
-                {set.title}
+                {`${set.title} `}
                 {own
                   ?
                   <>
-                    <Button color="inherit" onClick={handleEditOpen}>{` Edit `}</Button>
-                    <Button variant={published ? "text" : "contained"} onClick={publish}>{published ? ` unpublish ` : ` publish `}</Button>
+                    <Button variant={"contained"} color={published ? "secondary" : "default"} onClick={publish}>{published ? ` Published ` : ` Click to publish `}</Button>{`  `} 
+                    <Button variant="contained" color="primary" onClick={handleEditOpen}>{` Edit `}</Button>
+                    <IconButton color="inherit" edge="end" onClick={share}><ShareIcon /></IconButton>
                   </>
                   :
                   ` by ${set.username}`
@@ -141,6 +165,16 @@ export default function Header() {
         </Typography>
         }
       </AppBar>
+      <Snackbar
+        anchorOrigin={{
+          vertical: 'top',
+          horizontal: 'center',
+        }}
+        open={open}
+        autoHideDuration={1000}
+        onClose={handleClose}
+        message="Link copied to clipboard!"
+      />
     </div>
   );
 }

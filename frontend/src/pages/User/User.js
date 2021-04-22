@@ -43,7 +43,7 @@ export default function Users() {
       {localStorage.getItem('username') === entryParam 
         ? <Button id="addset" variant="contained" color="primary" onClick={newSet}>Add new set</Button>
         : ``}
-        <br/>
+        <p/>
         {sets
           ? <SetList sets={sets} own={localStorage.getItem('username') === entryParam}/>
           : `${message}` || `Fetching sets...`

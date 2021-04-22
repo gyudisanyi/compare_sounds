@@ -36,11 +36,19 @@ export default function SetListItem({set, own}) {
     setImgUploadOpen(false);
   }
 
+  const byWho = () => {
+    if (set.username === localStorage.getItem('username')) return;
+    return (
+      <>By <a href={`/${set.username}`}>{set.username}</a></>
+    )
+  }
+  
   return (
     <Card className={classes.root} raised>
       <CardActionArea onClick={() => path.push('/sets/' + id)}>
-        <CardHeader title={title} subheader={description}/>
+        <CardHeader title={title ? title : "Untitled set"} subheader={byWho()}/>
         <CardContent>
+          {description}
           <CardMedia
             style={{ backgroundColor: "gray" }}
             className={classes.media}

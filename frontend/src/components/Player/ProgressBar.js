@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { withStyles } from '@material-ui/core/styles';
+import { withStyles, useTheme } from '@material-ui/core/styles';
 import { 
   Slider,
   Switch,
@@ -42,8 +42,12 @@ export default function ProgressBar({props}) {
   
   const allTracks = Object.values(trackNodes);
 
-  const primaryColor = "rgb(62, 80, 179)";
-  const secondaryColor = "rgb(239, 2, 88)";
+  const { palette } = useTheme();
+
+  console.log(palette)
+
+  const primaryColor = palette.primary.main;
+  const secondaryColor = palette.secondary.main;
 
   const grad = rangesToGradient(loopsArray, primaryColor, secondaryColor)
 
