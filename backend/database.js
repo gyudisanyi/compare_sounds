@@ -1,12 +1,13 @@
 import pkg from 'mysql2';
-const { createConnection } = pkg;
+const { createPool } = pkg;
 import {} from 'dotenv/config.js';
 
-const DB = createConnection({
+const DB = createPool({
   host: process.env.MYSQL_HOST,
   user: process.env.MYSQL_USER,
   password: process.env.MYSQL_PASSWORD,
   database: process.env.MYSQL_DATABASE,
+  connectionLimit: 10,
   multipleStatements: true,
   authSwitchHandler: function ({pluginName, pluginData}, cb) {
     if (pluginName === 'ssh-key-auth') {
@@ -24,15 +25,16 @@ const DB = createConnection({
   }
 });
 
-DB.connect((err) => {
+DB.getConnection((err) => {
   if (err) {
-    console.error('Unable to connect to DB', err.sqlMessage);
+    console.error('Unable to connect to DB pool', err.sqlMessage);
     return;
-  } console.log('Successfully connected to DB');
+  } console.log('Successfully connected to DB pool');
 });
 
-function queryAsync(sql, queryParameters) {
-  DB.connect();
+
+async function queryAsync(sql, queryParameters) {
+
   return new Promise((resolve, reject) => {
     DB.query(sql, queryParameters, (error, result) => {
       if (error) {

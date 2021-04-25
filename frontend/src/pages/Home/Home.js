@@ -7,8 +7,6 @@ import Login from '../../components/Login/Login';
 export default function Home() {
 
   const path = useHistory();
-  const username = localStorage.getItem('username')
-  if (username) { path.push('../' + username) }
 
   const [loginOpen, setLoginOpen] = useState(false);
 
@@ -17,9 +15,6 @@ export default function Home() {
   }
   const handleLoginClose = () => {
     setLoginOpen(false);
-    if (localStorage.getItem('username')) {
-      path.push('../' + localStorage.getItem('username'));
-    }
   }
 
   return (

@@ -167,6 +167,7 @@ export default function ProgressBar({props}) {
         <TextField 
             label="name (max 30)" 
             variant="outlined"
+            margin="normal"
             value={customLoopName} 
             onChange={enterLoopName} />
       </Box>

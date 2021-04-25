@@ -38,9 +38,11 @@ export default function Set({username}) {
         const response = await generalFetch("sets/"+setId, "GET");
         console.log({response});
         if (response.message) {setMessage(response.message); throw (response.message)}
-        if (response.set && parseInt(response.set.user_id ) === parseInt(localStorage.getItem('userid'))) {
+        const own = response.set && parseInt(response.set.user_id) === parseInt(localStorage.getItem('userid'));
+        if (own) {
           response.set[`own`] = true;
         }
+        if (!own && !response.set.published) {setMessage("This set is not public");}
         setSetData(response);
       } catch (error) {
         if (error.message) setMessage(error.message);
@@ -53,7 +55,7 @@ export default function Set({username}) {
 
   return (
     <>
-      {setData
+      {setData && !message
         ?
         <GlobalContext.Provider value={{setData, trackNodes, username, }} >
           <Header />

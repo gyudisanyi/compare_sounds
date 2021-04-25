@@ -152,12 +152,12 @@ export default function Header() {
                   <>
                     <Button variant={"contained"} color={published ? "secondary" : "default"} onClick={publish}>{published ? ` Published ` : ` Click to publish `}</Button>{`  `} 
                     <Button variant="contained" color="primary" onClick={handleEditOpen}>{` Edit `}</Button>
-                    <IconButton color="inherit" edge="end" onClick={share}><ShareIcon /></IconButton>
                   </>
                   :
                   ` by ${set.username}`
                 }
               </Typography>
+              <IconButton color="inherit" edge="end" onClick={share}><ShareIcon /></IconButton>
             </Toolbar>
           </>
           : <Typography variant="h6" className={classes.title}>

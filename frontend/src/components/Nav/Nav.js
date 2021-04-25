@@ -18,12 +18,15 @@ export default function Nav() {
   const handleAboutOpen = () => {
     setAboutOpen(true);
   }
+
   const handleAboutClose = () => {
     setAboutOpen(false);
   }
+
   const handleLoginOpen = () => {
     setLoginOpen(true);
   }
+
   const handleLoginClose = () => {
     setLoginOpen(false);
     if (localStorage.getItem('username')) {

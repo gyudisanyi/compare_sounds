@@ -106,6 +106,7 @@ export default function EditSet({ onClose, setList, open }) {
       />
       <TextField
         variant="outlined"
+        margin="normal"
         label="New title"
         name="updateTitles"
         defaultValue={tracks[key].title}
@@ -113,6 +114,7 @@ export default function EditSet({ onClose, setList, open }) {
         key={`et ${key}`} id={`et ${key}`} />
       <TextField
         variant="outlined"
+        margin="normal"
         multiline rows={2}
         label="New description"
         name="updateDescriptions"
@@ -134,12 +136,13 @@ export default function EditSet({ onClose, setList, open }) {
       </DialogTitle>
       <DialogContent>
         <FormControl onSubmit={handleSubmission} onKeyPress={(e) => keyed(e)} >
-          <Card square>
+          <Card square elevation={4}>
             <CardContent>
               <FormGroup row onChange={handleUpdateSet}>
                 <TextField 
                   label="New title (50)" 
-                  variant="outlined" 
+                  variant="outlined"
+                  margin="normal" 
                   fullWidth 
                   name="Title" 
                   defaultValue={set.title}
@@ -147,7 +150,8 @@ export default function EditSet({ onClose, setList, open }) {
                   placeholder="Add new title" />
                 <TextField 
                   label="New description (250)" 
-                  variant="outlined" 
+                  variant="outlined"
+                  margin="normal" 
                   fullWidth 
                   multiline rows={3} 
                   InputProps={{ inputProps: {maxlength: 250}}}

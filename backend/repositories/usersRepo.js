@@ -8,7 +8,7 @@ export const usersRepo = {
   },
 
   async getUsers() {
-    const sql = 'SELECT username, COUNT(idset) as published_sets FROM users LEFT JOIN sets ON (iduser = user_id) WHERE published IS NOT NULL GROUP BY iduser;';
+    const sql = 'SELECT username, COUNT(idset) as published_sets FROM users LEFT JOIN sets ON (iduser = user_id) WHERE published IS NOT NULL AND sets.deleted IS NULL GROUP BY iduser;';
     return await queryAsync(sql);
   },
 
