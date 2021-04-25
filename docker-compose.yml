@@ -48,6 +48,13 @@ services:
     volumes:
       - backend_public:/srv/http
 
+  frontend_redirection:
+    image: morbz/docker-web-redirect
+    environment:
+      REDIRECT_TARGET: ${FRONTEND_URL}
+    ports:
+      - "80:80"
+
 volumes:
   mysqldb:
   backend_public:
