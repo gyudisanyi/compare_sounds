@@ -2,8 +2,6 @@ FROM node:15.12.0
 
 # Create app directory
 WORKDIR /usr/src/app
-ENV REACT_APP_API_URL="http://leves.info:9899/"
-ENV REACT_APP_TITLE="Compare Sounds"
 
 # Install app dependencies
 # A wildcard is used to ensure both package.json AND package-lock.json are copied
