@@ -12,10 +12,10 @@ const useStyles = makeStyles({
   description: {
     display: 'flex',
     flexDirection: 'column',
-    width: '60%',
   },
   media: {
-    width: '40%',
+    width: '30%',
+    backgroundSize: 'contain',
     backgroundPositionY: 'top',
     backgroundPositionX: 'right',
   }
@@ -41,7 +41,7 @@ export default function TrackDescription({track, url, setId, own}) {
     <Card className={classes.root} raised>
       <CardContent className={classes.description}>{description}</CardContent>
       <CardMedia
-        style={{ backgroundColor: "gray" }}
+        style={{ backgroundColor: img_url ? 'white' : 'gray' }}
         onClick={handleImgOpen}
         className={classes.media}
         image={img_url ? `${url + 'audio_src/' + setId}/img/${img_url}` : ``}

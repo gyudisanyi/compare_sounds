@@ -1,8 +1,10 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import { Button, Card, CardActionArea, CardContent, CardMedia, CardHeader, Snackbar,  } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import UploadImage from '../UploadImage/UploadImage';
 import { useHistory } from 'react-router';
+
+import generalFetch from '../../utilities/generalFetch';
 
 const useStyles = makeStyles({
   root: {
@@ -12,14 +14,13 @@ const useStyles = makeStyles({
   media: {
     width: '100%',
     minHeight: 120,
-    backgroundPositionY: 'top',
-    backgroundPositionX: 'right',
+    backgroundSize: "contain",
   }
 })
 
 export default function SetListItem({set, own}) {
 
-  const {id, title, description, img_url} = set;
+  const {id, title, description, img_url, published} = set;
   
   const url = process.env.REACT_APP_API_URL;
   const path = useHistory();
@@ -55,8 +56,15 @@ export default function SetListItem({set, own}) {
     navigator.clipboard.writeText(window.location.hostname + `/sets/${id}`);
   }
 
+  const publish = async (id) => {
+    await generalFetch('publish/'+set.id, 'PATCH');
+    handleClick();
+    navigator.clipboard.writeText(window.location.hostname + `/sets/${id}`);
+    window.location.reload();
+  }
+
   const byWho = () => {
-    if (set.username === localStorage.getItem('username')) return;
+    if (set.username === localStorage.getItem('username')) return (<>Your set</>);
     return (
       <>By <a href={`/${set.username}`}>{set.username}</a></>
     )
@@ -64,12 +72,12 @@ export default function SetListItem({set, own}) {
   
   return (
     <>
-    <Card className={classes.root} raised>
+    <Card className={classes.root} raised width={1} >
       <CardActionArea onClick={() => path.push('/sets/' + id)}>
         <CardHeader title={title ? title : "Untitled set"} subheader={byWho()}/>
-        <CardContent>{description}
+        <CardContent>{description}<p/>
           <CardMedia
-            style={{ backgroundColor: "gray" }}
+            style={{ backgroundColor: img_url ? "white" : "gray" }}
             className={classes.media}
             image={img_url ? `${url + 'audio_src/' + id}/img/${img_url}` : ``}
           />
@@ -83,12 +91,20 @@ export default function SetListItem({set, own}) {
           <UploadImage open={imgUploadOpen} onClose={handleImgClose} setId={id} trackId={0} />
           </>
         : ``}
+        { !own || (own && published) ?
         <Button 
           onClick={(e) => share(set.id)}
           variant="contained"
           color="primary">
           Share
         </Button>
+        : <Button 
+          onClick={(e) => publish(set.id)}
+          variant="contained"
+          color="primary">
+          Publish & share
+        </Button>
+        }
     </Card>
     <Snackbar
         anchorOrigin={{

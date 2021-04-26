@@ -76,7 +76,7 @@ export default function SetStarter({setId, own}) {
       </>
       : 
       <>
-      <CardHeader title={`Hey stranger!`} subheader="You might want to log in or register." />
+      <CardHeader title={`Hey stranger!`} subheader="This is an empty set. You might want to log in or register and make one for you." />
       <CardContent>
       </CardContent>
       </> }

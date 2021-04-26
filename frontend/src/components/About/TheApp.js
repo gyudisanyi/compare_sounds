@@ -6,7 +6,7 @@ export default function TheApp() {
     <>
       <h4>Compare_sounds v.0.0.0.7345</h4>
       <p>
-        This is a React/NodeJS+MySQL app living in composed AWS dockers.
+        This is a React/NodeJS+MySQL app running in a containerized environment, hosted at AWS.
         A personal project as a proof to myself and those interested of what I can do now.
       </p>
       <p>
