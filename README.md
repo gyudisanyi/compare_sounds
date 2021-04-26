@@ -1,6 +1,6 @@
 # compare_sounds v.0.0.0.7345
 
-This is a React/NodeJS+MySQL app <a href="https://cs.sanyi.space/"> living </a> in composed AWS dockers. A personal project as a proof to myself and those interested of what I can do now.
+This is a React/NodeJS+MySQL app <a href="https://cs.gyudisanyi.hu/"> running </a> in a containerized environment, hosted at AWS. A personal project as a proof to myself and those interested of what I can do now.
 
 Also quite a lot of fun to use. Might even be useful.
 
