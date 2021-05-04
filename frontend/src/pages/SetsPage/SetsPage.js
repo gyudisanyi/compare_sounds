@@ -28,7 +28,7 @@ export default function SetsPage() {
 
   return (
     <Card>
-      <CardHeader title="Published sets" />
+      <CardHeader title="Public sets" />
       <CardContent>
         {sets
           ? <SetList sets={sets} own={false}/>

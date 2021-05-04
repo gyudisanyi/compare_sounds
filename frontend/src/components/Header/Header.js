@@ -9,6 +9,9 @@ import {
   Menu,
   MenuItem,
   Button,
+  Switch,
+  FormControl,
+  FormControlLabel,
   Snackbar } from '@material-ui/core';
 import LibraryMusicTwoToneIcon from '@material-ui/icons/LibraryMusicTwoTone';
 import ShareIcon from '@material-ui/icons/Share';
@@ -150,11 +153,13 @@ export default function Header() {
                 {own
                   ?
                   <>
-                    <Button variant={"contained"} color={published ? "secondary" : "default"} onClick={publish}>{published ? ` Published ` : ` Click to publish `}</Button>{`  `} 
-                    <Button variant="contained" color="primary" onClick={handleEditOpen}>{` Edit `}</Button>
+                    <FormControl>
+                      <FormControlLabel key={`public`} control={<Switch checked={published} onClick={publish} />} label="Public" labelPlacement="start"  />
+                    </FormControl>
+                    {`  `}<Button variant="contained" onClick={handleEditOpen}>{` Edit `}</Button>
                   </>
                   :
-                  ` by ${set.username}`
+                  <>by <a href={`/${set.username}`}>{set.username}</a></>
                 }
               </Typography>
               <IconButton color="inherit" edge="end" onClick={share}><ShareIcon /></IconButton>

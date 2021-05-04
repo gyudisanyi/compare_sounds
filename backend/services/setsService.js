@@ -6,6 +6,7 @@ import fs from 'fs-extra';
 export const setsService = {
   async newSet(userId) {
     let Data = await setsRepo.newSet(userId);
+    console.log(Data);
     return Data.insertId;
     },
 

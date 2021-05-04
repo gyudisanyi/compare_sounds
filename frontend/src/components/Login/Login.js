@@ -9,6 +9,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import CloseIcon from '@material-ui/icons/Close';
 
 import generalFetch from '../../utilities/generalFetch';
+import Welcome from './Welcome';
 
 const useStyles = makeStyles((theme) => ({
   closeButton: {
@@ -25,7 +26,8 @@ export default function Login({ onClose, open }) {
 
   const [userPass, setUserPass] = useState({username: "", password: ""});
   const [message, setMessage] = useState();
-
+  const [welcome, setWelcome] = useState(false);
+  const [setId, newSetId] = useState()
   const handleClose = () => {
     onClose();
   }
@@ -57,45 +59,76 @@ export default function Login({ onClose, open }) {
 
   }
   const register = async () => {
-    
     try {
       const data = await generalFetch('users', 'POST', userPass);
+      newSetId(data.data);
       setMessage(data.message);
+      if (data.status === 201) welcoming();
     } catch(err) {
       console.log(err);
     }
+  }
 
+  const welcoming = async () => {
+    try {
+      const data = await generalFetch('login', 'POST', userPass);
+      if (data.message) {setMessage(data.message); throw new Error(data.message)}
+      if (data.token && data.username && data.usertype && data.userid) {
+        localStorage.setItem('token', data.token);
+        localStorage.setItem('username', data.username);
+        localStorage.setItem('usertype', data.usertype);
+        localStorage.setItem('userid', data.userid);
+      }
+      setMessage('');
+      setWelcome(true);
+    } catch(err) {
+      console.log(err);
+    }
   }
 
   return (
     <Dialog maxWidth="sm" onClose={handleClose} open={open} scroll="body">
-
-      <DialogTitle>
-        Login or register
-        <IconButton className={classes.closeButton} aria-label="close" onClick={handleClose}>
-          <CloseIcon />
-        </IconButton>
-      </DialogTitle>
-      <DialogContent>
-        <FormControl onSubmit={login} onKeyPress={(e) => keyed(e)}>
-          <FormGroup row onChange={handleChange}>
-            <TextField 
-              label="Username" 
-              name="username" 
-              InputProps={{ inputProps: {maxlength: 50}}} />
-            <TextField 
-              label="Password" 
-              type="password" 
-              name="password" />
-          </FormGroup>
-          {message}
-          <Button type="submit" variant="contained" color="primary" onClick={() => login()}>Login</Button>
-          <Button type="submit" variant="contained" onClick={() => register()}>Register</Button>
-          Your username will link to your page.<br/>
-          Your password is stored securely. No third parties.<br/>
-          <span>If you forgot it, <a href="mailto: soundscompare@gmail.com">drop me a line</a> to get another one.</span>
-        </FormControl>
-      </DialogContent>
+      {welcome
+      ?
+      <>
+        <DialogTitle>
+          Welcome {setId}!
+          <IconButton className={classes.closeButton} aria-label="close" onClick={handleClose}>
+            <CloseIcon />
+          </IconButton>
+        </DialogTitle>
+        <Welcome onClose={handleClose} id={setId}/>
+      </>
+      :
+      <>
+        <DialogTitle>
+          Login or register
+          <IconButton className={classes.closeButton} aria-label="close" onClick={handleClose}>
+            <CloseIcon />
+          </IconButton>
+        </DialogTitle>
+        <DialogContent>
+          <FormControl onSubmit={login} onKeyPress={(e) => keyed(e)}>
+            <FormGroup row onChange={handleChange}>
+              <TextField 
+                label="Username" 
+                name="username" 
+                InputProps={{ inputProps: {maxlength: 50}}} />
+              <TextField 
+                label="Password" 
+                type="password" 
+                name="password" />
+            </FormGroup>
+            {message}
+            <Button type="submit" variant="contained" color="primary" onClick={() => login()}>Login</Button>
+            <Button type="submit" variant="contained" onClick={() => register()}>Register</Button>
+            Your username will link to your page.<br/>
+            Your password is stored securely. No third parties.<br/>
+            <span>If you forgot it, <a href="mailto: soundscompare@gmail.com">drop me a line</a> to get another one.</span>
+          </FormControl>
+        </DialogContent>
+      </>
+      }
     </Dialog>
   )
 }

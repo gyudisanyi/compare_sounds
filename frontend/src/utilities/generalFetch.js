@@ -7,8 +7,6 @@ async function generalFetch(endpoint, method, bodyData = undefined) {
     },
   };
 
-  console.log("YOOOO", process.env.REACT_APP_API_URL+endpoint, method, bodyData);
-
   if (endpoint !== 'login') {
     const token = localStorage.getItem('token');
     requestOptions.headers.Authorization = `Bearer ${token}`;
@@ -17,7 +15,6 @@ async function generalFetch(endpoint, method, bodyData = undefined) {
   if (bodyData !== undefined) { requestOptions.body = JSON.stringify(bodyData); }
   
   if (method === "PATCH" && endpoint.split('/')[0] !== "loops") {
-    console.log(method);
     requestOptions.body = bodyData;
     delete requestOptions.headers['Content-Type'];
   };
@@ -25,7 +22,6 @@ async function generalFetch(endpoint, method, bodyData = undefined) {
   const httpResponse = await fetch(`${process.env.REACT_APP_API_URL+endpoint}`, requestOptions);
   
   const response = await httpResponse.json();
-  console.log(response);
   const { status } = httpResponse;
   const { message } = response;
   

@@ -23,7 +23,7 @@ export const registrationController = {
       const newSetId = await setsService.newSet(registration.insertId);
 
       res.status(201).json({ 
-        newSetId,
+        data: newSetId,
         message: registration.message });
     } catch (error) {
       next(error);
